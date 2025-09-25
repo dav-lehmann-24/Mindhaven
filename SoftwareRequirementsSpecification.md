@@ -46,8 +46,8 @@ Planned Subsystems are:
 | ----------- | -------------------------------------- |
 | SRS         | Software Requirements Specification    |
 | UC          | Use Case                               |
-| n/a         | not applicable                         |
-| tbd         | to be determined                       |
+| N/A         | Not Applicable                         |
+| TBD         | To Be Determined                       |
 | OUCD        | Overall Use Case Diagram               |
 | FAQ         | Frequently asked Questions             |
 
