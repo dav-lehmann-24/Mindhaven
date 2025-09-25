@@ -55,8 +55,8 @@ Planned Subsystems are:
 
 | Title                                                                   | Date       | Publishing organization   |
 | ----------------------------------------------------------------------- |:----------:| ------------------------- |
-| [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven)    | 18.10.2018 | Common Playground Team    |
-| [GitHub](https://github.com/dav-lehmann-24/Mindhaven)                   | 18.10.2018 | Common Playground Team    |
+| [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven)    | 18.10.2018 | Mindhaven Team    		   |
+| [GitHub](https://github.com/dav-lehmann-24/Mindhaven)                   | 18.10.2018 | Mindhaven Team    		   |
 
 
 ### 1.5 Overview
