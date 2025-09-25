@@ -100,14 +100,14 @@ Testing:
 
 ### 3.1 Functionality
 This section will explain the different use cases, you could see in the Use Case Diagram, and their functionality.  
-Until the end of November we plan to implement:
+Until the end of the first semester we plan to implement:
 - 3.1.1 Create account
 - 3.1.2 Logging in / Logging out
 - 3.1.3 Edit account
 - 3.1.4 Delete account
 - 3.1.5 Reset password
 
-Until the end of May, we want to implement:
+Until the end of the second semester, we want to implement:
 - 3.1.6 Manage journal (create, edit, delete, list)
 - 3.1.7 Implement AI assistance (Chatbot) 
 - 3.1.8 Implement SOS Mode
