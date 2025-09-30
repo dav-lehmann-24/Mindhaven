@@ -243,6 +243,3 @@ The Team Members are:
 - Daniela Chaves Acuna
 - David Lehmann
 - Hafsa 
-
-<!-- Picture-Link definitions: -->
-[OUCD]: "Overall Use Case Diagram"
