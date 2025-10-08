@@ -69,7 +69,7 @@ Mindhaven is a mental health application designed to be a safe and secure digita
 
 ### 2.2 Use Case Diagram
 
-![OUCD](UCD.png)
+![OUCD](Pictures/UCD.png)
 
 
 ### 2.3 Technology Stack
