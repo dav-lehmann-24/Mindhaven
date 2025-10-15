@@ -117,7 +117,9 @@ Until the end of the second semester, we want to implement:
 #### 3.1.1 Create account
 
 
-[Create account]()
+To ensure user identification, the web application requires an account system that links data to each user. The account creation process involves users submitting necessary details such as their username, email, and password. This process is essential for securing user data and personalizing the experience within the application. The detailed steps for creating an account are described in the Create Account Use Case.
+For details, refer to [Create Account Use Case](UCCreateAccount.md)
+
 
 #### 3.1.2 Logging in / Logging out
 
@@ -127,7 +129,8 @@ Until the end of the second semester, we want to implement:
 #### 3.1.3 Edit account
 
 
-[Edit account]()
+The user is able to edit the username and password. 
+For details, refer to [Edit Account Use Case](UCEditAccount.md)
 
 #### 3.1.4 Delete account
 
