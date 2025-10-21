@@ -1,16 +1,16 @@
 # Mindhaven
 Repository of the Mindhaven application
 
-###Running client
+### Running client
 npm run start   
 
-###Running server 
+### Running server 
   node index.js
   
-###Running server 
+### Running server 
  do cd features/  
   npx cucumber-js
 
-###Auto refresh server 
+### Auto refresh server 
   npm install --save-dev nodemon 
 
