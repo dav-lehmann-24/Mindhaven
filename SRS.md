@@ -83,7 +83,7 @@ Frontend:
 - React
 
 IDE:
-- TBD
+- Visual Studio Code
 
 Project Management:
 - YouTrack
