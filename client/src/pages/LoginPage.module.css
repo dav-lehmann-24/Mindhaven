@@ -1,0 +1,114 @@
+.container {
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(135deg, var(--mh-primary-600) 0%, var(--mh-purple-500) 50%, var(--mh-purple-400) 100%);
+	padding: 24px;
+	flex-direction: column;
+}
+
+.card {
+	width: 100%;
+	max-width: 420px;
+	padding: 28px;
+	border-radius: var(--mh-radius-lg);
+	background: var(--mh-card-bg);
+	box-shadow: var(--mh-shadow-1);
+}
+
+.title {
+	margin: 0 0 12px 0;
+	text-align: center;
+	color: var(--mh-gray-800);
+}
+
+.pageTitle {
+	color: #fff;
+	margin: 0 0 18px 0;
+	text-align: center;
+}
+
+.subtitle {
+	margin: 0 0 16px 0;
+	text-align: center;
+	color: var(--mh-gray-500);
+	font-size: 0.95rem;
+}
+
+.input {
+	width: 100%;
+	padding: 10px 12px;
+	border: 2px solid var(--mh-gray-200);
+	border-radius: 10px;
+	outline: none;
+	transition: box-shadow 0.2s ease, border-color 0.2s ease;
+	box-sizing: border-box;
+	display: block;
+	margin: 0 auto;
+}
+.input:focus {
+	border-color: var(--mh-purple-500);
+	box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+}
+
+.label {
+	display: block;
+	margin-bottom: 6px;
+	color: var(--mh-gray-700);
+	font-weight: 600;
+	text-align: center;
+}
+
+.error {
+	color: var(--mh-red-600);
+	background: var(--mh-red-100);
+	border: 1px solid var(--mh-red-200);
+	padding: 8px 12px;
+	border-radius: 10px;
+	margin-top: 6px;
+}
+
+.button {
+	width: 100%;
+	padding: 10px 14px;
+	border: none;
+	border-radius: 12px;
+	color: white;
+	font-weight: 600;
+	background: linear-gradient(90deg, var(--mh-primary-500) 0%, var(--mh-purple-500) 50%, var(--mh-purple-400) 100%);
+	cursor: pointer;
+	transition: transform 0.06s ease, filter 0.2s ease;
+}
+.button:hover {
+	filter: brightness(1.05);
+}
+.button:active {
+	transform: translateY(1px);
+}
+
+.links {
+	margin-top: 16px;
+	text-align: center;
+}
+.links a {
+	color: var(--mh-primary-600);
+	text-decoration: none;
+}
+.links a:hover {
+	text-decoration: underline;
+}
+
+.field {
+	margin-bottom: 12px;
+	width: 100%;
+}
+
+.form {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	align-items: stretch;
+}
+
