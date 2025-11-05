@@ -1,0 +1,72 @@
+@startuml MindHaven Backend
+' =============================
+'   MindHaven Backend UML
+' =============================
+
+class User {
+  - id : int
+  - username : string
+  - email : string
+  - password : string
+  - bio : string
+  - profile_picture : string
+  - country : string
+  - gender : string
+  + register()
+  + login()
+  + updateProfile()
+  + deleteAccount()
+}
+
+class Journal {
+  - id : int
+  - user_id : int
+  - title : string
+  - content : text
+  - tags : string[]
+  - created_at : date
+  + createJournal()
+  + editJournal()
+  + deleteJournal()
+  + filterByTag()
+  + sortByDate()
+}
+
+class AuthController {
+  + registerUser(req, res)
+  + loginUser(req, res)
+  + resetPassword(req, res)
+}
+
+class JournalController {
+  + createJournal(req, res)
+  + updateJournal(req, res)
+  + deleteJournal(req, res)
+  + listJournals(req, res)
+}
+
+class SOSController {
+  + getEmergencyList()
+  + getHotlines()
+  + getYouTubeResources()
+}
+
+class Buddy {
+  - id : int
+  - user_id : int
+  - buddy_id : int
+  - streak : int
+  + connectBuddy()
+  + removeBuddy()
+  + updateStreak()
+}
+
+class AIController {
+  + chatWithAI(req, res)
+  + getSuggestions(req, res)
+}
+
+User "1" --> "*" Journal
+User "1" --> "*" Buddy
+Journal "*" --> "*" Tag
+@enduml
