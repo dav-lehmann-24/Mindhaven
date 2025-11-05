@@ -1,5 +1,5 @@
 @startuml MindHaven
-title MindHaven Full System Architecture
+title MindHaven - Journal Management Feature (Frontend + Backend)
 
 skinparam packageStyle rectangle
 skinparam class {
@@ -10,42 +10,24 @@ skinparam class {
 
 ' ===================== FRONTEND (React) =====================
 package "Frontend (React)" {
-  class LoginPage
-  class RegisterPage
-  class AccountProfilePage
-  class AccountLayoutPage
-  class JournalCreatePage
-  class JournalDetailPage
-  class JournalEditPage
   class JournalListPage
+  class JournalDetailPage
+  class JournalCreatePage
+  class JournalEditPage
   class JournalStatsPage
   class JournalCalendarPage
 }
 
 ' ===================== BACKEND (Node/Express) =====================
 package "Backend (Node/Express)" {
-  class AuthController {
-    +registerUser(req, res)
-    +loginUser(req, res)
-    +resetPassword(req, res)
-  }
-
   class JournalController {
     +createJournal(req, res)
     +updateJournal(req, res)
     +deleteJournal(req, res)
     +listJournals(req, res)
-  }
-
-  class User {
-    -id : int
-    -username : string
-    -email : string
-    -password : string
-    -bio : string
-    -profile_picture : string
-    -country : string
-    -gender : string
+    +getJournalById(req, res)
+    +filterByTag(req, res)
+    +sortByDate(req, res)
   }
 
   class Journal {
@@ -55,24 +37,18 @@ package "Backend (Node/Express)" {
     -content : text
     -tags : string[]
     -created_at : date
+    +createJournal()
+    +editJournal()
+    +deleteJournal()
+    +filterByTag()
+    +sortByDate()
   }
 
-  class Buddy {
+  class Tag {
     -id : int
-    -user_id : int
-    -buddy_id : int
-    -streak : int
-  }
-
-  class AIController {
-    +chatWithAI(req, res)
-    +getSuggestions(req, res)
-  }
-
-  class SOSController {
-    +getEmergencyList(req, res)
-    +getHotlines(req, res)
-    +getYouTubeResources(req, res)
+    -name : string
+    +addTag()
+    +removeTag()
   }
 
   class Database {
@@ -84,17 +60,6 @@ package "Backend (Node/Express)" {
 
 ' ===================== DATABASE (MySQL) =====================
 package "Database (MySQL)" {
-  class users {
-    id : int
-    username : string
-    email : string
-    password : string
-    bio : string
-    profile_picture : string
-    country : string
-    gender : string
-  }
-
   class journals {
     id : int
     user_id : int
@@ -103,20 +68,15 @@ package "Database (MySQL)" {
     tags : string
     created_at : date
   }
-
-  class buddies {
+  class tags {
     id : int
-    user_id : int
-    buddy_id : int
-    streak : int
+    journal_id : int
+    name : string
   }
 }
 
 ' ===================== CONNECTIONS =====================
-' Frontend ↔ Backend
-LoginPage -[#blue]-> AuthController : POST /api/auth/login
-RegisterPage -[#blue]-> AuthController : POST /api/auth/register
-AccountProfilePage -[#blue]-> AuthController : GET /api/auth/profile
+' --- Frontend to Backend ---
 JournalListPage -[#blue]-> JournalController : GET /api/journals
 JournalDetailPage -[#blue]-> JournalController : GET /api/journals/:id
 JournalCreatePage -[#blue]-> JournalController : POST /api/journals
@@ -124,13 +84,13 @@ JournalEditPage -[#blue]-> JournalController : PUT /api/journals/:id
 JournalStatsPage -[#blue]-> JournalController : GET /api/journals/stats
 JournalCalendarPage -[#blue]-> JournalController : GET /api/journals/calendar
 
-' Backend ↔ Database
-AuthController --> User
-JournalController --> Journal
-AIController --> Database
-SOSController --> Database
-User --> users
+' --- Backend Internal Relations ---
+JournalController --> Journal : uses
+Journal "*" --> "*" Tag : includes
+JournalController --> Database : executes SQL queries
+
+' --- Database Relations ---
 Journal --> journals
-Buddy --> buddies
+Tag --> tags
 
 @enduml

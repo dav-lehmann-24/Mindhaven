@@ -1,0 +1,67 @@
+@startuml MindHaven
+title MindHaven - AI Assistance Feature (Frontend + Backend)
+
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor Snow
+  BorderColor Black
+  ArrowColor Black
+}
+
+' ===================== FRONTEND (React) =====================
+package "Frontend (React)" {
+  class ChatbotPage
+  class AISuggestionsPage
+}
+
+' ===================== BACKEND (Node/Express) =====================
+package "Backend (Node/Express)" {
+  class AIController {
+    +chatWithAI(req, res)
+    +getSuggestions(req, res)
+  }
+
+  class AIService {
+    +generateResponse(prompt : string)
+    +analyzeJournal(text : string)
+    +recommendResources()
+  }
+
+  class Journal {
+    -id : int
+    -user_id : int
+    -content : text
+    -tags : string[]
+    +getUserJournals()
+  }
+
+  class Database {
+    +connect()
+    +query(sql, params)
+    +close()
+  }
+}
+
+' ===================== DATABASE (MySQL) =====================
+package "Database (MySQL)" {
+  class journals {
+    id : int
+    user_id : int
+    content : text
+    tags : string
+    created_at : date
+  }
+}
+
+' ===================== CONNECTIONS =====================
+' --- Frontend to Backend ---
+ChatbotPage -[#blue]-> AIController : POST /api/ai/chat
+AISuggestionsPage -[#blue]-> AIController : GET /api/ai/suggestions
+
+' --- Backend Internal Flow ---
+AIController --> AIService : uses
+AIService --> Journal : analyzes content
+AIController --> Database : logs queries (optional)
+Journal --> journals : reads journal entries
+
+@enduml

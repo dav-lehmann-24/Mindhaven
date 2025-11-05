@@ -52,6 +52,7 @@ package "Frontend (React)" {
   class LoginPage
   class RegisterPage
 }
+
 LoginPage -[#blue]-> AuthController : POST /api/auth/login
 RegisterPage -[#blue]-> AuthController : POST /api/auth/register
 

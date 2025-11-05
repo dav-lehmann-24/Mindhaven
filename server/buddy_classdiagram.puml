@@ -1,0 +1,83 @@
+@startuml MindHaven
+title MindHaven - Buddy / Community Feature (Frontend + Backend)
+
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor Snow
+  BorderColor Black
+  ArrowColor Black
+}
+
+' ===================== FRONTEND (React) =====================
+package "Frontend (React)" {
+  class BuddyListPage
+  class BuddyProfilePage
+  class BuddyRequestsPage
+  class BuddyStreakPage
+}
+
+' ===================== BACKEND (Node/Express) =====================
+package "Backend (Node/Express)" {
+  class BuddyController {
+    +connectBuddy(req, res)
+    +removeBuddy(req, res)
+    +getBuddyProfile(req, res)
+    +updateStreak(req, res)
+    +listBuddies(req, res)
+  }
+
+  class Buddy {
+    -id : int
+    -user_id : int
+    -buddy_id : int
+    -streak : int
+    +connectBuddy()
+    +removeBuddy()
+    +updateStreak()
+  }
+
+  class User {
+    -id : int
+    -username : string
+    -email : string
+    -country : string
+  }
+
+  class Database {
+    +connect()
+    +query(sql, params)
+    +close()
+  }
+}
+
+' ===================== DATABASE (MySQL) =====================
+package "Database (MySQL)" {
+  class buddies {
+    id : int
+    user_id : int
+    buddy_id : int
+    streak : int
+  }
+  class users {
+    id : int
+    username : string
+    email : string
+    country : string
+  }
+}
+
+' ===================== CONNECTIONS =====================
+' --- Frontend to Backend ---
+BuddyListPage -[#blue]-> BuddyController : GET /api/buddies
+BuddyProfilePage -[#blue]-> BuddyController : GET /api/buddies/:id
+BuddyRequestsPage -[#blue]-> BuddyController : POST /api/buddies
+BuddyStreakPage -[#blue]-> BuddyController : PUT /api/buddies/streak
+
+' --- Backend Internal Flow ---
+BuddyController --> Buddy : manages connections
+Buddy --> User : references buddy profiles
+BuddyController --> Database : executes queries
+Buddy --> buddies
+User --> users
+
+@enduml

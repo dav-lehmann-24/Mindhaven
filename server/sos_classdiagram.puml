@@ -1,0 +1,64 @@
+@startuml MindHaven
+title MindHaven - SOS / Emergency Mode Feature (Frontend + Backend)
+
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor Snow
+  BorderColor Black
+  ArrowColor Black
+}
+
+' ===================== FRONTEND (React) =====================
+package "Frontend (React)" {
+  class SOSPage
+  class EmergencyListPage
+  class YouTubeResourcesPage
+}
+
+' ===================== BACKEND (Node/Express) =====================
+package "Backend (Node/Express)" {
+  class SOSController {
+    +getEmergencyList(req, res)
+    +getHotlines(req, res)
+    +getYouTubeResources(req, res)
+  }
+
+  class SOSResource {
+    -id : int
+    -type : string
+    -title : string
+    -link : string
+    +getAllResources()
+    +getHotlines()
+    +getVideos()
+  }
+
+  class Database {
+    +connect()
+    +query(sql, params)
+    +close()
+  }
+}
+
+' ===================== DATABASE (MySQL) =====================
+package "Database (MySQL)" {
+  class sos_resources {
+    id : int
+    type : string
+    title : string
+    link : string
+  }
+}
+
+' ===================== CONNECTIONS =====================
+' --- Frontend to Backend ---
+SOSPage -[#blue]-> SOSController : GET /api/sos
+EmergencyListPage -[#blue]-> SOSController : GET /api/sos/hotlines
+YouTubeResourcesPage -[#blue]-> SOSController : GET /api/sos/resources
+
+' --- Backend Internal Flow ---
+SOSController --> SOSResource : uses
+SOSResource --> Database : executes queries
+SOSResource --> sos_resources : reads resource data
+
+@enduml
