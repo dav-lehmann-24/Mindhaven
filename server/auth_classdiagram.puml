@@ -1,0 +1,59 @@
+@startuml MindHaven
+title Authentication Feature - MindHaven
+
+skinparam class {
+  BackgroundColor Snow
+  ArrowColor Black
+  BorderColor Black
+}
+
+' ---------- CONTROLLER ----------
+class AuthController {
+  +registerUser(req, res)
+  +loginUser(req, res)
+  +resetPassword(req, res)
+}
+
+' ---------- MODEL / ENTITY ----------
+class User {
+  -id : int
+  -username : string
+  -email : string
+  -password : string
+  -bio : string
+  -profile_picture : string
+  -country : string
+  -gender : string
+  +register()
+  +login()
+  +updateProfile()
+  +deleteAccount()
+}
+
+' ---------- DATABASE ----------
+class Database {
+  +connect()
+  +query(sql, params)
+  +close()
+}
+
+' ---------- OPTIONAL MIDDLEWARE ----------
+class AuthMiddleware {
+  +verifyToken(req, res, next)
+}
+
+' ---------- RELATIONSHIPS ----------
+AuthController --> User : uses
+AuthController --> Database : executes queries
+AuthController --> AuthMiddleware : verifies JWT (if applied)
+Database --> User : stores/retrieves data
+
+package "Frontend (React)" {
+  class LoginPage
+  class RegisterPage
+}
+LoginPage -[#blue]-> AuthController : POST /api/auth/login
+RegisterPage -[#blue]-> AuthController : POST /api/auth/register
+
+
+@enduml
