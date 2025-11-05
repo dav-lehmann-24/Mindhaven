@@ -2,7 +2,7 @@
 Repository of the Mindhaven application
 
 ### Running client
-npm run start   
+npm start   
 
 ### Running server 
   node index.js
