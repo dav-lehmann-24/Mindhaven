@@ -76,15 +76,15 @@ as the Logical, Deployment, Implementation and Data Views.
 ## 2. Architectural Representation
 The back-end server uses Node.js + Express for REST APIs, front-end side is a React.js client with React Router and Axios. We follow the Model-View-Control.
 
-![MVC]() <br>
+![MVC](Pictures/high-level-mvc.png) <br>
 
 In the backend we have folders for our 'model' and 'controller' files.
 
-![backend]() <br>
+![backend](Pictures/frontend.png) <br>
 
 In our frontend we manage the 'view' with components implemented on pages.
 
-![frontend]() <br>
+![frontend](Pictures/backend.png) <br>
 
 
 
