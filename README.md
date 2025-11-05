@@ -14,3 +14,5 @@ npm start
 ### Auto refresh server 
   npm install --save-dev nodemon 
 
+### Generating class diagrams 
+  option+D on mac 
