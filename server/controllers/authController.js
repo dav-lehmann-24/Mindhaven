@@ -14,10 +14,17 @@ const hashedPassword = bcrypt.hashSync(password, 10);
 
   User.create(username, email, hashedPassword, bio, profile_picture, country, gender, (err, result) => {
     if (err) {
-      console.error(err);
-      return res.status(400).json({ message: 'Error registering user' });
+      console.error('❌ Registration error:', err.sqlMessage || err);
+
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({
+          message: 'Username or email already exists. Please use a different one.',
+        });
+      }
+      return res.status(500).json({ message: 'Error registering user' });
     }
     res.status(201).json({ message: 'User registered successfully!' });
+    console.log('✅ Response sent to client');
   });
 };
 

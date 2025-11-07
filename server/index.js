@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+
+
 // const errorMiddleware = require('./middleware/errorMiddleware');
 
 require('dotenv').config();
@@ -17,6 +20,8 @@ app.use(bodyParser.json());
 
 // routes
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/uploads', express.static('uploads'));
 
 // error middleware
 // app.use(errorMiddleware);
