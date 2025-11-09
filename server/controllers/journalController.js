@@ -21,3 +21,13 @@ exports.createJournal = (req, res) => {
 };
 
 
+exports.updateJournal = (req,res) => {
+  const id = req.params.id;
+  const { title, content, tags } = req.body;
+  Journal.updateJournal(id, title, content, tags, (err, result) => {
+    if (err) return res.status(500).json({ message: 'Error updating journal' });
+    if (result.affectedRows === 0)
+      return res.status(404).json({ message: 'Journal not found' });
+    res.status(200).json({ message: '✅ Journal updated successfully' });
+  });
+}

@@ -7,7 +7,17 @@ const Journal = {
       VALUES (?, ?, ?, ?)
     `;
     db.query(sql, [userId, title, content, tags], callback);
-  }
+  },
+
+    updateJournal: (id, title, content, tags, callback) => {
+    const sql = `
+      UPDATE journals
+      SET title = ?, content = ?, tags = ?
+      WHERE id = ?
+    `;
+    db.query(sql, [title, content, tags, id], callback);
+  },
+
 };
 
 module.exports = Journal;
