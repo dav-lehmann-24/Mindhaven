@@ -11,5 +11,5 @@ router.get('/profile', verifyToken, (req, res) => {
   res.json({ message: `Welcome back, user ${req.user.email}!`, user: req.user });
 });
 
-
 module.exports = router;
+
