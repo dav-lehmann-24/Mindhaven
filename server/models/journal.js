@@ -22,7 +22,15 @@ const Journal = {
     const sql = `
     DELETE FROM journals WHERE id = ?`;
     db.query(sql, [id], callback);
-    }
+  },
+
+  // getJournalsByUserId: (userId, callback) => {
+  //   db.query(
+  //     `SELECT id, title, content, tags, created_at FROM journals WHERE user_id = ? ORDER BY created_at DESC`,
+  //     [userId],
+  //     callback
+  //   );
+  // },
 
 };
 

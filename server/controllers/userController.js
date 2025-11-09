@@ -30,6 +30,7 @@ exports.updateProfile = (req, res) => {
 // Get user journals
 exports.getUserJournals = (req, res) => {
   const userId = req.user.id;
+  console.log('Decoded user ID from token:', userId);
   const query = `
     SELECT id, title, content, tags, created_at
     FROM journals WHERE user_id = ? ORDER BY created_at DESC`;
