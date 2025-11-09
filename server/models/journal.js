@@ -18,6 +18,12 @@ const Journal = {
     db.query(sql, [title, content, tags, id], callback);
   },
 
+    deleteJournal: (id, callback) => {
+    const sql = `
+    DELETE FROM journals WHERE id = ?`;
+    db.query(sql, [id], callback);
+    }
+
 };
 
 module.exports = Journal;
