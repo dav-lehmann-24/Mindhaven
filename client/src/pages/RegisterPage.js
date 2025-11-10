@@ -7,6 +7,7 @@ import styles from './AuthPage.module.css';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ const RegisterPage = () => {
     setError('');
     setTimeout(() => {
       setLoading(false);
-      if (!email || !password || !confirmPassword) {
+      if (!email || !username || !password || !confirmPassword) {
         setError('Please fill in all fields.');
       } else if (password !== confirmPassword) {
         setError('Passwords do not match.');
@@ -54,6 +55,19 @@ const RegisterPage = () => {
             labelClassName={styles.label}
             inputClassName={styles.input}
             autoComplete="email"
+            required
+          />
+          <InputField
+            id="reg-username"
+            label="Username"
+            type="text"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            placeholder="Enter username..."
+            containerClassName={styles.field}
+            labelClassName={styles.label}
+            inputClassName={styles.input}
+            autoComplete="username"
             required
           />
           <InputField

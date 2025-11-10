@@ -1,8 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders login welcome title', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const heading = screen.getByText(/Welcome to Mindhaven!/i);
+  expect(heading).toBeInTheDocument();
+});
+
+test('can preview dashboard via button', () => {
+  render(<App />);
+  const previewBtn = screen.getByText(/Preview the Dashboard/i);
+  expect(previewBtn).toBeInTheDocument();
 });
