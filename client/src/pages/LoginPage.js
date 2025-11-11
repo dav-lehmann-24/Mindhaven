@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Card from '../components/Card';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
@@ -7,6 +9,7 @@ import styles from './AuthPage.module.css';
 import { Link } from 'react-router-dom';
 
 const LoginPage = ({ onPreviewDashboard }) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,14 +19,27 @@ const LoginPage = ({ onPreviewDashboard }) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setTimeout(() => {
+    if (!email || !password) {
+      setError('Please enter both email and password.');
       setLoading(false);
-      if (!email || !password) {
-        setError('Please enter both email and password.');
-      } else {
-        setError('');
+      return;
+    }
+    try {
+      const res = await axios.post('/api/auth/login', { email, password });
+      setLoading(false);
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+        navigate('/dashboard');
       }
-    }, 1000);
+    } catch (err) {
+      setLoading(false);
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Login failed. Please try again.');
+      }
+    }
   };
 
   useEffect(() => {
