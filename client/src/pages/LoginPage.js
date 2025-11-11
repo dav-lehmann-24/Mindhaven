@@ -6,7 +6,7 @@ import Loader from '../components/Loader';
 import styles from './AuthPage.module.css';
 import { Link } from 'react-router-dom';
 
-const LoginPage = () => {
+const LoginPage = ({ onPreviewDashboard }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -71,7 +71,13 @@ const LoginPage = () => {
         </form>
         <div className={styles.links}>
           <Link to="/register">New to Mindhaven? Register here</Link><br />
-          <a href="#">Forgot password? Reset it here</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); alert('Reset password (demo)'); }}>Forgot password? Reset it here</a>
+          <br />
+          {onPreviewDashboard && (
+            <button type="button" onClick={onPreviewDashboard} style={{ marginTop: 8, background: 'none', border: 'none', color: 'var(--mh-purple-600)', textDecoration: 'underline', cursor: 'pointer' }}>
+              Preview the Dashboard
+            </button>
+          )}
         </div>
       </Card>
     </div>

@@ -1,0 +1,99 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 72px;
+  background: linear-gradient(135deg, var(--mh-primary-600) 0%, var(--mh-purple-500) 50%, var(--mh-purple-400) 100%);
+  display: grid;
+  grid-template-columns: 1fr 120px 1fr;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  padding-right: 16px;
+}
+
+.iconButton {
+  background: rgba(0,0,0,0.18);
+  color: #fff;
+  opacity: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  transition: transform 0.08s ease, background 0.2s, box-shadow 0.2s;
+  border: none;
+}
+.iconButton:hover {
+  background: rgba(0,0,0,0.32);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+  transform: translateY(-2px) scale(1.08);
+}
+.iconButton:active {
+  background: rgba(0,0,0,0.22);
+  transform: scale(0.98);
+}
+.iconButton:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.sos {
+  width: 56px;
+  height: 56px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 50% 35%, #ef4444, #b91c1c);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 1px;
+  box-shadow: 0 0 12px rgba(239,68,68,0.7), 0 0 30px rgba(239,68,68,0.35);
+  border: 2px solid rgba(255,255,255,0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.08s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.sos:hover { filter: brightness(1.05); }
+.sos:active { transform: scale(0.98); }
+.sos:focus-visible { outline: 3px solid rgba(255,255,255,0.7); outline-offset: 3px; }
+
+.left {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 32px;
+  min-width: 180px;
+  height: 72px;
+}
+.logo {
+  width: 56px;
+  height: 56px;
+  margin-right: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.45rem;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+}
