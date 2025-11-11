@@ -7,6 +7,8 @@ import AppHeader from './components/AppHeader';
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AccountProfilePage from './pages/AccountProfilePage';
+import JournalCreatePage from './pages/JournalCreatePage';
+import JournalListPage from './pages/JournalListPage';
 
 function App() {
   const [showDashboard, setShowDashboard] = useState(false);
@@ -25,16 +27,20 @@ function App() {
   const renderSidebar = () => {
     if (!sidebarOpen) return null;
     const isProfile = sidebarOpen === 'profile';
+    const closeSidebarAnd = fn => e => {
+      if (fn) fn(e);
+      setSidebarOpen(null);
+    };
     const options = isProfile
       ? [
-          { label: 'Profile', href: '#profile', onClick: () => setShowDashboard('profile') },
-          { label: 'Settings', href: '#settings' },
-          { label: 'Preferences', href: '#preferences' },
-          { label: 'Logout', href: '#logout', color: 'var(--mh-red-200)' },
+          { label: 'Profile', href: '#profile', onClick: closeSidebarAnd(() => setShowDashboard('profile')) },
+          { label: 'Settings', href: '#settings', onClick: closeSidebarAnd() },
+          { label: 'Preferences', href: '#preferences', onClick: closeSidebarAnd() },
+          { label: 'Logout', href: '#logout', color: 'var(--mh-red-200)', onClick: closeSidebarAnd() },
         ]
       : [
-          { label: 'Create Journal', href: '#create-journal' },
-          { label: 'View Journals', href: '#view-journals' },
+          { label: 'Create Journal', href: '#create-journal', onClick: closeSidebarAnd(() => setShowDashboard('create-journal')) },
+          { label: 'View Journals', href: '#view-journals', onClick: closeSidebarAnd(() => setShowDashboard('view-journals')) },
         ];
     return (
       <div
@@ -100,6 +106,42 @@ function App() {
         {renderSidebar()}
         <div style={{ flex: 1 }}>
           <AccountProfilePage />
+          <div style={{ textAlign: 'center', margin: '32px 0' }}>
+            <button onClick={handleBackToLogin} style={{ background: 'none', color: 'var(--mh-primary-600)', cursor: 'pointer', border: '1px solid var(--mh-primary-300)', padding: '8px 16px', borderRadius: 8 }}>Return to Login</button>
+          </div>
+        </div>
+      </div>
+    </>
+  ) : showDashboard === 'create-journal' ? (
+    <>
+      <AppHeader
+        onHome={() => setShowDashboard(true)}
+        onJournal={handleJournalClick}
+        onProfile={handleProfileClick}
+        onSOS={handleSOS}
+      />
+      <div style={{ display: 'flex', position: 'relative' }}>
+        {renderSidebar()}
+        <div style={{ flex: 1 }}>
+          <JournalCreatePage />
+          <div style={{ textAlign: 'center', margin: '32px 0' }}>
+            <button onClick={handleBackToLogin} style={{ background: 'none', color: 'var(--mh-primary-600)', cursor: 'pointer', border: '1px solid var(--mh-primary-300)', padding: '8px 16px', borderRadius: 8 }}>Return to Login</button>
+          </div>
+        </div>
+      </div>
+    </>
+  ) : showDashboard === 'view-journals' ? (
+    <>
+      <AppHeader
+        onHome={() => setShowDashboard(true)}
+        onJournal={handleJournalClick}
+        onProfile={handleProfileClick}
+        onSOS={handleSOS}
+      />
+      <div style={{ display: 'flex', position: 'relative' }}>
+        {renderSidebar()}
+        <div style={{ flex: 1 }}>
+          <JournalListPage />
           <div style={{ textAlign: 'center', margin: '32px 0' }}>
             <button onClick={handleBackToLogin} style={{ background: 'none', color: 'var(--mh-primary-600)', cursor: 'pointer', border: '1px solid var(--mh-primary-300)', padding: '8px 16px', borderRadius: 8 }}>Return to Login</button>
           </div>

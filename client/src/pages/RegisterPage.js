@@ -10,6 +10,8 @@ const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [country, setCountry] = useState('');
+  const [gender, setGender] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -19,7 +21,7 @@ const RegisterPage = () => {
     setError('');
     setTimeout(() => {
       setLoading(false);
-      if (!email || !username || !password || !confirmPassword) {
+      if (!email || !username || !password || !confirmPassword || !country || !gender) {
         setError('Please fill in all fields.');
       } else if (password !== confirmPassword) {
         setError('Passwords do not match.');
@@ -70,6 +72,34 @@ const RegisterPage = () => {
             autoComplete="username"
             required
           />
+          <div className={styles.field}>
+            <label className={styles.label}>Country</label>
+            <input
+              id="reg-country"
+              type="text"
+              value={country}
+              onChange={e => setCountry(e.target.value)}
+              className={styles.input}
+              placeholder="Enter your country..."
+              autoComplete="country"
+              required
+            />
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Gender</label>
+            <select
+              id="reg-gender"
+              value={gender}
+              onChange={e => setGender(e.target.value)}
+              className={styles.input}
+              required
+            >
+              <option value="">Select gender...</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
           <InputField
             id="reg-password"
             label="Password"
