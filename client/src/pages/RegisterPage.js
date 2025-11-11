@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Card from '../components/Card';
 import InputField from '../components/InputField';
@@ -7,6 +8,7 @@ import Loader from '../components/Loader';
 import styles from './AuthPage.module.css';
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -42,6 +44,7 @@ const RegisterPage = () => {
       });
       setLoading(false);
       if (res.data.message) {
+        navigate('/dashboard');
       }
     } catch (err) {
       setLoading(false);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Card from '../components/Card';
 import InputField from '../components/InputField';
@@ -8,6 +9,7 @@ import styles from './AuthPage.module.css';
 import { Link } from 'react-router-dom';
 
 const LoginPage = ({ onPreviewDashboard }) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,6 +30,7 @@ const LoginPage = ({ onPreviewDashboard }) => {
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
+        navigate('/dashboard');
       }
     } catch (err) {
       setLoading(false);
