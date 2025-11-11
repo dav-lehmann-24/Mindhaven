@@ -1,13 +1,15 @@
 const Journal = require('../models/journal');
 
 exports.createJournal = (req, res) => {
-  const { user_id, title, content, tags  } = req.body;
+  const userId = req.user.id;
+  const { title, content, tags  } = req.body;
 
   if (!title || !content) {
     return res.status(400).json({ message: 'Title and content are required.' });
   }
 
-  Journal.createJournal(user_id, title, content, tags, (err, result) => {
+
+  Journal.createJournal( userId, title, content, tags, (err, result) => {
     if (err) {
       console.error('❌ Error creating journal:', err);
       return res.status(500).json({ message: 'Database error' });
@@ -21,30 +23,74 @@ exports.createJournal = (req, res) => {
 };
 
 
-exports.updateJournal = (req,res) => {
-  const id = req.params.id;
+// exports.updateJournal = (req,res) => {
+//   const id = req.params.id;
+//   const { title, content, tags } = req.body;
+//   Journal.updateJournal(id, title, content, tags, (err, result) => {
+//     if (err) return res.status(500).json({ message: 'Error updating journal' });
+//     if (result.affectedRows === 0)
+//       return res.status(404).json({ message: 'Journal not found' });
+//     res.status(200).json({ message: 'Journal updated successfully' });
+//   });
+// };
+
+exports.updateJournal = (req, res) => {
+  
+  const userId = req.user.id;
+  const journalId = req.params.id;
   const { title, content, tags } = req.body;
-  Journal.updateJournal(id, title, content, tags, (err, result) => {
-    if (err) return res.status(500).json({ message: 'Error updating journal' });
-    if (result.affectedRows === 0)
-      return res.status(404).json({ message: 'Journal not found' });
-    res.status(200).json({ message: 'Journal updated successfully' });
+
+  Journal.checkOwnership(journalId, (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Database error' });
+    if (rows.length === 0) return res.status(404).json({ message: 'Journal not found' });
+    if (rows[0].user_id !== userId)
+      return res.status(403).json({ message: 'Unauthorized: not your journal' });
+
+    // 2️⃣ Update journal
+    Journal.updateJournal(journalId, title, content, tags, (err, result) => {
+      if (err) {
+        console.error('❌ Error updating journal:', err);
+        return res.status(500).json({ message: 'Error updating journal' });
+      }
+      res.status(200).json({ message: '✅ Journal updated successfully' });
+    });
   });
 };
 
- exports.deleteJournal = (req, res) => {
-    const id = req.params.id;
-    Journal.deleteJournal(id, (err,result) => {
-    if (err) return res.status(500).json({ message: 'Error deleting journal' });
-    if (result.affectedRows === 0)
-      return res.status(404).json({ message: 'Journal not found' });
-    res.status(200).json({ message: 'Journal deleted successfully' });
+
+//  exports.deleteJournal = (req, res) => {
+//     const id = req.params.id;
+//     Journal.deleteJournal(id, (err,result) => {
+//     if (err) return res.status(500).json({ message: 'Error deleting journal' });
+//     if (result.affectedRows === 0)
+//       return res.status(404).json({ message: 'Journal not found' });
+//     res.status(200).json({ message: 'Journal deleted successfully' });
+//     });
+//   };
+
+exports.deleteJournal = (req, res) => {
+  const userId = req.user.id;
+  const journalId = req.params.id;
+
+Journal.checkOwnership(journalId, (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Database error' });
+    if (rows.length === 0) return res.status(404).json({ message: 'Journal not found' });
+    if (rows[0].user_id !== userId)
+      return res.status(403).json({ message: 'Unauthorized: not your journal' });
+
+    Journal.deleteJournal(journalId, (err) => {
+      if (err) {
+        console.error('❌ Error deleting journal:', err);
+        return res.status(500).json({ message: 'Error deleting journal' });
+      }
+      res.status(200).json({ message: '🗑️ Journal deleted successfully!' });
     });
-  };
+  });
+};
 
-  exports.getJournalsByUserId = (req, res) => {
-  const userId = req.params.userId; 
 
+  // exports.getJournalsByUserId = (req, res) => {
+  // const userId = req.params.userId; 
   // Journal.getJournalsByUserId(userId, (err, result) => {
   //   if (err) {
   //     console.error('Error fetching journals:', err);
@@ -53,4 +99,4 @@ exports.updateJournal = (req,res) => {
 
   //   res.status(200).json(result);
   // });
-};
+// };

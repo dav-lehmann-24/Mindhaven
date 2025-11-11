@@ -34,13 +34,6 @@ app.get('/', (req,res)=>{
     res.send('Hello from our server')
 })
 
-const listEndpoints = require('express-list-endpoints');
-console.log('✅ Auth Routes:', listEndpoints(authRoutes));
-console.log('✅ User Routes:', listEndpoints(userRoutes));
-console.log('✅ Journal Routes:', listEndpoints(journalRoutes));
-console.log('✅ Test Routes:', listEndpoints(testRoutes));
-// console.log('✅ journalRoutes variable:', journalRoutes);
-
 
  
 const PORT = process.env.PORT || 8080;

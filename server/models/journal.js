@@ -24,6 +24,12 @@ const Journal = {
     db.query(sql, [id], callback);
   },
 
+  checkOwnership: (journalId, callback) => {
+  const sql = 'SELECT user_id FROM journals WHERE id = ?';
+  db.query(sql, [journalId], callback);
+  },
+
+
   // getJournalsByUserId: (userId, callback) => {
   //   db.query(
   //     `SELECT id, title, content, tags, created_at FROM journals WHERE user_id = ? ORDER BY created_at DESC`,
