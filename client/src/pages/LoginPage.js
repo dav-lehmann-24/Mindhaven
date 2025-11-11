@@ -27,10 +27,7 @@ const LoginPage = ({ onPreviewDashboard }) => {
       setLoading(false);
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
-        // Optional: Userdaten speichern
         localStorage.setItem('user', JSON.stringify(res.data.user));
-        // Optional: Weiterleitung oder Auth-Status setzen
-        // window.location.href = '/';
       }
     } catch (err) {
       setLoading(false);

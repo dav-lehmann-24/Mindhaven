@@ -42,8 +42,6 @@ const RegisterPage = () => {
       });
       setLoading(false);
       if (res.data.message) {
-        // Optional: Weiterleitung oder Erfolgsmeldung
-        // window.location.href = '/login';
       }
     } catch (err) {
       setLoading(false);
