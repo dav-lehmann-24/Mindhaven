@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Card from '../components/Card';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
@@ -16,14 +17,29 @@ const LoginPage = ({ onPreviewDashboard }) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setTimeout(() => {
+    if (!email || !password) {
+      setError('Please enter both email and password.');
       setLoading(false);
-      if (!email || !password) {
-        setError('Please enter both email and password.');
-      } else {
-        setError('');
+      return;
+    }
+    try {
+      const res = await axios.post('/api/auth/login', { email, password });
+      setLoading(false);
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        // Optional: Userdaten speichern
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+        // Optional: Weiterleitung oder Auth-Status setzen
+        // window.location.href = '/';
       }
-    }, 1000);
+    } catch (err) {
+      setLoading(false);
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Login failed. Please try again.');
+      }
+    }
   };
 
   useEffect(() => {

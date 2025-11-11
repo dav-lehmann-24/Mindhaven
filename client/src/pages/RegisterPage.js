@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Card from '../components/Card';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
@@ -19,17 +20,39 @@ const RegisterPage = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setTimeout(() => {
+    if (!email || !username || !password || !confirmPassword || !country || !gender) {
+      setError('Please fill in all fields.');
       setLoading(false);
-      if (!email || !username || !password || !confirmPassword || !country || !gender) {
-        setError('Please fill in all fields.');
-      } else if (password !== confirmPassword) {
-        setError('Passwords do not match.');
-      } else {
-        setError('');
-        // TODO: call registration API
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await axios.post('/api/auth/register', {
+        username,
+        email,
+        password,
+        bio: '',
+        profile_picture: '',
+        country,
+        gender,
+      });
+      setLoading(false);
+      if (res.data.message) {
+        // Optional: Weiterleitung oder Erfolgsmeldung
+        // window.location.href = '/login';
       }
-    }, 800);
+    } catch (err) {
+      setLoading(false);
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+    }
   };
 
   useEffect(() => {
