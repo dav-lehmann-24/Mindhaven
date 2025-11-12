@@ -11,7 +11,7 @@ import JournalListPage from './JournalListPage';
 const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [sidebarOpen, setSidebarOpen] = useState(null);
-  const [activeJournalPage, setActiveJournalPage] = useState(null); // 'create' | 'view' | null
+  const [activeJournalPage, setActiveJournalPage] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,9 +21,15 @@ const DashboardPage = () => {
     }
   }, [navigate]);
 
-  const handleProfileClick = () => setSidebarOpen('profile');
+  const handleProfileClick = () => {
+    setSidebarOpen(null);
+    navigate('/profile');
+  };
   const handleJournalClick = () => setSidebarOpen('journal');
-  const handleHomeClick = () => setSidebarOpen('home');
+  const handleHomeClick = () => {
+    setSidebarOpen(null);
+    setActiveJournalPage(null);
+  };
   const handleSOS = () => alert('SOS triggered (demo)');
   const handleSidebarClose = () => setSidebarOpen(null);
 
@@ -78,12 +84,6 @@ const DashboardPage = () => {
         { label: 'Create Journal', href: '#create-journal', onClick: handleCreateJournal },
         { label: 'View Journals', href: '#view-journals', onClick: handleViewJournals },
       ];
-    } else if (isHome) {
-      sidebarStyle.top = 72;
-      sidebarStyle.right = 16 + 44 * 3;
-      options = [
-        { label: 'Dashboard', href: '#dashboard', onClick: handleSidebarClose },
-      ];
     }
     return (
       <div style={sidebarStyle}>
@@ -133,25 +133,47 @@ const DashboardPage = () => {
       ) : activeJournalPage === 'view' ? (
         <JournalListPage />
       ) : (
-        <main style={{ padding: '24px' }}>
-          <Card style={{ border: 'none', maxWidth: 1200, margin: '24px auto', padding: 32, display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
-            <div className={styles.calendarBox}>
-                <h3 style={{ color: '#fff', fontWeight: 700, fontSize: '1.35rem', margin: '0 auto 18px auto', letterSpacing: '0.5px', textAlign: 'center', width: 'fit-content' }}>Your Calendar</h3>
-              <Calendar
-                onChange={setSelectedDate}
-                value={selectedDate}
-                locale="de-DE"
-              />
-              <div className={styles.selectedDate}>
-                Chosen Date: <b>{selectedDate.toLocaleDateString()}</b>
+        <>
+          <main style={{ padding: '24px' }}>
+            <Card style={{ border: 'none', maxWidth: 1200, margin: '24px auto', padding: 32, display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+              <div className={styles.calendarBox}>
+                  <h3 style={{ color: '#fff', fontWeight: 700, fontSize: '1.35rem', margin: '0 auto 18px auto', letterSpacing: '0.5px', textAlign: 'center', width: 'fit-content' }}>Your Calendar</h3>
+                <Calendar
+                  onChange={setSelectedDate}
+                  value={selectedDate}
+                  locale="de-DE"
+                />
+                <div className={styles.selectedDate}>
+                  Chosen Date: <b>{selectedDate.toLocaleDateString()}</b>
+                </div>
               </div>
-            </div>
-            <div className={styles.centerContent}>
-              <h2 className={styles.welcomeTitle}>Welcome back</h2>
-              <p className={styles.welcomeText}>Here you can access your journal quickly, see recent activity, or jump to profile settings.</p>
-            </div>
-          </Card>
-        </main>
+              <div className={styles.centerContent}>
+                <h2 className={styles.welcomeTitle}>Welcome back</h2>
+                <p className={styles.welcomeText}>Here you can access your journal quickly, see recent activity, or jump to profile settings.</p>
+              </div>
+            </Card>
+          </main>
+          <div style={{
+            width: '100vw',
+            margin: '36px 0 0 0',
+            left: '50%',
+            right: '50%',
+            transform: 'translateX(-50%)',
+            position: 'relative',
+            background: 'linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%)',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: '1.15rem',
+            letterSpacing: '2px',
+            boxShadow: '0 2px 12px rgba(79,70,229,0.10)',
+            padding: '16px 0',
+            textAlign: 'center',
+            marginBottom: '16px',
+            zIndex: 10,
+          }}>
+            ! UNDER CONSTRUCTION !
+          </div>
+        </>
       )}
     </>
   );

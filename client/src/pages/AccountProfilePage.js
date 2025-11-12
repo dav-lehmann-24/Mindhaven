@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Card from '../components/Card';
 import Button from '../components/Button';
+import AppHeader from '../components/AppHeader';
 import styles from './AccountProfilePage.module.css';
 
 const initialProfile = {
@@ -19,39 +21,56 @@ const AccountProfilePage = () => {
 	const [avatarPreview, setAvatarPreview] = useState(null);
 	const [showSuccess, setShowSuccess] = useState(false);
 
+	useEffect(() => {
+		const token = localStorage.getItem('token');
+		if (!token) return;
+		axios.get('/api/user/profile', {
+			headers: { Authorization: `Bearer ${token}` }
+		})
+			.then(res => {
+				if (res.data && res.data.user) {
+					setProfile(prev => ({ ...prev, ...res.data.user }));
+				}
+			})
+			.catch(() => {});
+	}, []);
+
 	const handleChange = e => {
 		const { name, value } = e.target;
 		setProfile(prev => ({ ...prev, [name]: value }));
 	};
-		const handleAvatarChange = e => {
-			const file = e.target.files[0];
-			if (file) {
-				setProfile(prev => ({ ...prev, avatar: file }));
-				setAvatarPreview(URL.createObjectURL(file));
-			}
-		};
-		const handleEdit = () => setEditing(true);
-		const handleCancel = () => {
-			setProfile(initialProfile);
-			setEditing(false);
-			setAvatarPreview(null);
-		};
-		const handleSave = () => {
-			 setEditing(false);
-			 // TODO: Save changes to backend
-			 setShowSuccess(true);
-			 setTimeout(() => setShowSuccess(false), 2000);
-		};
-		return (
-				<div className={styles.profileContainer}>
-					<Card className={styles.profileCard} style={{ maxWidth: 520, margin: '40px auto', padding: 32 }}>
-						<div className={styles.avatarSection}>
-							<div className={styles.avatarWrapper}>
-								<img
-									src={avatarPreview || '/default-avatar.png'}
-									alt="Profile"
-									className={styles.avatar}
-								/>
+	const handleAvatarChange = e => {
+		const file = e.target.files[0];
+		if (file) {
+			setProfile(prev => ({ ...prev, avatar: file }));
+			setAvatarPreview(URL.createObjectURL(file));
+		}
+	};
+	
+	const handleEdit = () => setEditing(true);
+	const handleCancel = () => {
+		setProfile(initialProfile);
+		setEditing(false);
+		setAvatarPreview(null);
+	};
+	const handleSave = () => {
+		setEditing(false);
+		// TODO: Save changes to backend
+		setShowSuccess(true);
+		setTimeout(() => setShowSuccess(false), 2000);
+	};
+	return (
+		<>
+			<AppHeader />
+			<div className={styles.profileContainer}>
+				<Card className={styles.profileCard} style={{ maxWidth: 520, margin: '40px auto', padding: 32 }}>
+					<div className={styles.avatarSection}>
+						<div className={styles.avatarWrapper}>
+							<img
+								src={avatarPreview || '/default-avatar.png'}
+								alt="Profile"
+								className={styles.avatar}
+							/>
 								{editing && (
 									<label className={styles.avatarUpload}>
 										<input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
@@ -125,10 +144,11 @@ const AccountProfilePage = () => {
 							)}
 						</div>
 					</Card>
-							{showSuccess && (
-								<div className={styles.successToast}>Changes saved successfully!</div>
-							)}
+					{showSuccess && (
+						<div className={styles.successToast}>Changes saved successfully!</div>
+					)}
 				</div>
+			</>
 	);
 };
 
