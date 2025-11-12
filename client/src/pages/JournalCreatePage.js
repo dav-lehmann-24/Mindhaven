@@ -154,9 +154,6 @@ const JournalCreatePage = () => {
             <Button type="submit" text="Create Journal" className={styles.createBtn} aria-label="Create Journal" />
           </div>
         </form>
-        <div style={{ textAlign: 'center', marginTop: 24 }}>
-          <a href="/login" style={{ color: 'var(--mh-primary-600, #4f8cff)', textDecoration: 'underline', fontSize: '1rem' }}>Return to Login</a>
-        </div>
       </Card>
     </div>
   );
