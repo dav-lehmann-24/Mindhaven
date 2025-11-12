@@ -1,37 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import styles from './JournalListPage.module.css';
 
-// Demo-Data
-const demoJournals = [
-  {
-    id: 1,
-    title: 'My First Journal',
-    content: 'This is the content of my first journal.',
-    tags: ['life', 'mindset'],
-    createdAt: '2025-11-01',
-  },
-  {
-    id: 2,
-    title: 'Mindfulness Practice',
-    content: 'Today I practiced mindfulness and felt great.',
-    tags: ['mindfulness'],
-    createdAt: '2025-11-05',
-  },
-  {
-    id: 3,
-    title: 'Gratitude Journal',
-    content: 'I am grateful for my family, my health, and the opportunities I have.',
-    tags: ['gratitude', 'wellbeing'],
-    createdAt: '2025-11-10',
-  },
-];
-
 const JournalListPage = () => {
-  const [journals, setJournals] = useState(demoJournals);
+  const [journals, setJournals] = useState([]);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    axios.get('/api/journal/user', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => {
+        setJournals(res.data.journals || []);
+      })
+      .catch(() => {
+        setJournals([]);
+      });
+  }, []);
   const [selectedJournal, setSelectedJournal] = useState(null);
   const [deleteJournal, setDeleteJournal] = useState(null);
   const [deleteSuccess, setDeleteSuccess] = useState(false);

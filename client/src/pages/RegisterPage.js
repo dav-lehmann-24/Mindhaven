@@ -44,7 +44,7 @@ const RegisterPage = () => {
       });
       setLoading(false);
       if (res.data.message) {
-        navigate('/dashboard');
+        navigate('/login'); // Redirect to login after successful registration
       }
     } catch (err) {
       setLoading(false);

@@ -30,7 +30,10 @@ const LoginPage = ({ onPreviewDashboard }) => {
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
-        navigate('/dashboard');
+        // Only navigate if token is set
+        if (localStorage.getItem('token')) {
+          navigate('/dashboard');
+        }
       }
     } catch (err) {
       setLoading(false);

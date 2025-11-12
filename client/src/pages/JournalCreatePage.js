@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -74,10 +75,23 @@ const JournalCreatePage = () => {
     setJournal(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    // TODO: Send journal to backend
-    alert('Journal created! (Demo)');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('You must be logged in to create a journal.');
+      return;
+    }
+    try {
+      const payload = { ...journal, tags: journal.tags.join(',') };
+      const res = await axios.post('/api/journal/create', payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Journal created!');
+      setJournal(initialJournal);
+    } catch (err) {
+      alert('Error creating journal.');
+    }
   };
 
   return (

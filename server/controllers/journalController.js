@@ -89,14 +89,18 @@ Journal.checkOwnership(journalId, (err, rows) => {
 };
 
 
-  // exports.getJournalsByUserId = (req, res) => {
-  // const userId = req.params.userId; 
-  // Journal.getJournalsByUserId(userId, (err, result) => {
-  //   if (err) {
-  //     console.error('Error fetching journals:', err);
-  //     return res.status(500).json({ message: 'Database error' });
-  //   }
-
-  //   res.status(200).json(result);
-  // });
-// };
+exports.getJournalsByUserId = (req, res) => {
+  const userId = req.user.id;
+  Journal.getJournalsByUserId(userId, (err, result) => {
+    if (err) {
+      console.error('Error fetching journals:', err);
+      return res.status(500).json({ message: 'Database error' });
+    }
+    // tags als Array zurückgeben
+    const journals = result.map(journal => ({
+      ...journal,
+      tags: typeof journal.tags === 'string' ? journal.tags.split(',').map(t => t.trim()).filter(Boolean) : Array.isArray(journal.tags) ? journal.tags : []
+    }));
+    res.status(200).json({ journals });
+  });
+};

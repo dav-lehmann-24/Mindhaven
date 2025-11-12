@@ -6,10 +6,10 @@ const { verifyToken } = require('../middleware/authMiddleware');
 const { createJournal, updateJournal, deleteJournal, getJournalsByUserId } = require('../controllers/journalController');
 
 // POST /api/journal/create
-router.post('/create',verifyToken, createJournal);
+router.post('/create', verifyToken, createJournal);
 router.put('/update/:id', verifyToken, updateJournal);
-router.delete('/delete/:id',verifyToken, deleteJournal);
-// router.get('/user/:userId', getJournalsByUserId);
+router.delete('/delete/:id', verifyToken, deleteJournal);
+router.get('/user', verifyToken, getJournalsByUserId);
 
 module.exports = router;
 
