@@ -35,10 +35,11 @@ app.get('/', (req,res)=>{
 })
 
 
- 
-const PORT = process.env.PORT || 8080;
-app.listen(8080,()=>{
-    console.log('our server listening on port 8080');
-})
+if (require.main === module) {
+  const PORT = process.env.PORT || 8080;
+  app.listen(PORT, () => {
+    console.log(`✅ Our server listening on port ${PORT}`);
+  });
+}
 
-
+module.exports = app;
