@@ -24,6 +24,17 @@ const User = {
       callback
     );
   },
+
+  getcheckOwnership : (userId, callback) => {
+  const sql = 'SELECT id FROM users WHERE id = ?';
+  db.query(sql, [userId], callback);
+},
+
+deleteById : (userId, callback) => {
+  const sql = 'DELETE FROM users WHERE id = ?';
+  db.query(sql, [userId], callback);
+}
+  
 };
 
 module.exports = User;

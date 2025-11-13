@@ -7,6 +7,9 @@ router.post('/login', authController.loginUser);
 
 const { verifyToken } = require('../middleware/authMiddleware');
 
+router.post('/request-reset', authController.requestPasswordReset);
+router.post('/reset-password', authController.resetPassword);
+
 router.get('/profile', verifyToken, (req, res) => {
   res.json({ message: `Welcome back, user ${req.user.email}!`, user: req.user });
 });

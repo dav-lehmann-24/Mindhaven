@@ -8,6 +8,8 @@ const upload = require('../middleware/uploadMiddleware');
 router.get('/profile', verifyToken, userController.getProfile);
 router.put('/profile', verifyToken, userController.updateProfile);
 router.get('/profile/journals', verifyToken, userController.getUserJournals);
+router.delete('/delete', verifyToken, userController.deleteAccount);
+
 
 // Upload & update profile picture
 router.post(

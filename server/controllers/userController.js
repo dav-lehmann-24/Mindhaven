@@ -1,5 +1,5 @@
 const db = require('../config/database');
-
+const User = require('../models/user');
 // Get user profile
 exports.getProfile = (req, res) => {
   const userId = req.user.id;
@@ -55,6 +55,36 @@ exports.uploadProfilePicture = (req, res) => {
     res.status(200).json({
       message: 'Profile picture updated successfully',
       imageUrl: filePath,
+    });
+  });
+};
+
+exports.deleteAccount = (req, res) => {
+  const userId = req.user.id; 
+
+  User.getcheckOwnership(userId, (err, rows) => {
+    if (err) {
+      console.error('❌ Database error during ownership check:', err);
+      return res.status(500).json({ message: 'Database error' });
+    }
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    if (rows[0].id !== userId) {
+      return res
+        .status(403)
+        .json({ message: 'Unauthorized: not your account' });
+    }
+    User.deleteById(userId, (err2, result) => {
+      if (err2) {
+        console.error('❌ Error deleting account:', err2);
+        return res.status(500).json({ message: 'Error deleting account' });
+      }
+
+      res
+        .status(200)
+        .json({ message: '🗑️ Account deleted successfully!' });
     });
   });
 };
