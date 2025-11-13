@@ -7,9 +7,8 @@ npm start
 ### Running server 
   node index.js
   
-### Running server 
- do cd features/  
-  npx cucumber-js
+### Running tests in server 
+  npm run test:e2e
 
 ### Auto refresh server 
   npm install --save-dev nodemon 
