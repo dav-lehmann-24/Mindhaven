@@ -3,14 +3,12 @@ const User = require('../models/auth');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const db = require('../config/database');
+const { sendResetEmail } = require('../utils/emailService');
 
 
 
 exports.registerUser = (req, res) => {
   const { username, email, password, bio, profile_picture, country, gender } = req.body;
-
-
-//   console.log('Request body:', req.body);
 
 // hashing
 const hashedPassword = bcrypt.hashSync(password, 10);
@@ -105,8 +103,14 @@ exports.requestPasswordReset = (req, res) => {
         if (err2) return res.status(500).json({ message: 'Database error' });
 
         // TODO: send via email using nodemailer later
-        console.log(`🔗 Reset Link: http://localhost:3000/reset-password/${token}`);
-        res.status(200).json({ message: 'Reset link sent (simulated)' });
+        sendResetEmail(email, token)
+        .then(() => {
+          res.status(200).json({ message: '📧 Password reset link sent to your email!' });
+        })
+        .catch((error) => {
+          console.error(' Error sending email:', error);
+          res.status(500).json({ message: 'Error sending reset email' });
+        });
       });
     });
   });
