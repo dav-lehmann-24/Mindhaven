@@ -38,15 +38,18 @@ The project is going to be realized as a web application.
   
 Actors of this application are users.
 
-Planned subsystems include:
+Planned subsystems for this semester include:
 
-Authentication
+- Authentication
 
-Account management
+- Account management
 
-Journal management
+- Journal management
 
-Future planned extensions: AI assistance, SOS Mode, advanced journal tagging & filtering
+Future planned extensions: 
+- AI assistance
+- SOS Mode
+- Buddy Circle
 
 ### 1.3 Definitions, Acronyms and Abbreviations
 | Abbrevation | Explanation                            |
@@ -101,7 +104,9 @@ Deployment:
 - TBD
 
 Testing:
-- TBD
+- Cucumber
+- Chai
+- Playwright
 
 ## 3. Specific Requirements
 
@@ -113,13 +118,17 @@ Until the end of the first semester we plan to implement:
 - 3.1.3 Edit account
 - 3.1.4 Delete account
 - 3.1.5 Reset password
+- 3.1.6 Manage journal (create, edit, delete, list)
+- 3.1.7 Add tags to journals
+- 3.1.8 Create alerts based on tags
+- 3.1.9 Search journals based on tags
+- 3.1.10 Sort journals chronologically
 
 Until the end of the second semester, we want to implement:
-- 3.1.6 Manage journal (create, edit, delete, list)
-- 3.1.7 Implement AI assistance (Chatbot) 
-- 3.1.8 Implement SOS Mode
-- 3.1.9 Implement links for SOS Mode
-- 3.1.10
+- 3.1.11 Implement AI assistance (Chatbot) 
+- 3.1.12 Implement SOS Mode
+- 3.1.13 Implement links for SOS Mode
+- 3.1.14 Buddy circle
 
 #### 3.1.1 Create account
 
@@ -129,9 +138,10 @@ For details, refer to [Create Account Use Case](UCCreateAccount.md)
 
 
 #### 3.1.2 Logging in / Logging out
+The webapp will provide the possiblity to manually log in and out. Loggin in is essential to use the functions.
 
+For more details, refer to the [Log in Log out Use Case](UCLoginLogout.md).
 
-[Logging in / Logging out]()
 
 #### 3.1.3 Edit account
 
@@ -141,38 +151,80 @@ For details, refer to [Edit Account Use Case](UCEditAccount.md)
 
 #### 3.1.4 Delete account
 
-
-[Delete account]()
+It is possible to delete the account. All data linked to it will be deleted too.
+For more details, refer to the [Delete Account Use Case.](UCDeleteAccount.md).
 
 #### 3.1.5 Reset password
 
+The user is able to reset their password.
 
-[Reset password]()
+For more details, refer to the [Reset Password Use Case](UCResetPassword.md).
+
 
 #### 3.1.6 Manage journal
 
+The user can keep a journal where they can add several enteries each day. This function includes listjournal, write, edit and delete journal.
 
-[Manage journal]()
+For more details, refer to the [Manage Journal](UCManageJournal.md).
 
-#### 3.1.7 Implement AI assistance (Chatbot)
+#### 3.1.7 Add tags to journals
+
+To improve organization and personalization, the application allows users to add tags to their journal entries.   
+When creating or editing a journal, users can select one or more predefined tags from a list. 
+
+For details, refer to **[Add Tags to Journal Use Case](UCAddTags.md)**  
+
+
+
+#### 3.1.8 Create alerts based on tags
+
+The system enables users to receive personalized alerts derived from the emotional or contextual tags used in their journals.  
+Alerts help users recognize patterns in their emotional well-being — for example, frequent use of negative tags like *sad, anxious, stressed* may trigger a gentle reminder or supportive message.
+
+For details, refer to **[Journal Alert Use Case](UCAlerts.md)**  
+
+
+#### 3.1.9 Search journals based on tags
+
+To help users quickly locate specific journal entries, the system allows searching journals by tag.  
+Users can choose tags from a predefined list, and the system will return all journal entries containing the selected tag(s).
+
+For details, refer to **[Search Journals by Tag Use Case](UCTagSearch.md)**  
+*(planned feature for future development)*
+
+
+#### 3.1.10 Sort journals chronologically
+
+The application provides users with the ability to sort journal entries by date.  
+Journals can be displayed in:
+
+- **Newest first** (default)
+- **Oldest first**
+
+Sorting journals chronologically allows users to track their emotional journey over time and makes navigating long lists of entries easier.
+
+For details, refer to **[Sort Journals Use Case](UCSort.md)**  
+*(planned feature for future development)*
+
+
+#### 3.1.11 Implement AI assistance (Chatbot)
 
 
 [Implement AI assistance]()
 
-#### 3.1.8 Implement SOS Mode
+#### 3.1.12 Implement SOS Mode
 
 
 [Implement SOS Mode]()
 
-#### 3.1.9 Implement links for SOS Mode
+#### 3.1.13 Implement links for SOS Mode
 
 
 [Implement links for SOS Mode]()
 
-#### 3.1.10
+#### 3.1.14 Buddy Circle
 
-
-[ ]()
+[Implement links for Buddy Circle]()
 
 
 ### 3.2 Usability
@@ -250,6 +302,5 @@ The development will follow the common clean code standards and naming conventio
 ## 4. Supporting Information
 For any further information you can contact the Mindhaven Team or check our [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven). 
 The Team Members are:
-- Daniela Chaves Acuna
 - David Lehmann
 - Hafsa 
