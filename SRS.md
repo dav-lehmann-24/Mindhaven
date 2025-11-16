@@ -36,10 +36,17 @@ This Software Requirements Specification (SRS) describes all specifications for 
 ### 1.2 Scope
 The project is going to be realized as a web application.  
   
-Actors of this App can be users.  
-  
-Planned Subsystems are: 
-* TBD
+Actors of this application are users.
+
+Planned subsystems include:
+
+Authentication
+
+Account management
+
+Journal management
+
+Future planned extensions: AI assistance, SOS Mode, advanced journal tagging & filtering
 
 ### 1.3 Definitions, Acronyms and Abbreviations
 | Abbrevation | Explanation                            |

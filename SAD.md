@@ -12,7 +12,9 @@
 - [Use-Case View](#4-use-case-view)
 - [Logical View](#5-logical-view)
     - [Overview](#51-overview)
-    - [Architecturally Significant Design Packages](#52-architecturally-significant-design-packages)
+    - [Architecturally Significant Design Packages]
+    - [5.4 Implemented features and components]
+    (#52-architecturally-significant-design-packages)
     - [Refactoring with Design Patterns](#53-refactoring-with-design-patterns)
 - [Process View](#6-process-view)
 - [Deployment View](#7-deployment-view)
@@ -47,7 +49,7 @@ This document describes the technical architecture of the Mindhaven project, inc
 
 | Title                                                              | Date       | Publishing organization   |
 | -------------------------------------------------------------------|:----------:| ------------------------- |
-| [GMindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven/)| 05.11.2025 |Mindhaven  |
+| [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven/)| 05.11.2025 |Mindhaven  |
 | [GitHub Repository](https://github.com/dav-lehmann-24/Mindhaven)| 05.11.2025 |Mindhaven  |
 | [Overall Use Case Diagram](Pictures/UCD.png)| 05.11.2025 |Mindhaven  |
 | [SRS](SRS.md)| 05.11.20254 |Mindhaven  |
@@ -55,19 +57,12 @@ This document describes the technical architecture of the Mindhaven project, inc
 | [UC:Edit Account](UCEditAccount.md)| 05.11.2025 |Mindhaven  |
 | [UC:Delete Account](UCDeleteAccount.md)| 05.11.2025 |Mindhaven  |
 | [UC:Log in and Log out](UCLogin_logout.md)|05.11.2025 |Mindhaven  |
-| [UC:Manage Blogpost](UCManagePost.md)| 05.11.2025 |Mindhaven  |
-| [UC:Manage Comments](UCManageComment.md)| 05.11.2025 |Mindhaven  |
-| [UC:Like Post](UCLikePost.md)| 05.11.2025 |Mindhaven  |
-| [UC:Like Comments](UCLikeDislikeComment.md)| 105.11.2025 |Mindhaven  |
+| [UC:Manage Journals](UCManagePost.md)| 05.11.2025 |Mindhaven  |
 | [UC:Reset Password](UCResetPassword.md)|05.11.2025 |Mindhaven  |
-| [UC:Manage Admin Accounts](UCManageAdmins.md)|05.11.2025 |Mindhaven  |
-| [UC:Create Recipe](UCCreateRecipe.md)|05.11.2025 |Mindhaven  |
-| [UC:Log Macros](UCLogMacros.md)|05.11.2025 |Mindhaven  |
-| [UC:Log Meals](UCLogMeal.md)|05.11.2025 |Mindhaven  |
-| [UC:Manage Glucose Logs](UCManageGlucoseLogs.md)|05.11.2025 |Mindhaven  |
-| [UC:Generate Graphs](UCGenerateGraph.md)|05.11.2025 |Mindhaven  |
-| [UC:Manage Alerts](UCManageAlerts.md)|05.11.2025 |Mindhaven  |
-
+| [UC:Show Alerts](UCManageAlerts.md)|05.11.2025 |Mindhaven  |
+| [UC:Tag Journals](UCManageAlerts.md)|05.11.2025 |Mindhaven  |
+| [UC:Filter Journals using tags](UCManageAlerts.md)|05.11.2025 |
+| [UC:Sort Journals](UCManageAlerts.md)|05.11.2025 |
 
 ### 1.5 Overview
 This document contains the Architectural Representation, Goals and Constraints as well
@@ -100,6 +95,30 @@ Node.js and Express provides the back-end framework, offering RESTful endpoints 
 The front-end and back-end are spearate but communicate via a REST API.
 They are both written in Javascript. 
 
+### Goals
+
+Secure authentication
+
+Clean modular architecture
+
+Reusable controllers & models
+
+Separation of concerns
+
+Scalable REST API
+
+Token-based authentication
+
+### Constraints
+
+JavaScript-based stack (React + Node.js)
+
+MySQL relational schema
+
+Multer file upload restrictions
+
+Environment variable security for email + JWT
+
 ## 4. Use-Case View
 Our overall UC diagram:
 
@@ -111,7 +130,7 @@ Our overall UC diagram:
 
 ### 5.1 Overview
 The our project our elements are categorized by model, view and controller.
-Data Flow:
+
 
 ![MVC](Pictures/MVC_Mindhaven.png) <br>
 
@@ -127,9 +146,22 @@ Data Flow:
 Generating an Architectural UML diagram for a JavaScript (JS) application are challenging because most UML tools and generators are geared toward object-oriented languages (like Java or C#) with strict class-based structures.
 We've tried PlantUML and UML Generator in VSC but it does not automatically generate UML Diagrams, but we have to code Diagrams ourselfs.
 
+#### Backend Data Flow
+
+
+User sends request → Frontend (React)
+
+Controller receives it → Express route → Controller
+
+Controller calls Model → DB Query
+
+Model returns result → Controller formats response
+
+Response returned to Frontend
+
 [You can see our components here.]()
 
-This is the class diagram for the feature Authentification
+This is the class diagram for the feature Authentication
 
 ![Post](Pictures/F8.png) <br>
 
@@ -152,8 +184,9 @@ This is the class diagram for the feature Buddy
 
 ### 5.2 Architecturally Significant Design Packages
 - Multer (File Upload Middleware)
-- Quill (Text Editor)
+- JWT Authentication (Used in middleware to validate access.)
 - Axios (HTTP Client)
+- Nodemailer (Used for password reset link delivery.)
 
 These can be considered architectually significant.
 
@@ -172,69 +205,101 @@ This ensures:
 - Reduced redundancy by reusing the same JWT utility instance  
 - Improved security and easier maintenance of authentication logic  
 
----
+### 5.4 Implemented features and components
 
-#### 5.3.1 Refactoring Summary
+✔ Authentication
 
+authController.js
 
-#### 5.3.2 Implementation Details
+auth.js (model)
 
+authRoutes.js
 
-**Class created:**
+JWT-based login
 
+Password reset via token + email
 
-**Affected Controllers:**
+✔ User Profile
 
+Get profile
 
----
+Update profile
 
-#### 5.3.3 Diagrams: Before and After Refactoring
+Upload profile picture (multer)
 
-##### Before Refactoring (Direct Dependency)
+Delete user account
 
----
+✔ Journal Management
 
-##### After Refactoring (With Strategy Pattern)
+journal.js
 
+Create / update / delete
 
----
-
-#### 5.3.4 Advantages of the Refactoring
-
----
-
-
-
+Fetch all journals for authenticated user
 
 ## 6. Process View
+
+### Login Sequence
         
-n/a
+React Login Page
+        ↓
+POST /api/auth/login
+        ↓
+authController.loginUser()
+        ↓
+Compare password (bcrypt)
+        ↓
+Generate JWT (jsonwebtoken)
+        ↓
+Return token to client
+     
+### Password Reset Flow
+
+User requests password reset
+        ↓
+Backend generates token
+        ↓
+Saves token in DB
+        ↓
+Sends email with reset link
+        ↓
+User submits new password
+        ↓
+Backend verifies token → updates password
+
+###Journal CURD
+
+All journal routes require verifyToken
+
+Operations are tied to req.user.id
+
 
 ## 7. Deployment View
 
 Our Deployment setup includes a client and a server. 
-
-            ┌─────────────────────────────────────┐
-            │                                     │
-            │          React Frontend             │
-            │              Client                 │
-            │                                     │
-            └────────────────┬────────────────────┘
-                             │
-                             │
-       ┌─────────────────────▼─────────────────────┐
-       │                                           │
-       │       Node.js + Express Backend           │
-       │                  Server                   │
-       │                                           │
-       └─────────────────────┬─────────────────────┘
-                             │
-                             │
-                             ▼
-                 ┌──────────────────────┐
-                 │Database (MySQL) │
-                 │                      │
-                 └──────────────────────┘
+┌──────────────────────────────────┐
+│     React Frontend (Client)      │
+│  - Pages                         │
+│  - Components                    │
+│  - Axios API calls               │
+└─────────────────┬────────────────┘
+                  │
+                  ▼
+┌──────────────────────────────────┐
+│  Node.js + Express Backend       │
+│  - Controllers / Models          │
+│  - Middleware                    │
+│  - Upload server                 │
+│  - Email service                 │
+└─────────────────┬────────────────┘
+                  │
+                  ▼
+┌──────────────────────────────────┐
+│           MySQL Database         │
+│  - users                         │
+│  - journals                      │
+│  - password_reset_tokens         │
+└──────────────────────────────────┘
 
 
 
