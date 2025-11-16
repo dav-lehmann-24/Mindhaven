@@ -142,5 +142,21 @@ exports.resetPassword = (req, res) => {
   });
 };
 
+exports.updateProfile = (req, res) => {
+  const userId = req.user.id;
+  const { bio, country, gender } = req.body;
+  const profile_picture = req.file ? `/uploads/${req.file.filename}` : null;
 
+  User.checkOwnership(userId, (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Database error' });
+    if (rows.length === 0) return res.status(404).json({ message: 'User not found' });
 
+    User.updateProfile(userId, bio, country, gender, profile_picture, (err2) => {
+      if (err2) {
+        console.error('❌ Error updating profile:', err2);
+        return res.status(500).json({ message: 'Error updating profile' });
+      }
+      res.status(200).json({ message: '✅ Profile updated successfully!' });
+    });
+  });
+};

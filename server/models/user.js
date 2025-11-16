@@ -3,7 +3,7 @@ const db = require('../config/database');
 const User = {
   findById: (id, callback) => {
     db.query(
-      `SELECT id, username, email, bio, profile_picture, country, gender FROM users WHERE id = ?`,
+      `SELECT id, username, email, bio, profile_picture, country, gender, updated_at FROM users WHERE id = ?`,
       [id],
       callback
     );

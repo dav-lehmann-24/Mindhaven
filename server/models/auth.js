@@ -25,7 +25,20 @@ const User = {
   deleteByUserId: (userId, callback) => {
     const sql = `DELETE FROM password_reset_tokens WHERE user_id = ?`;
     db.query(sql, [userId], callback);
-  }
+  },
+  checkOwnership: (userId, callback) => {
+    const sql = 'SELECT id FROM users WHERE id = ?';
+    db.query(sql, [userId], callback);
+  },
+
+  updateProfile: (id, bio, country, gender, picture, callback) => {
+    const sql = `
+      UPDATE users
+      SET bio = ?, country = ?, gender = ?, profile_picture = ?
+      WHERE id = ?
+    `;
+    db.query(sql, [bio, country, gender, picture, id], callback);
+  },
 };
 
 

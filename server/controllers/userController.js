@@ -4,7 +4,7 @@ const User = require('../models/user');
 exports.getProfile = (req, res) => {
   const userId = req.user.id;
   const query = `
-    SELECT id, username, email, bio, profile_picture, country, gender
+    SELECT id, username, email, bio, profile_picture, country, gender, updated_at
     FROM users WHERE id = ?`;
   db.query(query, [userId], (err, result) => {
     if (err) return res.status(500).json({ message: 'Database error' });
