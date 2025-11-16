@@ -4,14 +4,28 @@ Edit Account
 ## 1.1 Brief Description
 
 ## 2. Basic Flow
+1. The user navigates to the account page.
+2. The user clicks 'edit account'
+3. The user clicks on 'change password' button or 'change username' button
+3. The user types in a new value.
+4. The system validates the user's input:
+   - Ensures the format is valid.
+   - Checks that the password meets strength requirements.
+   - Ensures that the username is unique and available.
+5. If validation is successful, the system updates the user's account information in the database.
+6. The system confirms the account edit by showing a success message.
 
 ### 2.1 Activity Diagram
 ![Edit Account Activity Diagram](Pictures/Edit_Account_UML_Diagram.png)
 
 ### 2.2 Mock-up
 
-
+![Edit Account Mockup](Pictures/EditAcc.png)
 ### 2.3 Alternate Flow:
+- **Invalid Input:**
+   - If the user provides an invalid user name or weak password, the system displays an error message and asks the user to correct the form.
+- **Duplicate Username:**
+   - If the username already exists, the system displays an error message and informs the user, that the username is already taken.
 
 ### 2.4 Narrative
 ```gherkin
