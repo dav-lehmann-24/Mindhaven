@@ -5,6 +5,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import styles from './JournalListPage.module.css';
+import parser from 'html-react-parser';
 
 const JournalListPage = () => {
   const [journals, setJournals] = useState([]);
@@ -114,7 +115,7 @@ const JournalListPage = () => {
                 ))}
               </div>
               <div className={styles.contentPreview}>
-                {journal.content.split('\n').slice(0,2).join(' ')}{journal.content.split('\n').length > 2 ? '...' : ''}
+                {parser(journal.content)}
               </div>
               <div className={styles.buttonRow}>
                 <Button text="Details" className={styles.detailsBtn} aria-label="View details" onClick={() => handleDetails(journal)} />
@@ -134,7 +135,7 @@ const JournalListPage = () => {
             <div className={styles.modalInfo}><b>Last updated at:</b> {selectedJournal.updatedAt || selectedJournal.createdAt}</div>
             <div className={styles.modalInfo}><b>Tags:</b> {selectedJournal.tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}</div>
             <div className={styles.modalInfo}><b>Content:</b></div>
-            <div className={styles.modalContent}>{selectedJournal.content}</div>
+            <div className={styles.modalContent}>{parser(selectedJournal.content)}</div>
           </div>
         </div>
       )}
