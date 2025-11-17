@@ -4,7 +4,6 @@ import Card from '../components/Card';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styles from './DashboardPage.module.css';
-import AppHeader from '../components/AppHeader';
 import JournalCreatePage from './JournalCreatePage';
 import JournalListPage from './JournalListPage';
 
@@ -20,21 +19,8 @@ const DashboardPage = () => {
     }
   }, [navigate]);
 
-  const handleHomeClick = () => {
-    setActiveJournalPage(null);
-  };
-  const handleSOS = () => alert('SOS triggered (demo)');
-  const handleJournalCreate = () => setActiveJournalPage('create');
-  const handleJournalView = () => setActiveJournalPage('view');
-
   return (
     <>
-      <AppHeader
-        onHome={handleHomeClick}
-        onSOS={handleSOS}
-        onJournalCreate={handleJournalCreate}
-        onJournalView={handleJournalView}
-      />
       {activeJournalPage === 'create' ? (
         <JournalCreatePage />
       ) : activeJournalPage === 'view' ? (

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import AppHeader from '../components/AppHeader';
 import styles from './AccountProfilePage.module.css';
 
 function formatDate(dateString) {
@@ -126,7 +125,6 @@ const AccountProfilePage = () => {
 	};
 	return (
 		<>
-			<AppHeader onHome={() => navigate('/dashboard')} />
 			<div className={styles.profileContainer}>
 				{errorMsg && (
 					<div className={styles.errorToast}>{errorMsg}</div>

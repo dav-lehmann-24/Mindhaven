@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './AppHeader.module.css';
 import { MdHomeFilled, MdMenuBook, MdPerson, MdGroup } from 'react-icons/md';
 
-const AppHeader = ({ onHome, onSOS, onJournalCreate, onJournalView }) => {
+const AppHeader = () => {
   const [sidebarOpen, setSidebarOpen] = useState(null);
   const navigate = useNavigate();
 
@@ -11,11 +11,11 @@ const AppHeader = ({ onHome, onSOS, onJournalCreate, onJournalView }) => {
   const handleJournalClick = () => setSidebarOpen('journal');
   const handleHomeClick = () => {
     setSidebarOpen(null);
-    if (onHome) onHome();
+    navigate('/dashboard');
   };
   const handleSOSClick = () => {
     setSidebarOpen(null);
-    if (onSOS) onSOS();
+    navigate('/sos');
   };
   const handleSidebarClose = () => setSidebarOpen(null);
 
@@ -60,11 +60,11 @@ const AppHeader = ({ onHome, onSOS, onJournalCreate, onJournalView }) => {
       ];
     } else if (isJournal) {
       const handleCreateJournal = () => {
-        if (onJournalCreate) onJournalCreate();
+        navigate('/journal/create');
         setSidebarOpen(null);
       };
       const handleViewJournals = () => {
-        if (onJournalView) onJournalView();
+        navigate('/journal/list');
         setSidebarOpen(null);
       };
       options = [
@@ -106,38 +106,38 @@ const AppHeader = ({ onHome, onSOS, onJournalCreate, onJournalView }) => {
     );
   };
 
-  return (
-    <header className={styles.header} style={{ position: 'relative' }}>
-      <div className={styles.left}>
-        <span className={styles.logo} aria-label="Logo">
-          <img
-            src={require('../Logo.png')}
-            alt="Mindhaven Logo"
-            style={{ width: 56, height: 56, objectFit: 'contain', display: 'block', marginRight: 18 }}
-          />
-        </span>
-        <span className={styles.brand}>Mindhaven</span>
-      </div>
-      <div className={styles.center}>
-        <button className={styles.sos} aria-label="SOS emergency" onClick={handleSOSClick}>SOS</button>
-      </div>
-      <div className={styles.right}>
-        <button className={styles.iconButton} aria-label="Home" onClick={handleHomeClick}>
-          <MdHomeFilled size={28} color="#fff" style={{ filter: 'drop-shadow(0 0 2px #222)' }} />
-        </button>
-        <button className={styles.iconButton} aria-label="Journal" onClick={handleJournalClick}>
-          <MdMenuBook size={28} color="#fff" style={{ filter: 'drop-shadow(0 0 2px #222)' }} />
-        </button>
-        <button className={styles.iconButton} aria-label="Buddy">
-          <MdGroup size={28} color="#fff" style={{ filter: 'drop-shadow(0 0 2px #222)' }} />
-        </button>
-        <button className={styles.iconButton} aria-label="Profile" onClick={handleProfileClick}>
-          <MdPerson size={28} color="#fff" style={{ filter: 'drop-shadow(0 0 2px #222)' }} />
-        </button>
-      </div>
-      {renderSidebar()}
-    </header>
-  );
+    return (
+      <header className={styles.header} style={{ position: 'relative' }}>
+        <div className={styles.left}>
+          <span className={styles.logo} aria-label="Logo">
+            <img
+              src={require('../Logo.png')}
+              alt="Mindhaven Logo"
+              style={{ width: 56, height: 56, objectFit: 'contain', display: 'block', marginRight: 18 }}
+            />
+          </span>
+          <span className={styles.brand}>Mindhaven</span>
+        </div>
+        <div className={styles.center}>
+          <button className={styles.sos} aria-label="SOS emergency" onClick={handleSOSClick}>SOS</button>
+        </div>
+        <div className={styles.right}>
+          <button className={styles.iconButton} aria-label="Home" onClick={handleHomeClick}>
+            <MdHomeFilled size={28} color="#fff" style={{ filter: 'drop-shadow(0 0 2px #222)' }} />
+          </button>
+          <button className={styles.iconButton} aria-label="Journal" onClick={handleJournalClick}>
+            <MdMenuBook size={28} color="#fff" style={{ filter: 'drop-shadow(0 0 2px #222)' }} />
+          </button>
+          <button className={styles.iconButton} aria-label="Buddy" onClick={() => { setSidebarOpen(null); navigate('/buddy'); }}>
+            <MdGroup size={28} color="#fff" style={{ filter: 'drop-shadow(0 0 2px #222)' }} />
+          </button>
+          <button className={styles.iconButton} aria-label="Profile" onClick={handleProfileClick}>
+            <MdPerson size={28} color="#fff" style={{ filter: 'drop-shadow(0 0 2px #222)' }} />
+          </button>
+        </div>
+        {renderSidebar()}
+      </header>
+    );
 };
 
 export default AppHeader;
