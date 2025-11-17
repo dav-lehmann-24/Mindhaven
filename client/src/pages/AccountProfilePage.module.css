@@ -174,10 +174,22 @@
   z-index: 6000;
   animation: fadeIn 0.3s;
 }
-.cancelBtn:focus {
-  outline: 2px solid var(--mh-red-200, #ffb3b3);
-}
-.cancelBtn:hover {
-  background: #c0392b;
+
+.errorToast {
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 12px 24px;
+  max-width: 320px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 1.08rem;
+  box-shadow: 0 2px 12px rgba(185,28,28,0.08);
+  z-index: 99999;
+  animation: fadeIn 0.3s;
 }
 
