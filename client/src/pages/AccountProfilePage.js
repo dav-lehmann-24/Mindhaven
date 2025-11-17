@@ -6,22 +6,27 @@ import Button from '../components/Button';
 import AppHeader from '../components/AppHeader';
 import styles from './AccountProfilePage.module.css';
 
-const initialProfile = {
-	username: 'MindUser',
-	email: 'user@mindhaven.com',
-	bio: 'Welcome to my Mindhaven profile!',
-	country: 'Germany',
-	gender: 'Other',
-	createdAt: '2025-01-10',
-	updatedAt: '2025-11-10',
-	avatar: null,
-};
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('de-DE', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }) + ', ' + date.toLocaleTimeString('de-DE', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
 const AccountProfilePage = () => {
-	const [profile, setProfile] = useState(initialProfile);
+	const [profile, setProfile] = useState({});
 	const [editing, setEditing] = useState(false);
 	const [avatarPreview, setAvatarPreview] = useState(null);
 	const [showSuccess, setShowSuccess] = useState(false);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+	const [errorMsg, setErrorMsg] = useState('');
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -31,8 +36,8 @@ const AccountProfilePage = () => {
 			headers: { Authorization: `Bearer ${token}` }
 		})
 			.then(res => {
-				if (res.data && res.data.user) {
-					setProfile(prev => ({ ...prev, ...res.data.user }));
+				if (res.data) {
+					setProfile(res.data);
 				}
 			})
 			.catch(() => {});
@@ -52,20 +57,80 @@ const AccountProfilePage = () => {
 	
 	const handleEdit = () => setEditing(true);
 	const handleCancel = () => {
-		setProfile(initialProfile);
 		setEditing(false);
 		setAvatarPreview(null);
+		const token = localStorage.getItem('token');
+		if (!token) return;
+		axios.get('/api/user/profile', {
+			headers: { Authorization: `Bearer ${token}` }
+		})
+			.then(res => {
+				if (res.data) {
+					setProfile(res.data);
+				}
+			});
 	};
-	const handleSave = () => {
-		setEditing(false);
-		// TODO: Save changes to backend
-		setShowSuccess(true);
-		setTimeout(() => setShowSuccess(false), 2000);
+	const handleSave = async () => {
+		setErrorMsg('');
+		const token = localStorage.getItem('token');
+		if (!token) return;
+		try {
+			let profilePictureUrl = profile.profile_picture;
+			if (profile.avatar instanceof File) {
+				const formData = new FormData();
+				formData.append('profile_picture', profile.avatar);
+				const uploadRes = await axios.post('/api/user/profile/upload', formData, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'multipart/form-data'
+					}
+				});
+				if (uploadRes.data && uploadRes.data.imageUrl) {
+					profilePictureUrl = uploadRes.data.imageUrl;
+				}
+			}
+			const payload = {
+				username: profile.username,
+				bio: profile.bio,
+				country: profile.country,
+				gender: profile.gender,
+				profile_picture: profilePictureUrl,
+				email: profile.email,
+				createdAt: profile.createdAt,
+				updatedAt: profile.updatedAt
+			};
+			await axios.put('/api/user/profile', payload, {
+				headers: { Authorization: `Bearer ${token}` }
+			});
+			setEditing(false);
+			setShowSuccess(true);
+			const reloadProfile = async () => {
+				const token = localStorage.getItem('token');
+				if (!token) return;
+				try {
+					const res = await axios.get('/api/user/profile', {
+						headers: { Authorization: `Bearer ${token}` }
+					});
+					if (res.data) {
+						setProfile(res.data);
+					}
+				} catch {}
+			};
+			reloadProfile();
+			setTimeout(() => setShowSuccess(false), 2000);
+		} catch (err) {
+			if (err.response && err.response.data && err.response.data.message === 'Username already exists') {
+				setErrorMsg('Dieser Username ist bereits vergeben.');
+			}
+		}
 	};
 	return (
 		<>
 			<AppHeader onHome={() => navigate('/dashboard')} />
 			<div className={styles.profileContainer}>
+				{errorMsg && (
+					<div className={styles.errorToast}>{errorMsg}</div>
+				)}
 				<Card className={styles.profileCard} style={{
 					maxWidth: 520,
 					margin: '40px auto',
@@ -76,7 +141,7 @@ const AccountProfilePage = () => {
 					<div className={styles.avatarSection}>
 						<div className={styles.avatarWrapper}>
 							<img
-								src={avatarPreview || '/default-avatar.png'}
+								src={avatarPreview || (profile.profile_picture ? profile.profile_picture : '/default-avatar.png')}
 								alt="Profile"
 								className={styles.avatar}
 							/>
@@ -92,23 +157,19 @@ const AccountProfilePage = () => {
 							<div className={styles.fieldRow}>
 								<label className={styles.label}>Username</label>
 								{editing ? (
-									<input name="username" value={profile.username} onChange={handleChange} className={styles.input} />
+									<input name="username" value={profile.username || ''} onChange={handleChange} className={styles.input} />
 								) : (
 									<span className={styles.value}>{profile.username}</span>
 								)}
 							</div>
 							<div className={styles.fieldRow}>
 								<label className={styles.label}>Email</label>
-								{editing ? (
-									<input name="email" value={profile.email} onChange={handleChange} className={styles.input} />
-								) : (
-									<span className={styles.value}>{profile.email}</span>
-								)}
+								<span className={styles.value}>{profile.email}</span>
 							</div>
 							<div className={styles.fieldRow}>
 								<label className={styles.label}>Bio</label>
 								{editing ? (
-									<textarea name="bio" value={profile.bio} onChange={handleChange} className={styles.input} rows={2} />
+									<textarea name="bio" value={profile.bio || ''} onChange={handleChange} className={styles.input} rows={2} />
 								) : (
 									<span className={styles.value}>{profile.bio}</span>
 								)}
@@ -116,30 +177,22 @@ const AccountProfilePage = () => {
 							<div className={styles.fieldRow}>
 								<label className={styles.label}>Country</label>
 								{editing ? (
-									<input name="country" value={profile.country} onChange={handleChange} className={styles.input} />
+									<input name="country" value={profile.country || ''} onChange={handleChange} className={styles.input} />
 								) : (
 									<span className={styles.value}>{profile.country}</span>
 								)}
 							</div>
 							<div className={styles.fieldRow}>
 								<label className={styles.label}>Gender</label>
-								{editing ? (
-									<select name="gender" value={profile.gender} onChange={handleChange} className={styles.input}>
-										<option value="Male">Male</option>
-										<option value="Female">Female</option>
-										<option value="Other">Other</option>
-									</select>
-								) : (
-									<span className={styles.value}>{profile.gender}</span>
-								)}
+								<span className={styles.value}>{profile.gender}</span>
 							</div>
 							<div className={styles.fieldRow}>
 								<label className={styles.label}>Created At</label>
-								<span className={styles.value}>{profile.createdAt}</span>
+								<span className={styles.value}>{formatDate(profile.created_at || profile.createdAt)}</span>
 							</div>
 							<div className={styles.fieldRow}>
 								<label className={styles.label}>Updated At</label>
-								<span className={styles.value}>{profile.updatedAt}</span>
+								<span className={styles.value}>{formatDate(profile.updated_at || profile.updatedAt)}</span>
 							</div>
 						</div>
 						<div className={styles.buttonRow}>
@@ -182,7 +235,20 @@ const AccountProfilePage = () => {
 									<h2 style={{ color: 'var(--mh-red-200)', marginBottom: 18, fontWeight: 700, fontSize: '1.45rem', letterSpacing: '0.5px' }}>Delete Account</h2>
 									<p style={{ marginBottom: 24, color: '#222', fontSize: '1.08rem' }}>Are you sure you want to delete your account? This action cannot be undone.</p>
 									<div style={{ display: 'flex', gap: 18, justifyContent: 'center', marginTop: 8 }}>
-										<Button text="Yes, delete my account" onClick={() => { setShowDeleteConfirm(false); alert('Account deleted (demo)'); }} className={styles.cancelBtn} style={{ minWidth: 180 }} />
+										<Button text="Yes, delete my account" onClick={async () => {
+											setShowDeleteConfirm(false);
+											const token = localStorage.getItem('token');
+											if (!token) return;
+											try {
+												await axios.delete('/api/user/delete', {
+													headers: { Authorization: `Bearer ${token}` }
+												});
+												localStorage.removeItem('token');
+												navigate('/login');
+											} catch (err) {
+												alert('Fehler beim Löschen des Accounts');
+											}
+										}} className={styles.cancelBtn} style={{ minWidth: 180 }} />
 										<Button text="Cancel" onClick={() => setShowDeleteConfirm(false)} className={styles.editBtn} style={{ minWidth: 120, color: '#fff' }} />
 									</div>
 								</Card>

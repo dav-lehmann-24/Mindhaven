@@ -4,7 +4,7 @@ const User = require('../models/user');
 exports.getProfile = (req, res) => {
   const userId = req.user.id;
   const query = `
-    SELECT id, username, email, bio, profile_picture, country, gender, updated_at
+    SELECT id, username, email, bio, profile_picture, country, gender, created_at, updated_at
     FROM users WHERE id = ?`;
   db.query(query, [userId], (err, result) => {
     if (err) return res.status(500).json({ message: 'Database error' });
@@ -16,14 +16,23 @@ exports.getProfile = (req, res) => {
 // Update profile
 exports.updateProfile = (req, res) => {
   const userId = req.user.id;
-  const { bio, profile_picture, country, gender } = req.body;
-  const query = `
-    UPDATE users 
-    SET bio=?, profile_picture=?, country=?, gender=? 
-    WHERE id=?`;
-  db.query(query, [bio, profile_picture, country, gender, userId], (err) => {
-    if (err) return res.status(500).json({ message: 'Error updating profile' });
-    res.status(200).json({ message: 'Profile updated successfully' });
+  const { username, bio, profile_picture, country, gender } = req.body;
+  // Check, if username already exists for another user
+  const checkQuery = 'SELECT id FROM users WHERE username = ? AND id <> ?';
+  db.query(checkQuery, [username, userId], (err, results) => {
+    if (err) return res.status(500).json({ message: 'Database error' });
+    if (results.length > 0) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+    // Username is available, proceed with update
+    const updateQuery = `
+      UPDATE users 
+      SET username=?, bio=?, profile_picture=?, country=?, gender=? 
+      WHERE id=?`;
+    db.query(updateQuery, [username, bio, profile_picture, country, gender, userId], (err2) => {
+      if (err2) return res.status(500).json({ message: 'Error updating profile' });
+      res.status(200).json({ message: 'Profile updated successfully' });
+    });
   });
 };
 

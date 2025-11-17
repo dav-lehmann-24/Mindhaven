@@ -9,10 +9,10 @@ const User = {
     );
   },
 
-  update: (id, bio, picture, country, gender, callback) => {
+  update: (id, username, bio, picture, country, gender, callback) => {
     db.query(
-      `UPDATE users SET bio=?, profile_picture=?, country=?, gender=? WHERE id=?`,
-      [bio, picture, country, gender, id],
+      `UPDATE users SET username=?, bio=?, profile_picture=?, country=?, gender=? WHERE id=?`,
+      [username, bio, picture, country, gender, id],
       callback
     );
   },
