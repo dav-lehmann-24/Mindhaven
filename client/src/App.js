@@ -11,6 +11,10 @@ import JournalCreatePage from './pages/JournalCreatePage';
 import JournalListPage from './pages/JournalListPage';
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
 
 
 function AppContent() {
@@ -31,6 +35,10 @@ function AppContent() {
           <Route path="/reset-password/:resetToken" element={<ResetPasswordPage />} />
           <Route path="/journal/create" element={<JournalCreatePage />} />
           <Route path="/journal/list" element={<JournalListPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
         </Routes>
       </div>
       {shouldShowHeaderFooter && <Footer />}
