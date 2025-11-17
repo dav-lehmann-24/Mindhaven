@@ -3,22 +3,28 @@ import React, { useState } from 'react';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import styles from './AuthPage.module.css';
+import axios from 'axios';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!email) {
       setError('Please enter your email address.');
       return;
     }
-    // Simulate sending email
-    setSubmitted(true);
     setError('');
-    // TODO: Call backend API to send reset link
+    try {
+      await axios.post('/api/auth/request-reset', { email });
+      setSubmitted(true);
+    } catch (err) {
+      setError(
+        err.response?.data?.message || 'Error while sending reset email.'
+      );
+    }
   };
 
   return (

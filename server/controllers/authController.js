@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
-const User = require('../models/auth');
+const Auth = require('../models/auth');
+const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const db = require('../config/database');
@@ -13,7 +14,7 @@ exports.registerUser = (req, res) => {
 // hashing
 const hashedPassword = bcrypt.hashSync(password, 10);
 
-  User.create(username, email, hashedPassword, bio, profile_picture, country, gender, (err, result) => {
+  Auth.create(username, email, hashedPassword, bio, profile_picture, country, gender, (err, result) => {
     if (err) {
       console.error('❌ Registration error:', err.sqlMessage || err);
 
@@ -40,8 +41,7 @@ exports.loginUser = (req, res) => {
   }
 
   // Look for user in DB
-  const User = require('../models/auth');
-  User.findByEmail(email, (err, results) => {
+  Auth.findByEmail(email, (err, results) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ message: 'Database error' });
@@ -102,7 +102,6 @@ exports.requestPasswordReset = (req, res) => {
       User.createToken(userId, token, expiresAt, (err2) => {
         if (err2) return res.status(500).json({ message: 'Database error' });
 
-        // TODO: send via email using nodemailer later
         sendResetEmail(email, token)
         .then(() => {
           res.status(200).json({ message: '📧 Password reset link sent to your email!' });

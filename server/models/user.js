@@ -1,6 +1,21 @@
 const db = require('../config/database');
 
 const User = {
+    // Password reset token management
+    createToken: (userId, token, expiresAt, callback) => {
+      const sql = 'INSERT INTO password_resets (user_id, token, expires_at, created_at) VALUES (?, ?, ?, NOW())';
+      db.query(sql, [userId, token, expiresAt], callback);
+    },
+
+    findByToken: (token, callback) => {
+      const sql = 'SELECT * FROM password_resets WHERE token = ?';
+      db.query(sql, [token], callback);
+    },
+
+    deleteByUserId: (userId, callback) => {
+      const sql = 'DELETE FROM password_resets WHERE user_id = ?';
+      db.query(sql, [userId], callback);
+    },
   findById: (id, callback) => {
     db.query(
       `SELECT id, username, email, bio, profile_picture, country, gender, updated_at FROM users WHERE id = ?`,

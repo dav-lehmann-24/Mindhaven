@@ -120,7 +120,7 @@ const AccountProfilePage = () => {
 			setTimeout(() => setShowSuccess(false), 2000);
 		} catch (err) {
 			if (err.response && err.response.data && err.response.data.message === 'Username already exists') {
-				setErrorMsg('Dieser Username ist bereits vergeben.');
+				setErrorMsg('This username is already taken.');
 			}
 		}
 	};
@@ -246,7 +246,7 @@ const AccountProfilePage = () => {
 												localStorage.removeItem('token');
 												navigate('/login');
 											} catch (err) {
-												alert('Fehler beim Löschen des Accounts');
+												alert('Error while deleting account');
 											}
 										}} className={styles.cancelBtn} style={{ minWidth: 180 }} />
 										<Button text="Cancel" onClick={() => setShowDeleteConfirm(false)} className={styles.editBtn} style={{ minWidth: 120, color: '#fff' }} />
