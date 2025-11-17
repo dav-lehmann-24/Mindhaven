@@ -84,7 +84,7 @@ const JournalCreatePage = () => {
     }
     try {
       const payload = { ...journal, tags: journal.tags.join(',') };
-      const res = await axios.post('/api/journal/create', payload, {
+      await axios.post('/api/journal/create', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert('Journal created!');
