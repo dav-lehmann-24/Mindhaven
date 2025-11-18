@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -16,7 +16,13 @@ const JournalListPage = () => {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
-        setJournals(res.data.journals || []);
+        // Mapping für Backend-Felder
+        const mappedJournals = (res.data.journals || []).map(journal => ({
+          ...journal,
+          createdAt: journal.created_at,
+          updatedAt: journal.updated_at || journal.created_at
+        }));
+        setJournals(mappedJournals);
       })
       .catch(() => {
         setJournals([]);
@@ -31,8 +37,22 @@ const JournalListPage = () => {
   const [editTags, setEditTags] = useState([]);
   const [editTagInput, setEditTagInput] = useState('');
 
-  const handleDetails = journal => {
-    setSelectedJournal(journal);
+  const handleDetails = async (journal) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const res = await axios.get(`/api/journal/${journal.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const journalData = res.data.journal;
+      setSelectedJournal({
+        ...journalData,
+        createdAt: journalData.created_at,
+        updatedAt: journalData.updated_at || journalData.created_at
+      });
+    } catch (err) {
+      setSelectedJournal(journal);
+    }
   };
   const handleCloseDetails = () => {
     setSelectedJournal(null);
@@ -65,16 +85,29 @@ const JournalListPage = () => {
     setEditTagInput('');
   };
   const handleSaveEdit = () => {
-    setJournals(journals.map(j =>
-      j.id === editJournal.id
-        ? { ...j, title: editTitle, content: editContent, tags: editTags, updatedAt: new Date().toISOString().slice(0,10) }
-        : j
-    ));
-    setEditJournal(null);
-    setEditTitle('');
-    setEditContent('');
-    setEditTags([]);
-    setEditTagInput('');
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    axios.put(`/api/journal/update/${editJournal.id}`,
+      {
+        title: editTitle,
+        content: editContent,
+        tags: editTags.join(',')
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    ).then(() => {
+      setJournals(journals.map(j =>
+        j.id === editJournal.id
+          ? { ...j, title: editTitle, content: editContent, tags: editTags, updatedAt: new Date().toISOString() }
+          : j
+      ));
+      setEditJournal(null);
+      setEditTitle('');
+      setEditContent('');
+      setEditTags([]);
+      setEditTagInput('');
+    });
   };
 
   // TipTap Editor for content
@@ -96,6 +129,20 @@ const JournalListPage = () => {
     setEditTags(prev => prev.filter(t => t !== tag));
   };
 
+  const formatDate = useCallback((dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('de-DE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }) + ', ' + date.toLocaleTimeString('de-DE', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }, []);
+
   return (
     <div className={styles.container}>
       <h1 className={styles.pageTitle}>Your Journals</h1>
@@ -107,7 +154,7 @@ const JournalListPage = () => {
             <Card key={journal.id} className={styles.journalCard}>
               <div className={styles.cardHeader}>
                 <h2 className={styles.title}>{journal.title}</h2>
-                <span className={styles.date}>{journal.createdAt}</span>
+                <span className={styles.date}>{formatDate(journal.createdAt)}</span>
               </div>
               <div className={styles.tagsRow}>
                 {journal.tags.map(tag => (
@@ -131,8 +178,8 @@ const JournalListPage = () => {
           <div className={styles.modalCard} role="dialog" aria-modal="true">
             <button className={styles.closeBtn} onClick={handleCloseDetails} aria-label="Close details">×</button>
             <h2 className={styles.modalTitle}>{selectedJournal.title}</h2>
-            <div className={styles.modalInfo}><b>Created at:</b> {selectedJournal.createdAt}</div>
-            <div className={styles.modalInfo}><b>Last updated at:</b> {selectedJournal.updatedAt || selectedJournal.createdAt}</div>
+            <div className={styles.modalInfo}><b>Created at:</b> {formatDate(selectedJournal.createdAt)}</div>
+            <div className={styles.modalInfo}><b>Last updated at:</b> {formatDate(selectedJournal.updatedAt || selectedJournal.createdAt)}</div>
             <div className={styles.modalInfo}><b>Tags:</b> {selectedJournal.tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}</div>
             <div className={styles.modalInfo}><b>Content:</b></div>
             <div className={styles.modalContent}>{parser(selectedJournal.content)}</div>

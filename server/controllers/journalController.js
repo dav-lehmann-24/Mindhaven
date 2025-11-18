@@ -75,7 +75,6 @@ exports.getJournalsByUserId = (req, res) => {
       console.error('Error fetching journals:', err);
       return res.status(500).json({ message: 'Database error' });
     }
-    // tags als Array zurückgeben
     const journals = result.map(journal => ({
       ...journal,
       tags: typeof journal.tags === 'string' ? journal.tags.split(',').map(t => t.trim()).filter(Boolean) : Array.isArray(journal.tags) ? journal.tags : []
@@ -83,3 +82,14 @@ exports.getJournalsByUserId = (req, res) => {
     res.status(200).json({ journals });
   });
 };
+
+  exports.getJournalById = (req, res) => {
+    const userId = req.user.id;
+    const journalId = req.params.id;
+    Journal.getJournalById(journalId, (err, journal) => {
+      if (err) return res.status(500).json({ message: 'Database error' });
+      if (!journal) return res.status(404).json({ message: 'Journal not found' });
+      if (journal.user_id !== userId) return res.status(403).json({ message: 'Unauthorized: not your journal' });
+      res.status(200).json({ journal });
+    });
+  };

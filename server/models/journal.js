@@ -38,6 +38,17 @@ const Journal = {
     );
   },
 
+  getJournalById: (journalId, callback) => {
+    const sql = `SELECT id, user_id, title, content, tags, created_at, updated_at FROM journals WHERE id = ?`;
+    db.query(sql, [journalId], (err, results) => {
+      if (err) return callback(err);
+      if (!results.length) return callback(null, null);
+      const journal = results[0];
+      journal.tags = typeof journal.tags === 'string' ? journal.tags.split(',').map(t => t.trim()).filter(Boolean) : Array.isArray(journal.tags) ? journal.tags : [];
+      callback(null, journal);
+    });
+  },
+
 };
 
 module.exports = Journal;
