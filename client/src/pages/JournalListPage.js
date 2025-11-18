@@ -35,7 +35,10 @@ const JournalListPage = () => {
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
   const [editTags, setEditTags] = useState([]);
-  const [editTagInput, setEditTagInput] = useState('');
+  // Mood/Tag-States für Edit-Modal
+  const [editMood, setEditMood] = useState('');
+  const [editAvailableTags, setEditAvailableTags] = useState([]);
+  const [editSelectedTag, setEditSelectedTag] = useState('');
 
   const handleDetails = async (journal) => {
     const token = localStorage.getItem('token');
@@ -82,13 +85,18 @@ const JournalListPage = () => {
     setEditTitle(journal.title);
     setEditContent(journal.content);
     setEditTags(journal.tags);
+    setEditMood('');
+    setEditAvailableTags([]);
+    setEditSelectedTag('');
   };
   const handleCancelEdit = () => {
     setEditJournal(null);
     setEditTitle('');
     setEditContent('');
     setEditTags([]);
-    setEditTagInput('');
+    setEditMood('');
+    setEditAvailableTags([]);
+    setEditSelectedTag('');
   };
   const handleSaveEdit = () => {
     const token = localStorage.getItem('token');
@@ -112,7 +120,9 @@ const JournalListPage = () => {
       setEditTitle('');
       setEditContent('');
       setEditTags([]);
-      setEditTagInput('');
+      setEditMood('');
+      setEditAvailableTags([]);
+      setEditSelectedTag('');
       setEditSuccess(true);
       setTimeout(() => setEditSuccess(false), 2000);
     });
@@ -135,14 +145,28 @@ const JournalListPage = () => {
   }, [editor, editContent]);
 
   const handleAddEditTag = () => {
-    if (editTagInput.trim() && !editTags.includes(editTagInput.trim())) {
-      setEditTags(prev => [...prev, editTagInput.trim()]);
-      setEditTagInput('');
+    if (editSelectedTag && !editTags.includes(editSelectedTag)) {
+      setEditTags(prev => [...prev, editSelectedTag]);
+      setEditSelectedTag('');
     }
   };
   const handleRemoveEditTag = tag => {
     setEditTags(prev => prev.filter(t => t !== tag));
   };
+
+  useEffect(() => {
+    if (!editMood) {
+      setEditAvailableTags([]);
+      setEditSelectedTag('');
+      return;
+    }
+    axios.get(`/api/tags?mood=${editMood}`)
+      .then(res => {
+        setEditAvailableTags(res.data.tags || []);
+        setEditSelectedTag('');
+      })
+      .catch(() => setEditAvailableTags([]));
+  }, [editMood]);
 
   const formatDate = useCallback((dateString) => {
     if (!dateString) return '';
@@ -248,16 +272,41 @@ const JournalListPage = () => {
               </div>
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Tags</label>
+              <label className={styles.label}>Mood</label>
+              <select
+                className={styles.input}
+                name="editMood"
+                value={editMood}
+                onChange={e => setEditMood(e.target.value)}
+              >
+                <option value="" disabled>Choose Mood...</option>
+                <option value="positive">Positive</option>
+                <option value="negative">Negative</option>
+                <option value="neutral">Neutral</option>
+              </select>
+            </div>
+            <div className={styles.field}>
+              <label className={styles.label}>Tag</label>
               <div className={styles.tagsRow}>
-                <input
-                  type="text"
-                  value={editTagInput}
-                  onChange={e => setEditTagInput(e.target.value)}
+                <select
                   className={styles.input}
-                  placeholder="Add tag..."
+                  name="editTag"
+                  value={editSelectedTag}
+                  onChange={e => setEditSelectedTag(e.target.value)}
+                  disabled={!editAvailableTags.length}
+                >
+                  <option value="" disabled>Choose Tag...</option>
+                  {editAvailableTags.map(tag => (
+                    <option key={tag} value={tag}>{tag}</option>
+                  ))}
+                </select>
+                <Button
+                  type="button"
+                  text="Add"
+                  className={styles.createBtn}
+                  onClick={handleAddEditTag}
+                  disabled={!editSelectedTag}
                 />
-                <Button type="button" text="Add" className={styles.addTagBtn} onClick={handleAddEditTag} />
               </div>
               <div className={styles.tagsList}>
                 {editTags.map(tag => (

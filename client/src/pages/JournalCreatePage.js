@@ -25,8 +25,10 @@ const initialJournal = {
 
 const JournalCreatePage = () => {
   const [journal, setJournal] = useState(initialJournal);
-  const [tagInput, setTagInput] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [mood, setMood] = useState('');
+  const [availableTags, setAvailableTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState('');
 
   const editor = useEditor({
     extensions: [
@@ -73,9 +75,9 @@ const JournalCreatePage = () => {
   };
 
   const handleAddTag = () => {
-    if (tagInput.trim() && !journal.tags.includes(tagInput.trim())) {
-      setJournal(prev => ({ ...prev, tags: [...prev.tags, tagInput.trim()] }));
-      setTagInput('');
+    if (selectedTag && !journal.tags.includes(selectedTag)) {
+      setJournal(prev => ({ ...prev, tags: [...prev.tags, selectedTag] }));
+      setSelectedTag('');
     }
   };
 
@@ -102,6 +104,20 @@ const JournalCreatePage = () => {
       alert('Error creating journal.');
     }
   };
+
+  useEffect(() => {
+    if (!mood) {
+      setAvailableTags([]);
+      setSelectedTag('');
+      return;
+    }
+    axios.get(`/api/tags?mood=${mood}`)
+      .then(res => {
+        setAvailableTags(res.data.tags || []);
+        setSelectedTag('');
+      })
+      .catch(() => setAvailableTags([]));
+  }, [mood]);
 
   return (
     <div className={styles.container}>
@@ -142,16 +158,41 @@ const JournalCreatePage = () => {
             </div>
           </div>
           <div className={styles.field}>
-            <label className={styles.label}>Tags</label>
+            <label className={styles.label}>Mood</label>
+            <select
+              className={styles.input}
+              name="mood"
+              value={mood}
+              onChange={e => setMood(e.target.value)}
+            >
+              <option value="" disabled>Choose Mood...</option>
+              <option value="positive">Positive</option>
+              <option value="negative">Negative</option>
+              <option value="neutral">Neutral</option>
+            </select>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Tag</label>
             <div className={styles.tagsRow}>
-              <input
-                type="text"
-                value={tagInput}
-                onChange={e => setTagInput(e.target.value)}
+              <select
                 className={styles.input}
-                placeholder="Add tag..."
+                name="tag"
+                value={selectedTag}
+                onChange={e => setSelectedTag(e.target.value)}
+                disabled={!availableTags.length}
+              >
+                <option value="" disabled>Choose Tag...</option>
+                {availableTags.map(tag => (
+                  <option key={tag} value={tag}>{tag}</option>
+                ))}
+              </select>
+              <Button
+                type="button"
+                text="Add"
+                className={styles.addTagBtn}
+                onClick={handleAddTag}
+                disabled={!selectedTag}
               />
-              <Button type="button" text="Add" className={styles.addTagBtn} onClick={handleAddTag} />
             </div>
             <div className={styles.tagsList}>
               {journal.tags.map(tag => (

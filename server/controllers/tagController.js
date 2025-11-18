@@ -1,5 +1,5 @@
 const db = require("../config/database");
-const { analyzeTrend } = require("../models/tag");
+const { POSITIVE_TAGS, NEGATIVE_TAGS, NEUTRAL_TAGS, analyzeTrend } = require("../models/tag");
 
 exports.getMoodTrend = (req, res) => {
   const userId = req.user.id;
@@ -24,4 +24,14 @@ exports.getMoodTrend = (req, res) => {
       message: trend.message
     });
   });
+};
+
+exports.getTagsByMood = (req, res) => {
+  const mood = req.query.mood;
+  let tags = [];
+  if (mood === "positive") tags = POSITIVE_TAGS;
+  else if (mood === "negative") tags = NEGATIVE_TAGS;
+  else if (mood === "neutral") tags = NEUTRAL_TAGS;
+  else return res.status(400).json({ message: "Invalid mood type" });
+  res.status(200).json({ tags });
 };
