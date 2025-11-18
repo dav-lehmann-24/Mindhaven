@@ -65,10 +65,16 @@ const JournalListPage = () => {
     setDeleteJournal(null);
   };
   const handleConfirmDelete = () => {
-    setJournals(journals.filter(j => j.id !== deleteJournal.id));
-    setDeleteJournal(null);
-    setDeleteSuccess(true);
-    setTimeout(() => setDeleteSuccess(false), 2000);
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    axios.delete(`/api/journal/delete/${deleteJournal.id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(() => {
+      setJournals(journals.filter(j => j.id !== deleteJournal.id));
+      setDeleteJournal(null);
+      setDeleteSuccess(true);
+      setTimeout(() => setDeleteSuccess(false), 2000);
+    });
   };
 
   const handleEditClick = journal => {
