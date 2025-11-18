@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from '../components/Card';
 import Button from '../components/Button';
@@ -48,6 +48,13 @@ const JournalCreatePage = () => {
       setJournal(prev => ({ ...prev, content: editor.getHTML() }));
     },
   });
+
+  // Clear editor content when journal is reset
+  useEffect(() => {
+    if (editor && journal.content === '' && editor.getHTML() !== '<p></p>') {
+      editor.commands.setContent('');
+    }
+  }, [editor, journal.content]);
 
   // Toolbar actions
   const setBold = () => editor && editor.chain().focus().toggleBold().run();
