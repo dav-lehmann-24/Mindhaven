@@ -93,7 +93,8 @@ const JournalListPage = () => {
     axios.delete(`/api/journal/delete/${deleteJournal.id}`, {
       headers: { Authorization: `Bearer ${token}` }
     }).then(() => {
-      setJournals(journals.filter(j => j.id !== deleteJournal.id));
+      setJournals(prev => prev.filter(j => j.id !== deleteJournal.id));
+      setFilteredJournals(prev => prev.filter(j => j.id !== deleteJournal.id));
       setDeleteJournal(null);
       setDeleteSuccess(true);
       setTimeout(() => setDeleteSuccess(false), 2000);
