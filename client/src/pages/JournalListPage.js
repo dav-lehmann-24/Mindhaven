@@ -5,10 +5,12 @@ import StarterKit from '@tiptap/starter-kit';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import styles from './JournalListPage.module.css';
+import FilterSearch from '../components/FilterSearch';
 import parser from 'html-react-parser';
 
 const JournalListPage = () => {
   const [journals, setJournals] = useState([]);
+  const [filteredJournals, setFilteredJournals] = useState([]);
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -22,11 +24,30 @@ const JournalListPage = () => {
           updatedAt: journal.updated_at || journal.created_at
         }));
         setJournals(mappedJournals);
+        setFilteredJournals(mappedJournals);
       })
       .catch(() => {
         setJournals([]);
+        setFilteredJournals([]);
       });
   }, []);
+
+    const handleFilterApply = ({ search, filterBy, sortBy }) => {
+      let result = [...journals];
+      if (search.trim()) {
+        if (filterBy === 'title') {
+          result = result.filter(j => j.title.toLowerCase().includes(search.trim().toLowerCase()));
+        } else if (filterBy === 'tag') {
+          result = result.filter(j => Array.isArray(j.tags) && j.tags.some(tag => tag.toLowerCase().includes(search.trim().toLowerCase())));
+        }
+      }
+      if (sortBy === 'newest') {
+        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else {
+        result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      }
+      setFilteredJournals(result);
+    };
   const [selectedJournal, setSelectedJournal] = useState(null);
   const [deleteJournal, setDeleteJournal] = useState(null);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
@@ -35,7 +56,6 @@ const JournalListPage = () => {
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
   const [editTags, setEditTags] = useState([]);
-  // Mood/Tag-States für Edit-Modal
   const [editMood, setEditMood] = useState('');
   const [editAvailableTags, setEditAvailableTags] = useState([]);
   const [editSelectedTag, setEditSelectedTag] = useState('');
@@ -185,11 +205,12 @@ const JournalListPage = () => {
   return (
     <div className={styles.container}>
       <h1 className={styles.pageTitle}>Your Journals</h1>
+      <FilterSearch onApply={handleFilterApply} />
       <div className={styles.listWrapper}>
-        {journals.length === 0 ? (
+        {filteredJournals.length === 0 ? (
           <div className={styles.empty}>No journals found.</div>
         ) : (
-          journals.map(journal => (
+          filteredJournals.map(journal => (
             <Card key={journal.id} className={styles.journalCard}>
               <div className={styles.cardHeader}>
                 <h2 className={styles.title}>{journal.title}</h2>
