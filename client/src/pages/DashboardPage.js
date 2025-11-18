@@ -41,6 +41,14 @@ const DashboardPage = () => {
 
   return (
     <>
+      <h1 style={{
+        textAlign: 'center',
+        fontWeight: 700,
+        fontSize: '2rem',
+        margin: '32px 0 0 0',
+        letterSpacing: '0.5px',
+        color: '#6366f1'
+      }}>Your Dashboard</h1>
       <main style={{ padding: '24px' }}>
         <Card style={{ border: 'none', maxWidth: 1200, margin: '24px auto', padding: 32, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 48 }}>
           <div className={styles.calendarBox}>
