@@ -204,6 +204,22 @@
   background: #27ae60;
 }
 
+.successToast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: #fff;
+  font-weight: 600;
+  padding: 16px 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(34,197,94,0.12);
+  font-size: 1.12rem;
+  z-index: 9999;
+  animation: fadeIn 0.4s;
+}
+
 @media (max-width: 900px) {
   .card {
     padding: 12px;

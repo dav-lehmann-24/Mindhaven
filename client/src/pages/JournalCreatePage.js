@@ -26,6 +26,7 @@ const initialJournal = {
 const JournalCreatePage = () => {
   const [journal, setJournal] = useState(initialJournal);
   const [tagInput, setTagInput] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -87,8 +88,9 @@ const JournalCreatePage = () => {
       await axios.post('/api/journal/create', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Journal created!');
+      setShowSuccess(true);
       setJournal(initialJournal);
+      setTimeout(() => setShowSuccess(false), 2500);
     } catch (err) {
       alert('Error creating journal.');
     }
@@ -96,6 +98,9 @@ const JournalCreatePage = () => {
 
   return (
     <div className={styles.container}>
+      {showSuccess && (
+        <div className={styles.successToast}>Journal created!</div>
+      )}
       <h1 className={styles.pageTitle}>Create Journal</h1>
       <Card className={styles.card} style={{ border: 'none', maxWidth: 600, margin: '0 auto', padding: 32 }}>
         <form onSubmit={handleSubmit} className={styles.form}>

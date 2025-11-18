@@ -16,7 +16,6 @@ const JournalListPage = () => {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
-        // Mapping für Backend-Felder
         const mappedJournals = (res.data.journals || []).map(journal => ({
           ...journal,
           createdAt: journal.created_at,
@@ -31,6 +30,7 @@ const JournalListPage = () => {
   const [selectedJournal, setSelectedJournal] = useState(null);
   const [deleteJournal, setDeleteJournal] = useState(null);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [editSuccess, setEditSuccess] = useState(false);
   const [editJournal, setEditJournal] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
@@ -97,7 +97,7 @@ const JournalListPage = () => {
       {
         title: editTitle,
         content: editContent,
-        tags: editTags.join(',')
+        tags: Array.isArray(editTags) ? editTags.join(',') : ''
       },
       {
         headers: { Authorization: `Bearer ${token}` }
@@ -113,6 +113,8 @@ const JournalListPage = () => {
       setEditContent('');
       setEditTags([]);
       setEditTagInput('');
+      setEditSuccess(true);
+      setTimeout(() => setEditSuccess(false), 2000);
     });
   };
 
@@ -124,6 +126,13 @@ const JournalListPage = () => {
       setEditContent(editor.getHTML());
     },
   });
+
+  // Update editor content when editContent changes
+  useEffect(() => {
+    if (editor && editContent !== editor.getHTML()) {
+      editor.commands.setContent(editContent);
+    }
+  }, [editor, editContent]);
 
   const handleAddEditTag = () => {
     if (editTagInput.trim() && !editTags.includes(editTagInput.trim())) {
@@ -268,6 +277,9 @@ const JournalListPage = () => {
       )}
       {deleteSuccess && (
         <div className={styles.successToast}>Journal deleted successfully!</div>
+      )}
+      {editSuccess && (
+        <div className={styles.successToast} style={{background:'#22c55e'}}>Journal updated successfully!</div>
       )}
     </div>
   );
