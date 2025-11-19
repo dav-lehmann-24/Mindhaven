@@ -12,7 +12,7 @@ This use case describes how a user filters their journal entries based on either
 ![Filter Journals Activity Diagram](Pictures/Search1.png)
 
 ### 2.2 Mock-up
-diagram link
+![Filter Journals Wireframe](Pictures/Mindhaven_View_Journals_Wireframe.png)
 
 ### 2.3 Alternate Flow:
 - **AF-1: Empty Search Input**  
