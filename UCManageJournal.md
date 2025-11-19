@@ -45,8 +45,8 @@ The user can delete journals. We added a button in the edit page to delete an en
 ![Delete journal Diagram](Pictures/DeleteJour.drawio.png)
 ![Delete Journal Wireframe](Pictures/Mindhaven_View_Journals_Wireframe.png)
 
-### 2.6 View Blogjournal
-This is a blogjournal view:<br>
+### 2.6 View journal
+This is a Journal view:<br>
 ![Details_Journals_Wireframe](Pictures/Mindhaven_View_Journals_Details_Wireframe.png)<br>
 
 ---
