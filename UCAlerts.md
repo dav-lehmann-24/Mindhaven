@@ -12,6 +12,7 @@ This use case automatically analyzes the tags attached to a journal entry. If ne
 ![Alerts Activity Diagram](Pictures/alerting.png)
 
 ### 2.2 Mock-up
+![Alerts Wireframe](Pictures/Mindhaven_Dashboard_Wireframe_Updated.png)
 - Alert popup displayed after journal submission  
 - Text: "We noticed some difficult emotions in your entry. Would you like some support?"  
 - Buttons: **Okay**, **Tips**, **Close**
