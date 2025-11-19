@@ -33,7 +33,10 @@ Login Page with Forgot Password Option:<br>
 ![Login Page Mockup](Pictures/Mindhaven_Login_Wireframe.png)<br>
 
 Forgot Password Form:<br>
-![Forgot Password Form Mockup](Pictures/forgotpw.png)<br>
+![Forgot Password Wireframe](Pictures/Mindhaven_Forgot_Password_Wireframe.png)<br>
+
+Reset Password Form: <br>
+![Reset_Password_Wireframe](Pictures/Mindhaven_Reset_Password_Wireframe.png)<br>
 
 
 ---
