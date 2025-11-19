@@ -303,4 +303,4 @@ The development will follow the common clean code standards and naming conventio
 For any further information you can contact the Mindhaven Team or check our [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven). 
 The Team Members are:
 - David Lehmann
-- Hafsa 
+- Hafsa Jabeen
