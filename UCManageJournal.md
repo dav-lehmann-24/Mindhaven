@@ -47,7 +47,7 @@ The user can delete journals. We added a button in the edit page to delete an en
 
 ### 2.6 View Blogjournal
 This is a blogjournal view:<br>
-![picture](./docs/Screenshots/Blogjournal.png)<br>
+![Details_Journals_Wireframe](Pictures/Mindhaven_View_Journals_Details_Wireframe.png)<br>
 
 ---
 
