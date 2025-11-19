@@ -21,7 +21,7 @@ The creation of a new journal. The user will be asked to enter a title and the c
 
 This is what our blog looks like in our application:
 <br>
-![picture](./docs/Screenshots/CreateBlogjournal.png)<br>
+![Create_Journal_Wireframe](Pictures/Mindhaven_Create_Journal_Wireframe.png)<br>
 
 
 
@@ -29,21 +29,21 @@ This is what our blog looks like in our application:
 During editing, the user can modify the title and the content of the journal.
 
 ![Edit journal Diagram](Pictures/EditJour.drawio.png)
-![Edit journal Mockup](Assets/Edit.png)
+![Edit Journal_Wireframe](Pictures/Mindhaven_View_Journals_Edit_Wireframe.png)
 
 
 ### 2.4 List  
 The user wants to be able to view all of their journals. Therefore, the system presents a list with all entries.
 
 ![List journal Diagram](Pictures/ListJ.drawio.png)
-![List Mockup](Assets/List.png)
+![List Journal_Wireframe](Pictures/Mindhaven_View_Journals_Wireframe.png)
 
 
 ### 2.5 Delete  
 The user can delete journals. We added a button in the edit page to delete an entry. To ensure the user does not accidentally delete a journal, we added a modal asking for confirmation.
 
 ![Delete journal Diagram](Pictures/DeleteJour.drawio.png)
-![Delete journal Mockup](Assets/Delete.png)
+![Delete Journal Wireframe](Pictures/Mindhaven_View_Journals_Wireframe.png)
 
 ### 2.6 View Blogjournal
 This is a blogjournal view:<br>
