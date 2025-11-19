@@ -306,7 +306,7 @@ Our Deployment setup includes a client and a server.
 ## 9. Data View
 Our database structure in a schema:
 
-![DatabaseSchema]() <br>
+![DatabaseSchema](Pictures/Mindhaven_Database_Schema.png) <br>
 
 
 ## 10. Size and Performance
