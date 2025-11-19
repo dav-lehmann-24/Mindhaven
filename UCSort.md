@@ -13,7 +13,7 @@ The user selects whether journals should be shown from **newest to oldest** or *
 ![Sort Journals Activity Diagram](Pictures/Sort1.png)
 
 ### 2.2 Mock-up
-diagram link
+![Sort Journals Wireframe](Pictures/Mindhaven_View_Journals_Wireframe.png)
 
 ### 2.3 Alternate Flow:
 
