@@ -14,7 +14,7 @@ This use case allows a user to attach descriptive tags to a journal entry. Tags 
 ### 2.2 Mock-up
 ![Add_Tags_Wireframe](Pictures/Mindhaven_Create_Journal_Wireframe.png)
 - Journal page with a field/dropdown for selecting or typing tags  
-- “Save Tags” button  
+- “Add” button  
 - Tag chips displayed below the journal entry
 
 ### 2.3 Alternate Flow:
