@@ -1,5 +1,5 @@
 @startuml MindHaven
-title MindHaven Full System Architecture
+title MindHaven Full System Architecture (Updated Features)
 
 skinparam packageStyle rectangle
 skinparam class {
@@ -8,8 +8,14 @@ skinparam class {
   ArrowColor Black
 }
 
-' ===================== FRONTEND (React) =====================
-package "Frontend (React)" {
+' Force vertical stacking
+left to right direction
+skinparam package {
+  BorderColor black
+}
+
+' Frontend = widest
+package "Frontend (React)" as FE {
   class LoginPage
   class RegisterPage
   class AccountProfilePage
@@ -20,23 +26,28 @@ package "Frontend (React)" {
   class JournalListPage
   class JournalStatsPage
   class JournalCalendarPage
+  class BuddyPage
+  class BuddyProfilePage
+  class SOSPage
+  class AIChatPage
 }
 
-' ===================== BACKEND (Node/Express) =====================
-package "Backend (Node/Express)" {
+' Backend = medium width
+package "Backend (Node/Express)" as BE {
+  
+  ' AUTH
   class AuthController {
     +registerUser(req, res)
     +loginUser(req, res)
     +resetPassword(req, res)
   }
 
-  class JournalController {
-    +createJournal(req, res)
-    +updateJournal(req, res)
-    +deleteJournal(req, res)
-    +listJournals(req, res)
+  class JWTService {
+    +generateToken(user)
+    +verifyToken(token)
   }
 
+  ' USER
   class User {
     -id : int
     -username : string
@@ -48,6 +59,23 @@ package "Backend (Node/Express)" {
     -gender : string
   }
 
+  class UserController {
+    +getProfile(req, res)
+    +updateProfile(req, res)
+    +uploadProfilePicture(req, res)
+    +deleteAccount(req, res)
+  }
+
+  ' JOURNAL
+  class JournalController {
+    +createJournal(req, res)
+    +updateJournal(req, res)
+    +deleteJournal(req, res)
+    +listJournals(req, res)
+    +filterByTag(req, res)
+    +sortByDate(req, res)
+  }
+
   class Journal {
     -id : int
     -user_id : int
@@ -57,6 +85,19 @@ package "Backend (Node/Express)" {
     -created_at : date
   }
 
+  class Tag {
+    -id : int
+    -name : string
+  }
+
+  ' BUDDY
+  class BuddyController {
+    +connectBuddy(req, res)
+    +removeBuddy(req, res)
+    +updateStreak(req, res)
+    +listBuddies(req, res)
+  }
+
   class Buddy {
     -id : int
     -user_id : int
@@ -64,17 +105,20 @@ package "Backend (Node/Express)" {
     -streak : int
   }
 
+  ' AI
   class AIController {
     +chatWithAI(req, res)
     +getSuggestions(req, res)
   }
 
+  ' SOS
   class SOSController {
     +getEmergencyList(req, res)
     +getHotlines(req, res)
     +getYouTubeResources(req, res)
   }
 
+  ' DATABASE WRAPPER
   class Database {
     +connect()
     +query(sql, params)
@@ -82,8 +126,9 @@ package "Backend (Node/Express)" {
   }
 }
 
-' ===================== DATABASE (MySQL) =====================
-package "Database (MySQL)" {
+' Database = smallest width, placed at bottom
+package "Database (MySQL)" as DB {
+  
   class users {
     id : int
     username : string
@@ -110,27 +155,57 @@ package "Database (MySQL)" {
     buddy_id : int
     streak : int
   }
+
+  class tags {
+    id : int
+    name : string
+  }
 }
 
+' Position them vertically with decreasing size
+FE -down-> BE
+BE -down-> DB
+
+
 ' ===================== CONNECTIONS =====================
-' Frontend ↔ Backend
+
+' FRONTEND → BACKEND
 LoginPage -[#blue]-> AuthController : POST /api/auth/login
 RegisterPage -[#blue]-> AuthController : POST /api/auth/register
-AccountProfilePage -[#blue]-> AuthController : GET /api/auth/profile
-JournalListPage -[#blue]-> JournalController : GET /api/journals
-JournalDetailPage -[#blue]-> JournalController : GET /api/journals/:id
-JournalCreatePage -[#blue]-> JournalController : POST /api/journals
-JournalEditPage -[#blue]-> JournalController : PUT /api/journals/:id
-JournalStatsPage -[#blue]-> JournalController : GET /api/journals/stats
-JournalCalendarPage -[#blue]-> JournalController : GET /api/journals/calendar
+AccountProfilePage -[#blue]-> UserController : GET /api/user/profile
+AccountProfilePage -[#blue]-> UserController : PUT /api/user/profile
+AccountProfilePage -[#blue]-> UserController : POST /api/user/profile/upload
 
-' Backend ↔ Database
+JournalCreatePage -[#blue]-> JournalController : POST /api/journal/create
+JournalListPage -[#blue]-> JournalController : GET /api/journal/list
+JournalDetailPage -[#blue]-> JournalController : GET /api/journal/:id
+JournalEditPage -[#blue]-> JournalController : PUT /api/journal/update/:id
+JournalListPage -[#blue]-> JournalController : GET /api/journal/filter?tag=
+JournalListPage -[#blue]-> JournalController : GET /api/journal/sort?by=date
+
+BuddyPage -[#blue]-> BuddyController : GET /api/buddy/list
+BuddyProfilePage -[#blue]-> BuddyController : POST /api/buddy/connect
+BuddyProfilePage -[#blue]-> BuddyController : DELETE /api/buddy/remove
+
+SOSPage -[#blue]-> SOSController : GET /api/sos/list
+SOSPage -[#blue]-> SOSController : GET /api/sos/hotlines
+
+AIChatPage -[#blue]-> AIController : POST /api/ai/chat
+
+' BACKEND → DATABASE
 AuthController --> User
+AuthController --> JWTService
+UserController --> User
 JournalController --> Journal
+JournalController --> Tag
+BuddyController --> Buddy
+
 AIController --> Database
 SOSController --> Database
+
 User --> users
 Journal --> journals
 Buddy --> buddies
+Tag --> tags
 
 @enduml

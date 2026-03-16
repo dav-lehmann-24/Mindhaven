@@ -1,0 +1,134 @@
+@startuml Mindhaven
+
+skinparam style strictuml
+skinparam class {
+    BackgroundColor white
+    BorderColor #7D7D7D
+    ArrowColor #7D7D7D
+    FontColor black
+}
+skinparam stereotypeCBackgroundColor #D5E8D4
+skinparam stereotypeCBorderColor #82B366
+
+
+'
+' =========================
+' AUTH PAGES
+' =========================
+class LoginPage <<C>> {
+  + handleLogin()
+  + validateInputs()
+}
+
+class RegisterPage <<C>> {
+  + handleRegister()
+  + validateInputs()
+}
+
+class AuthLayoutPage <<C>> {}
+
+
+'
+' =========================
+' USER PROFILE PAGES
+' =========================
+class AccountLayoutPage <<C>> {}
+class AccountProfilePage <<C>> {
+  + handleBioUpdate()
+  + handleImageUpload()
+  + fetchUserProfile()
+}
+
+class AccountSettingsPage <<C>> {
+  + updateEmail()
+  + updatePassword()
+  + deleteAccount()
+}
+
+
+'
+' =========================
+' JOURNAL PAGES
+' =========================
+class JournalListPage <<C>> {
+  + fetchJournals()
+  + filterByTag()
+  + sortByDate()
+}
+
+class JournalCreatePage <<C>> {
+  + saveJournal()
+  + handleTags()
+}
+
+class JournalEditPage <<C>> {
+  + loadJournal()
+  + updateJournal()
+}
+
+class JournalDetailPage <<C>> {
+  + viewJournal()
+}
+
+class JournalStatsPage <<C>> {
+  + showCalendar()
+  + showMonthlyStats()
+}
+
+class JournalCalendarPage <<C>> {
+  + displayCalendar()
+}
+
+
+'
+' =========================
+' AI & SOS
+' =========================
+class AIChatPage <<C>> {
+  + sendMessage()
+  + fetchSuggestions()
+}
+
+class SOSPage <<C>> {
+  + getEmergencyList()
+  + getHotlines()
+  + openYouTubeResources()
+}
+
+'
+' =========================
+' BUDDY CIRCLE
+' =========================
+class BuddyCirclePage <<C>> {
+  + connectBuddy()
+  + removeBuddy()
+  + viewBuddies()
+}
+
+'
+' =========================
+' COMPONENTS
+' =========================
+class JournalCard <<C>> {}
+class TagSelector <<C>> {}
+class ChatBubble <<C>> {}
+class BuddyCard <<C>> {}
+
+
+'
+' ============= RELATIONSHIPS (Frontend Navigation) =============
+LoginPage --> AccountLayoutPage : redirects after success
+RegisterPage --> LoginPage
+AccountLayoutPage --> AccountProfilePage
+AccountLayoutPage --> AccountSettingsPage
+AccountProfilePage --> JournalListPage
+JournalListPage --> JournalDetailPage
+JournalListPage --> JournalCreatePage
+JournalDetailPage --> JournalEditPage
+
+JournalListPage --> TagSelector
+JournalListPage --> JournalCard
+AIChatPage --> ChatBubble
+BuddyCirclePage --> BuddyCard
+
+@enduml

@@ -1,0 +1,147 @@
+@startuml Mindhaven
+skinparam style strictuml
+skinparam class {
+    BackgroundColor white
+    BorderColor #7D7D7D
+    ArrowColor #7D7D7D
+    FontColor black
+}
+skinparam stereotypeCBackgroundColor #D5E8D4
+skinparam stereotypeCBorderColor #82B366
+
+'
+' =======================
+' AUTH CONTROLLER
+' =======================
+class AuthController <<C>> {
+  + registerUser(req, res)
+  + loginUser(req, res)
+  + resetPassword(req, res)
+  + deleteAccount(req, res)
+}
+
+'
+' =======================
+' USER CONTROLLER
+' =======================
+class UserController <<C>> {
+  + getProfile(req, res)
+  + updateProfile(req, res)
+  + uploadProfilePicture(req, res)
+}
+
+'
+' =======================
+' JOURNAL CONTROLLER
+' =======================
+class JournalController <<C>> {
+  + createJournal(req, res)
+  + updateJournal(req, res)
+  + deleteJournal(req, res)
+  + listJournals(req, res)
+  + filterByTag(req, res)
+  + sortByDate(req, res)
+}
+
+'
+' =======================
+' SOS CONTROLLER
+' =======================
+class SOSController <<C>> {
+  + getEmergencyList()
+  + getHotlines()
+  + getYouTubeResources()
+}
+
+'
+' =======================
+' AI CONTROLLER
+' =======================
+class AIController <<C>> {
+  + chatWithAI(req, res)
+  + getSuggestions(req, res)
+}
+
+'
+' =======================
+' BUDDY CONTROLLER
+' =======================
+class BuddyController <<C>> {
+  + connectBuddy(req, res)
+  + removeBuddy(req, res)
+  + updateStreak(req, res)
+  + listBuddies(req, res)
+}
+
+'
+' =======================
+' USER MODEL
+' =======================
+class User <<C>> {
+  - id : int
+  - username : string
+  - email : string
+  - password : string
+  - bio : string
+  - profile_picture : string
+  - country : string
+  - gender : string
+
+  + register()
+  + login()
+  + updateProfile()
+  + deleteAccount()
+}
+
+'
+' =======================
+' JOURNAL MODEL
+' =======================
+class Journal <<C>> {
+  - id : int
+  - user_id : int
+  - title : string
+  - content : text
+  - tags : string[]
+  - is_private : boolean
+  - created_at : date
+  - updated_at : date
+
+  + createJournal()
+  + editJournal()
+  + deleteJournal()
+  + filterByTag()
+  + sortByDate()
+}
+
+'
+' =======================
+' TAG MODEL
+' =======================
+class Tag <<C>> {
+  - id : int
+  - name : string
+}
+
+'
+' =======================
+' BUDDY MODEL
+' =======================
+class Buddy <<C>> {
+  - id : int
+  - user_id : int
+  - buddy_id : int
+  - streak : int
+
+  + connectBuddy()
+  + removeBuddy()
+  + updateStreak()
+}
+
+'
+' ========= RELATIONSHIPS =========
+User "1" --> "*" Journal
+Journal "*" --> "*" Tag
+User "1" --> "*" Buddy
+
+@enduml
