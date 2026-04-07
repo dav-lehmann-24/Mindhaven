@@ -31,3 +31,6 @@ npm start
    ```
    You can also provide the certificate content directly via `DB_SSL_CA_BASE64` if you cannot store files locally.
 3. Start the API from the `server` directory (`node index.js`). The server will now establish an SSL connection to the remote Aiven database while still running locally.
+## Running tests
+npm test
+npm run test:coverage      
