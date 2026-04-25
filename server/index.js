@@ -5,6 +5,7 @@ const userRoutes = require('./routes/userRoutes');
 const testRoutes = require('./routes/testRoutes');
 const journalRoutes = require('./routes/journalRoutes');
 const tagRoutes = require('./routes/tagRoutes');
+const buddyRoutes = require('./routes/buddyRoutes');
 // const errorMiddleware = require('./middleware/errorMiddleware');
 
 require('dotenv').config();
@@ -26,6 +27,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/test', testRoutes);
 app.use('/api/journal', journalRoutes);
 app.use('/api/tags', tagRoutes);
+app.use('/api/buddies', buddyRoutes);
 
 // error middleware
 // app.use(errorMiddleware);

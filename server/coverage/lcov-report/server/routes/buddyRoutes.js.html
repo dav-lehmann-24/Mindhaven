@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for server/routes/authRoutes.js</title>
+    <title>Code coverage report for server/routes/buddyRoutes.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">server/routes</a> authRoutes.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">server/routes</a> buddyRoutes.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.3% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/13</span>
+                <span class='fraction'>16/16</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.3% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/13</span>
+                <span class='fraction'>16/16</span>
             </div>
         
             
@@ -81,45 +81,42 @@
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
-<a name='L19'></a><a href='#L19'>19</a>
-<a name='L20'></a><a href='#L20'>20</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const exp = require('express');
-const router = exp.Router();
-const authController = require('../controllers/authController');
-const upload = require('../middleware/uploadMiddleware');
-&nbsp;
-router.post('/register', authController.registerUser);
-router.post('/login', authController.loginUser);
-&nbsp;
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const express = require('express');
+const router = express.Router();
 const { verifyToken } = require('../middleware/authMiddleware');
+const buddyController = require('../controllers/buddyController');
 &nbsp;
-router.post('/request-reset', authController.requestPasswordReset);
-router.post('/reset-password', authController.resetPassword);
-router.put('/update-profile', verifyToken, upload.single('profile_picture'), authController.updateProfile);
-router.get('/profile', verifyToken, <span class="fstat-no" title="function not covered" >(r</span>eq, res) =&gt; {
-<span class="cstat-no" title="statement not covered" >  res.json({ message: `Welcome back, user ${req.user.email}!`, user: req.user });</span>
-});
+router.post('/', verifyToken, buddyController.connectBuddy);
+router.get('/', verifyToken, buddyController.listBuddies);
+router.get('/pending', verifyToken, buddyController.listPendingRequests);
+router.get('/:id/tasks', verifyToken, buddyController.getBuddyTasks);
+router.post('/:id/tasks', verifyToken, buddyController.addBuddyTask);
+router.patch('/:id/tasks/:taskId', verifyToken, buddyController.toggleBuddyTask);
+router.put('/streak', verifyToken, buddyController.updateStreak);
+router.put('/:id/accept', verifyToken, buddyController.acceptBuddyRequest);
+router.delete('/:id/reject', verifyToken, buddyController.rejectBuddyRequest);
+router.get('/:id', verifyToken, buddyController.getBuddyProfile);
+router.delete('/:id', verifyToken, buddyController.removeBuddy);
 &nbsp;
 module.exports = router;
-&nbsp;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
