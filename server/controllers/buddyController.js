@@ -1,6 +1,9 @@
 const Buddy = require('../models/buddy');
+const buddyChecklistNotifier = require('../observers/buddyChecklistNotifier');
 
 const isAccepted = (record) => record && record.status === 'accepted';
+const hasAcceptedConnection = (outgoingConnection, incomingConnection) =>
+  isAccepted(outgoingConnection) || isAccepted(incomingConnection);
 const normalizePair = (userId, buddyId) => [Math.min(userId, buddyId), Math.max(userId, buddyId)];
 
 const getAcceptedConnection = (userId, buddyId, callback) => {
@@ -13,45 +16,6 @@ const getAcceptedConnection = (userId, buddyId, callback) => {
       const outgoingConnection = outgoingConnections[0];
       const incomingConnection = incomingConnections[0];
       return callback(null, outgoingConnection, incomingConnection);
-    });
-  });
-};
-
-const awardChecklistStreakIfReady = (userId, buddyId, callback) => {
-  const [firstUserId, secondUserId] = normalizePair(userId, buddyId);
-
-  Buddy.countChecklistTasks(firstUserId, secondUserId, (taskErr, taskRows) => {
-    if (taskErr) return callback(taskErr);
-
-    const totalTasks = taskRows[0] ? Number(taskRows[0].total) : 0;
-    if (totalTasks === 0) {
-      return callback(null, { streakAwarded: false, reason: 'no_tasks' });
-    }
-
-    Buddy.countTasksCompletedByBothToday(firstUserId, secondUserId, (completedErr, completedRows) => {
-      if (completedErr) return callback(completedErr);
-
-      const completedByBoth = completedRows[0] ? Number(completedRows[0].total) : 0;
-      if (completedByBoth !== totalTasks) {
-        return callback(null, { streakAwarded: false, reason: 'incomplete' });
-      }
-
-      Buddy.wasStreakAwardedToday(userId, buddyId, (awardedErr, awardedRows) => {
-        if (awardedErr) return callback(awardedErr);
-        if (awardedRows.length > 0) {
-          return callback(null, { streakAwarded: false, reason: 'already_awarded' });
-        }
-
-        Buddy.incrementStreakForPair(userId, buddyId, (incrementErr) => {
-          if (incrementErr) return callback(incrementErr);
-
-          Buddy.incrementStreakForPair(buddyId, userId, (mirrorErr) => {
-            if (mirrorErr) return callback(mirrorErr);
-
-            return callback(null, { streakAwarded: true, reason: 'completed' });
-          });
-        });
-      });
     });
   });
 };
@@ -205,7 +169,7 @@ exports.getBuddyTasks = (req, res) => {
 
   getAcceptedConnection(userId, buddyId, (connectionErr, outgoingConnection, incomingConnection) => {
     if (connectionErr) return res.status(500).json({ message: 'Database error' });
-    if (!isAccepted(outgoingConnection) || !isAccepted(incomingConnection)) {
+    if (!hasAcceptedConnection(outgoingConnection, incomingConnection)) {
       return res.status(400).json({ message: 'Checklist tasks require an accepted buddy connection' });
     }
 
@@ -232,7 +196,7 @@ exports.addBuddyTask = (req, res) => {
 
   getAcceptedConnection(userId, buddyId, (connectionErr, outgoingConnection, incomingConnection) => {
     if (connectionErr) return res.status(500).json({ message: 'Database error' });
-    if (!isAccepted(outgoingConnection) || !isAccepted(incomingConnection)) {
+    if (!hasAcceptedConnection(outgoingConnection, incomingConnection)) {
       return res.status(400).json({ message: 'Checklist tasks require an accepted buddy connection' });
     }
 
@@ -266,7 +230,7 @@ exports.toggleBuddyTask = (req, res) => {
 
   getAcceptedConnection(userId, buddyId, (connectionErr, outgoingConnection, incomingConnection) => {
     if (connectionErr) return res.status(500).json({ message: 'Database error' });
-    if (!isAccepted(outgoingConnection) || !isAccepted(incomingConnection)) {
+    if (!hasAcceptedConnection(outgoingConnection, incomingConnection)) {
       return res.status(400).json({ message: 'Checklist tasks require an accepted buddy connection' });
     }
 
@@ -293,13 +257,14 @@ exports.toggleBuddyTask = (req, res) => {
           });
         };
 
-        if (!completed) {
-          return finalizeResponse(false);
-        }
-
-        return awardChecklistStreakIfReady(userId, buddyId, (awardErr, awardResult) => {
-          if (awardErr) return res.status(500).json({ message: 'Could not update streak from checklist' });
-          return finalizeResponse(Boolean(awardResult.streakAwarded));
+        return buddyChecklistNotifier.notifyTaskToggled({
+          userId,
+          buddyId,
+          taskId,
+          completed,
+        }, (notifyErr, checklistEvent) => {
+          if (notifyErr) return res.status(500).json({ message: 'Could not update streak from checklist' });
+          return finalizeResponse(Boolean(checklistEvent.streakAwarded));
         });
       });
     });

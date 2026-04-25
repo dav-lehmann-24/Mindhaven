@@ -11,16 +11,17 @@ jest.mock('../../models/buddy', () => ({
   findChecklistTask: jest.fn(),
   markTaskCompleteForToday: jest.fn(),
   unmarkTaskCompleteForToday: jest.fn(),
-  countChecklistTasks: jest.fn(),
-  countTasksCompletedByBothToday: jest.fn(),
-  incrementStreakForPair: jest.fn(),
-  wasStreakAwardedToday: jest.fn(),
   updateStreak: jest.fn(),
   removeConnection: jest.fn(),
   rejectRequest: jest.fn(),
 }));
 
+jest.mock('../../observers/buddyChecklistNotifier', () => ({
+  notifyTaskToggled: jest.fn(),
+}));
+
 const Buddy = require('../../models/buddy');
+const buddyChecklistNotifier = require('../../observers/buddyChecklistNotifier');
 const buddyController = require('../../controllers/buddyController');
 
 const createRes = () => ({
@@ -176,6 +177,27 @@ describe('Buddy Controller', () => {
     expect(res.json).toHaveBeenCalledWith(tasks);
   });
 
+  test('getBuddyTasks also works when only one accepted buddy row exists', () => {
+    const req = {
+      user: { id: 1 },
+      params: { id: '2' },
+    };
+    const res = createRes();
+    const tasks = [{ id: 8, title: 'Stretch', completed_by_me: true, completed_by_buddy: false }];
+
+    Buddy.findRequest
+      .mockImplementationOnce((userId, buddyId, callback) => callback(null, [{ status: 'accepted' }]))
+      .mockImplementationOnce((userId, buddyId, callback) => callback(null, []));
+    Buddy.listChecklistTasks.mockImplementation((firstUserId, secondUserId, currentUserId, callback) => {
+      callback(null, tasks);
+    });
+
+    buddyController.getBuddyTasks(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(tasks);
+  });
+
   test('addBuddyTask creates a checklist item for an accepted buddy connection', () => {
     const req = {
       user: { id: 1 },
@@ -225,17 +247,8 @@ describe('Buddy Controller', () => {
     Buddy.markTaskCompleteForToday.mockImplementation((taskId, userId, callback) => {
       callback(null, { affectedRows: 1 });
     });
-    Buddy.countChecklistTasks.mockImplementation((firstUserId, secondUserId, callback) => {
-      callback(null, [{ total: 1 }]);
-    });
-    Buddy.countTasksCompletedByBothToday.mockImplementation((firstUserId, secondUserId, callback) => {
-      callback(null, [{ total: 1 }]);
-    });
-    Buddy.wasStreakAwardedToday.mockImplementation((userId, buddyId, callback) => {
-      callback(null, []);
-    });
-    Buddy.incrementStreakForPair.mockImplementation((userId, buddyId, callback) => {
-      callback(null, { affectedRows: 1 });
+    buddyChecklistNotifier.notifyTaskToggled.mockImplementation((event, callback) => {
+      callback(null, { ...event, streakAwarded: true });
     });
     Buddy.listChecklistTasks.mockImplementation((firstUserId, secondUserId, currentUserId, callback) => {
       callback(null, updatedTasks);
@@ -244,8 +257,12 @@ describe('Buddy Controller', () => {
     buddyController.toggleBuddyTask(req, res);
 
     expect(Buddy.markTaskCompleteForToday).toHaveBeenCalledWith(5, 1, expect.any(Function));
-    expect(Buddy.incrementStreakForPair).toHaveBeenNthCalledWith(1, 1, 2, expect.any(Function));
-    expect(Buddy.incrementStreakForPair).toHaveBeenNthCalledWith(2, 2, 1, expect.any(Function));
+    expect(buddyChecklistNotifier.notifyTaskToggled).toHaveBeenCalledWith({
+      userId: 1,
+      buddyId: 2,
+      taskId: 5,
+      completed: true,
+    }, expect.any(Function));
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       message: 'Checklist task updated successfully',
