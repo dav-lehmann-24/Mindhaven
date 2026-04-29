@@ -6,6 +6,7 @@ const testRoutes = require('./routes/testRoutes');
 const journalRoutes = require('./routes/journalRoutes');
 const tagRoutes = require('./routes/tagRoutes');
 const buddyRoutes = require('./routes/buddyRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 // const errorMiddleware = require('./middleware/errorMiddleware');
 
 require('dotenv').config();
@@ -28,6 +29,7 @@ app.use('/api/test', testRoutes);
 app.use('/api/journal', journalRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/buddies', buddyRoutes);
+app.use('/api/ai', aiRoutes);
 
 // error middleware
 // app.use(errorMiddleware);
