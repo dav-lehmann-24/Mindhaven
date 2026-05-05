@@ -5,6 +5,18 @@ const isAccepted = (record) => record && record.status === 'accepted';
 const hasAcceptedConnection = (outgoingConnection, incomingConnection) =>
   isAccepted(outgoingConnection) || isAccepted(incomingConnection);
 const normalizePair = (userId, buddyId) => [Math.min(userId, buddyId), Math.max(userId, buddyId)];
+const sendDatabaseError = (res) => res.status(500).json({ message: 'Database error' });
+
+const parseBuddyId = (req, res) => {
+  const buddyId = Number(req.params.id);
+
+  if (!Number.isInteger(buddyId)) {
+    res.status(400).json({ message: 'A valid buddy id is required' });
+    return null;
+  }
+
+  return buddyId;
+};
 
 const getAcceptedConnection = (userId, buddyId, callback) => {
   Buddy.findRequest(userId, buddyId, (outgoingErr, outgoingConnections) => {
@@ -17,6 +29,25 @@ const getAcceptedConnection = (userId, buddyId, callback) => {
       const incomingConnection = incomingConnections[0];
       return callback(null, outgoingConnection, incomingConnection);
     });
+  });
+};
+
+const getAnyConnection = (userId, buddyId, callback) => {
+  getAcceptedConnection(userId, buddyId, (err, outgoingConnection, incomingConnection) => {
+    if (err) return callback(err);
+    return callback(null, outgoingConnection || incomingConnection);
+  });
+};
+
+const withAcceptedChecklistConnection = (userId, buddyId, res, callback) => {
+  getAcceptedConnection(userId, buddyId, (connectionErr, outgoingConnection, incomingConnection) => {
+    if (connectionErr) return sendDatabaseError(res);
+    if (!hasAcceptedConnection(outgoingConnection, incomingConnection)) {
+      return res.status(400).json({ message: 'Checklist tasks require an accepted buddy connection' });
+    }
+
+    const [firstUserId, secondUserId] = normalizePair(userId, buddyId);
+    return callback(firstUserId, secondUserId);
   });
 };
 
@@ -70,14 +101,11 @@ exports.connectBuddy = (req, res) => {
 
 exports.acceptBuddyRequest = (req, res) => {
   const userId = req.user.id;
-  const buddyId = Number(req.params.id);
-
-  if (!Number.isInteger(buddyId)) {
-    return res.status(400).json({ message: 'A valid buddy id is required' });
-  }
+  const buddyId = parseBuddyId(req, res);
+  if (buddyId === null) return;
 
   Buddy.findRequest(buddyId, userId, (requestErr, requests) => {
-    if (requestErr) return res.status(500).json({ message: 'Database error' });
+    if (requestErr) return sendDatabaseError(res);
     if (requests.length === 0) {
       return res.status(404).json({ message: 'Buddy request not found' });
     }
@@ -129,14 +157,11 @@ exports.listPendingRequests = (req, res) => {
 
 exports.rejectBuddyRequest = (req, res) => {
   const userId = req.user.id;
-  const buddyId = Number(req.params.id);
-
-  if (!Number.isInteger(buddyId)) {
-    return res.status(400).json({ message: 'A valid buddy id is required' });
-  }
+  const buddyId = parseBuddyId(req, res);
+  if (buddyId === null) return;
 
   Buddy.findRequest(buddyId, userId, (requestErr, requests) => {
-    if (requestErr) return res.status(500).json({ message: 'Database error' });
+    if (requestErr) return sendDatabaseError(res);
     if (requests.length === 0 || requests[0].status !== 'pending') {
       return res.status(404).json({ message: 'Pending buddy request not found' });
     }
@@ -161,19 +186,10 @@ exports.listBuddies = (req, res) => {
 
 exports.getBuddyTasks = (req, res) => {
   const userId = req.user.id;
-  const buddyId = Number(req.params.id);
+  const buddyId = parseBuddyId(req, res);
+  if (buddyId === null) return;
 
-  if (!Number.isInteger(buddyId)) {
-    return res.status(400).json({ message: 'A valid buddy id is required' });
-  }
-
-  getAcceptedConnection(userId, buddyId, (connectionErr, outgoingConnection, incomingConnection) => {
-    if (connectionErr) return res.status(500).json({ message: 'Database error' });
-    if (!hasAcceptedConnection(outgoingConnection, incomingConnection)) {
-      return res.status(400).json({ message: 'Checklist tasks require an accepted buddy connection' });
-    }
-
-    const [firstUserId, secondUserId] = normalizePair(userId, buddyId);
+  withAcceptedChecklistConnection(userId, buddyId, res, (firstUserId, secondUserId) => {
     Buddy.listChecklistTasks(firstUserId, secondUserId, userId, (taskErr, tasks) => {
       if (taskErr) return res.status(500).json({ message: 'Error fetching checklist tasks' });
       return res.status(200).json(tasks);
@@ -183,24 +199,15 @@ exports.getBuddyTasks = (req, res) => {
 
 exports.addBuddyTask = (req, res) => {
   const userId = req.user.id;
-  const buddyId = Number(req.params.id);
+  const buddyId = parseBuddyId(req, res);
   const title = typeof req.body.title === 'string' ? req.body.title.trim() : '';
-
-  if (!Number.isInteger(buddyId)) {
-    return res.status(400).json({ message: 'A valid buddy id is required' });
-  }
+  if (buddyId === null) return;
 
   if (!title) {
     return res.status(400).json({ message: 'Task title is required' });
   }
 
-  getAcceptedConnection(userId, buddyId, (connectionErr, outgoingConnection, incomingConnection) => {
-    if (connectionErr) return res.status(500).json({ message: 'Database error' });
-    if (!hasAcceptedConnection(outgoingConnection, incomingConnection)) {
-      return res.status(400).json({ message: 'Checklist tasks require an accepted buddy connection' });
-    }
-
-    const [firstUserId, secondUserId] = normalizePair(userId, buddyId);
+  withAcceptedChecklistConnection(userId, buddyId, res, (firstUserId, secondUserId) => {
     Buddy.createChecklistTask(firstUserId, secondUserId, userId, title, (taskErr, result) => {
       if (taskErr) return res.status(500).json({ message: 'Could not create checklist task' });
 
@@ -228,15 +235,9 @@ exports.toggleBuddyTask = (req, res) => {
     return res.status(400).json({ message: 'Valid buddy id and task id are required' });
   }
 
-  getAcceptedConnection(userId, buddyId, (connectionErr, outgoingConnection, incomingConnection) => {
-    if (connectionErr) return res.status(500).json({ message: 'Database error' });
-    if (!hasAcceptedConnection(outgoingConnection, incomingConnection)) {
-      return res.status(400).json({ message: 'Checklist tasks require an accepted buddy connection' });
-    }
-
-    const [firstUserId, secondUserId] = normalizePair(userId, buddyId);
+  withAcceptedChecklistConnection(userId, buddyId, res, (firstUserId, secondUserId) => {
     Buddy.findChecklistTask(taskId, firstUserId, secondUserId, (taskErr, tasks) => {
-      if (taskErr) return res.status(500).json({ message: 'Database error' });
+      if (taskErr) return sendDatabaseError(res);
       if (tasks.length === 0) {
         return res.status(404).json({ message: 'Checklist task not found' });
       }
@@ -273,34 +274,25 @@ exports.toggleBuddyTask = (req, res) => {
 
 exports.getBuddyProfile = (req, res) => {
   const userId = req.user.id;
-  const buddyId = Number(req.params.id);
+  const buddyId = parseBuddyId(req, res);
+  if (buddyId === null) return;
 
-  if (!Number.isInteger(buddyId)) {
-    return res.status(400).json({ message: 'A valid buddy id is required' });
-  }
+  getAnyConnection(userId, buddyId, (connectionErr, connection) => {
+    if (connectionErr) return sendDatabaseError(res);
+    if (!connection) {
+      return res.status(404).json({ message: 'Buddy connection not found' });
+    }
 
-  Buddy.findRequest(userId, buddyId, (outgoingErr, outgoingConnections) => {
-    if (outgoingErr) return res.status(500).json({ message: 'Database error' });
-
-    Buddy.findRequest(buddyId, userId, (incomingErr, incomingConnections) => {
-      if (incomingErr) return res.status(500).json({ message: 'Database error' });
-
-      const connection = outgoingConnections[0] || incomingConnections[0];
-      if (!connection) {
-        return res.status(404).json({ message: 'Buddy connection not found' });
+    Buddy.findUserById(buddyId, (userErr, users) => {
+      if (userErr) return sendDatabaseError(res);
+      if (users.length === 0) {
+        return res.status(404).json({ message: 'Buddy not found' });
       }
 
-      Buddy.findUserById(buddyId, (userErr, users) => {
-        if (userErr) return res.status(500).json({ message: 'Database error' });
-        if (users.length === 0) {
-          return res.status(404).json({ message: 'Buddy not found' });
-        }
-
-        return res.status(200).json({
-          ...users[0],
-          streak: connection.streak,
-          status: connection.status,
-        });
+      return res.status(200).json({
+        ...users[0],
+        streak: connection.streak,
+        status: connection.status,
       });
     });
   });
@@ -314,26 +306,19 @@ exports.updateStreak = (req, res) => {
 
 exports.removeBuddy = (req, res) => {
   const userId = req.user.id;
-  const buddyId = Number(req.params.id);
+  const buddyId = parseBuddyId(req, res);
+  if (buddyId === null) return;
 
-  if (!Number.isInteger(buddyId)) {
-    return res.status(400).json({ message: 'A valid buddy id is required' });
-  }
+  getAnyConnection(userId, buddyId, (connectionErr, connection) => {
+    if (connectionErr) return sendDatabaseError(res);
+    if (!connection) {
+      return res.status(404).json({ message: 'Buddy connection not found' });
+    }
 
-  Buddy.findRequest(userId, buddyId, (outgoingErr, outgoingConnections) => {
-    if (outgoingErr) return res.status(500).json({ message: 'Database error' });
+    Buddy.removeConnection(userId, buddyId, (removeErr) => {
+      if (removeErr) return res.status(500).json({ message: 'Could not remove buddy' });
 
-    Buddy.findRequest(buddyId, userId, (incomingErr, incomingConnections) => {
-      if (incomingErr) return res.status(500).json({ message: 'Database error' });
-      if (outgoingConnections.length === 0 && incomingConnections.length === 0) {
-        return res.status(404).json({ message: 'Buddy connection not found' });
-      }
-
-      Buddy.removeConnection(userId, buddyId, (removeErr) => {
-        if (removeErr) return res.status(500).json({ message: 'Could not remove buddy' });
-
-        return res.status(200).json({ message: 'Buddy removed successfully' });
-      });
+      return res.status(200).json({ message: 'Buddy removed successfully' });
     });
   });
 };
