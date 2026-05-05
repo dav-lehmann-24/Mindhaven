@@ -7,6 +7,18 @@ import Button from '../components/Button';
 import Loader from '../components/Loader';
 import styles from './AuthPage.module.css';
 
+const validateForm = ({ email, username, password, confirmPassword, country, gender }) => {
+  if (!email || !username || !password || !confirmPassword || !country || !gender) {
+    return 'Please fill in all fields.';
+  }
+  if (password !== confirmPassword) {
+    return 'Passwords do not match.';
+  }
+  return '';
+};
+
+const registerUser = (payload) => axios.post('/api/auth/register', payload);
+
 const RegisterPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -22,18 +34,14 @@ const RegisterPage = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    if (!email || !username || !password || !confirmPassword || !country || !gender) {
-      setError('Please fill in all fields.');
-      setLoading(false);
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+    const validationError = validateForm({ email, username, password, confirmPassword, country, gender });
+    if (validationError) {
+      setError(validationError);
       setLoading(false);
       return;
     }
     try {
-      const res = await axios.post('/api/auth/register', {
+      const res = await registerUser({
         username,
         email,
         password,
@@ -42,17 +50,17 @@ const RegisterPage = () => {
         country,
         gender,
       });
-      setLoading(false);
       if (res.data.message) {
         navigate('/login'); // Redirect to login after successful registration
       }
     } catch (err) {
-      setLoading(false);
       if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
       } else {
         setError('Registration failed. Please try again.');
       }
+    } finally {
+      setLoading(false);
     }
   };
 
