@@ -28,3 +28,6 @@ jobs:
 
       - name: Run tests
         run: npm test
+       
+      - name: Check code duplication
+        run: npx jscpd controllers routes models middleware utils observers services --threshold 3
