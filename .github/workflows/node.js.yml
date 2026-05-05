@@ -31,3 +31,10 @@ jobs:
        
       - name: Check code duplication
         run: npx jscpd controllers routes models middleware utils observers --threshold 3
+      - name: Install frontend dependencies
+        working-directory: client
+        run: npm install
+
+      - name: Run ESLint (complexity check)
+        working-directory: client
+        run: npm run lint
