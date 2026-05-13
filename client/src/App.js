@@ -15,6 +15,8 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
+import SOSPage from './pages/SOSPage';
+import BuddyPage from './pages/BuddyPage';
 
 
 function AppContent() {
@@ -39,6 +41,8 @@ function AppContent() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/sos" element={<SOSPage />} />
+          <Route path="/buddy" element={<BuddyPage />} />
         </Routes>
       </div>
       {shouldShowHeaderFooter && <Footer />}

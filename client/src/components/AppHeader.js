@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AppHeader.module.css';
 import { MdHomeFilled, MdMenuBook, MdPerson, MdGroup } from 'react-icons/md';
+import ConfirmDialog from './ConfirmDialog';
 
 const AppHeader = () => {
   const [sidebarOpen, setSidebarOpen] = useState(null);
+  const [showSosConfirm, setShowSosConfirm] = useState(false);
   const navigate = useNavigate();
 
   const handleProfileClick = () => setSidebarOpen('profile');
@@ -15,8 +17,13 @@ const AppHeader = () => {
   };
   const handleSOSClick = () => {
     setSidebarOpen(null);
+    setShowSosConfirm(true);
+  };
+  const handleSosConfirm = () => {
+    setShowSosConfirm(false);
     navigate('/sos');
   };
+  const handleSosCancel = () => setShowSosConfirm(false);
   const handleSidebarClose = () => setSidebarOpen(null);
 
   const renderSidebar = () => {
@@ -136,6 +143,15 @@ const AppHeader = () => {
           </button>
         </div>
         {renderSidebar()}
+        <ConfirmDialog
+          open={showSosConfirm}
+          title="Open SOS mode?"
+          description="This will take you to a focused support screen. Do you want to continue?"
+          confirmText="Open SOS"
+          cancelText="Cancel"
+          onConfirm={handleSosConfirm}
+          onCancel={handleSosCancel}
+        />
       </header>
     );
 };

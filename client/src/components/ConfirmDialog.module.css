@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 20, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 7000;
+  padding: 24px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.card {
+  font-family: 'Manrope', system-ui, sans-serif;
+  width: min(520px, 92vw);
+  background: linear-gradient(150deg, #ffffff 0%, #eef2ff 100%);
+  border-radius: 22px;
+  padding: 32px 30px 28px;
+  box-shadow: 0 24px 60px rgba(79, 70, 229, 0.18), 0 6px 16px rgba(15, 23, 42, 0.12);
+  text-align: center;
+}
+
+.title {
+  margin: 0 0 10px 0;
+  font-size: 1.6rem;
+  color: #111827;
+  letter-spacing: 0.2px;
+}
+
+.description {
+  margin: 0 0 22px 0;
+  font-size: 1.05rem;
+  color: #374151;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cancelButton,
+.confirmButton {
+  border: none;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.cancelButton {
+  background: rgba(15, 23, 42, 0.08);
+  color: #111827;
+}
+
+.cancelButton:hover {
+  transform: translateY(-1px);
+  background: rgba(15, 23, 42, 0.12);
+}
+
+.confirmButton {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.25);
+}
+
+.confirmButton:hover {
+  transform: translateY(-1px) scale(1.02);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
