@@ -12,16 +12,15 @@
 - [Use-Case View](#4-use-case-view)
 - [Logical View](#5-logical-view)
     - [Overview](#51-overview)
-    - [Architecturally Significant Design Packages]
-    - [5.4 Implemented features and components]
-    (#52-architecturally-significant-design-packages)
+    - [Architecturally Significant Design Packages](#52-architecturally-significant-design-packages)
     - [Refactoring with Design Patterns](#53-refactoring-with-design-patterns)
+    - [Implemented features and components](#54-implemented-features-and-components)
 - [Process View](#6-process-view)
 - [Deployment View](#7-deployment-view)
 - [Implementation View](#8-implementation-view)
 - [Data View](#9-data-view)
 - [Size and Performance](#10-size-and-performance)
-- [Quality](#11-quality)
+- [Quality/Metrics](#11-qualitymetrics)
 
 
 ## 1. Introduction
@@ -52,17 +51,17 @@ This document describes the technical architecture of the Mindhaven project, inc
 | [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven/)| 05.11.2025 |Mindhaven  |
 | [GitHub Repository](https://github.com/dav-lehmann-24/Mindhaven)| 05.11.2025 |Mindhaven  |
 | [Overall Use Case Diagram](Pictures/UCD.png)| 05.11.2025 |Mindhaven  |
-| [SRS](SRS.md)| 05.11.20254 |Mindhaven  |
+| [SRS](SRS.md)| 05.11.2025 |Mindhaven  |
 | [UC:Create Account](UCCreateAccount.md)| 05.11.2025 |Mindhaven  |
 | [UC:Edit Account](UCEditAccount.md)| 05.11.2025 |Mindhaven  |
 | [UC:Delete Account](UCDeleteAccount.md)| 05.11.2025 |Mindhaven  |
-| [UC:Log in and Log out](UCLogin_logout.md)|05.11.2025 |Mindhaven  |
-| [UC:Manage Journals](UCManagePost.md)| 05.11.2025 |Mindhaven  |
+| [UC:Log in and Log out](UCLoginLogout.md)|05.11.2025 |Mindhaven  |
+| [UC:Manage Journals](UCManageJournal.md)| 05.11.2025 |Mindhaven  |
 | [UC:Reset Password](UCResetPassword.md)|05.11.2025 |Mindhaven  |
-| [UC:Show Alerts](UCManageAlerts.md)|05.11.2025 |Mindhaven  |
-| [UC:Tag Journals](UCManageAlerts.md)|05.11.2025 |Mindhaven  |
-| [UC:Filter Journals using tags](UCManageAlerts.md)|05.11.2025 |
-| [UC:Sort Journals](UCManageAlerts.md)|05.11.2025 |
+| [UC:Show Alerts](UCAlerts.md)|05.11.2025 |Mindhaven  |
+| [UC:Tag Journals](UCAddTags.md)|05.11.2025 |Mindhaven  |
+| [UC:Filter Journals using tags](UCTagSearch.md)|05.11.2025 |Mindhaven |
+| [UC:Sort Journals](UCSort.md)|05.11.2025 |Mindhaven |
 
 ### 1.5 Overview
 This document contains the Architectural Representation, Goals and Constraints as well
@@ -75,11 +74,11 @@ The back-end server uses Node.js + Express for REST APIs, front-end side is a Re
 
 In the backend we have folders for our 'model' and 'controller' files.
 
-![backend](Pictures/frontend.png) <br>
+![backend](Pictures/backend.png) <br>
 
 In our frontend we manage the 'view' with components implemented on pages.
 
-![frontend](Pictures/backend.png) <br>
+![frontend](Pictures/Feontend.png) <br>
 
 
 
@@ -196,14 +195,20 @@ These can be considered architectually significant.
 
 In addition to the MVC structure, we have refactored parts of our backend using well-established **Design Patterns** to enhance scalability, maintainability, and modularity.
 
-#### Singleton Pattern – JWT Authentication Service
-We applied the **Singleton Pattern** in our **JWT Authentication** logic.  
-The `jwtService.js` file is implemented as a **single shared instance** that provides consistent methods for token creation, verification, and decoding throughout the application.
+#### Observer Pattern - Buddy Checklist Streaks
+We applied the **Observer Pattern** to the Buddy checklist feature.
+The controller records checklist task changes, then notifies a checklist subject. The subscribed streak observer decides whether both buddies completed all shared tasks for the day and whether a streak should be awarded.
 
 This ensures:
-- A single source of truth for the secret key and expiry configuration  
-- Reduced redundancy by reusing the same JWT utility instance  
-- Improved security and easier maintenance of authentication logic  
+- Checklist task updates and streak-awarding logic are separated
+- More observers can be added without changing the checklist controller
+- Buddy streak updates remain consistent for both users in the buddy pair
+
+Relevant files:
+- `server/observers/BuddyChecklistSubject.js`
+- `server/observers/BuddyStreakObserver.js`
+- `server/observers/buddyChecklistNotifier.js`
+- `server/controllers/buddyController.js`
 
 ### 5.4 Implemented features and components
 
@@ -237,6 +242,50 @@ Create / update / delete
 
 Fetch all journals for authenticated user
 
+✔ Tags and Mood Alerts
+
+tagController.js
+
+tag.js (model)
+
+tagRoutes.js
+
+Fetch tags by mood category
+
+Analyze recent journal tags and return mood trend alerts
+
+✔ Buddy System
+
+buddyController.js
+
+buddy.js (model)
+
+buddyRoutes.js
+
+Send, accept, reject, list and remove buddy connections
+
+Shared buddy checklist tasks
+
+Automatic streak updates through the Observer Pattern
+
+✔ AI Mental Health Support
+
+aiController.js
+
+aiRoutes.js
+
+localMentalHealthAiService.js
+
+mental_health_ai.py
+
+Authenticated `POST /api/ai/support` endpoint
+
+Local Hugging Face Transformers model for supportive mental health replies
+
+Safety disclaimer and crisis guidance returned with each AI response
+
+✔ SOS Mode
+
 ## 6. Process View
 
 ### Login Sequence
@@ -267,11 +316,41 @@ User submits new password
         ↓
 Backend verifies token → updates password
 
-###Journal CURD
+### Journal CRUD
 
 All journal routes require verifyToken
 
 Operations are tied to req.user.id
+
+### Buddy Checklist and Streak Flow
+
+Authenticated user toggles buddy checklist task
+        ↓
+buddyController validates accepted buddy connection
+        ↓
+Buddy model stores or removes today's completion
+        ↓
+buddyChecklistNotifier notifies BuddyChecklistSubject
+        ↓
+BuddyStreakObserver checks whether both buddies completed all tasks today
+        ↓
+If eligible, streak is incremented for both buddy records
+        ↓
+Updated checklist and streakAwarded result are returned to the client
+
+### AI Support Flow
+
+Authenticated user sends support message
+        ↓
+POST /api/ai/support
+        ↓
+aiController validates message input
+        ↓
+localMentalHealthAiService starts server/python/mental_health_ai.py
+        ↓
+Python script loads local Transformers model and generates a supportive reply
+        ↓
+Controller returns reply, disclaimer and crisis guidance
 
 
 ## 7. Deployment View
@@ -291,6 +370,7 @@ Our Deployment setup includes a client and a server.
 │  - Middleware                    │
 │  - Upload server                 │
 │  - Email service                 │
+│  - Local AI service bridge       │
 └─────────────────┬────────────────┘
                   │
                   ▼
@@ -299,8 +379,48 @@ Our Deployment setup includes a client and a server.
 │  - users                         │
 │  - journals                      │
 │  - password_reset_tokens         │
+│  - buddies                       │
+│  - buddy_tasks                   │
+│  - buddy_task_completions        │
 └──────────────────────────────────┘
 
+
+The backend also depends on a Python runtime for local AI inference. Python dependencies are listed in `server/python/requirements.txt` and include `transformers`, `torch`, and `sentencepiece`.
+
+Important environment variables include:
+- Database connection settings
+- JWT secret
+- Email service credentials
+- `LOCAL_AI_MODEL`, `LOCAL_AI_PYTHON`, and `LOCAL_AI_TIMEOUT_MS` for the local AI service
+
+
+## 8. Implementation View
+
+The implementation is organized by client and server responsibilities.
+
+### Client
+- `client/src/pages`: page-level React views such as login, registration, dashboard, journal creation and journal list.
+- `client/src/components`: reusable UI components such as buttons, cards, forms, headers, footers, alerts and journal entry cards.
+- `client/src/App.js`: React Router configuration and top-level layout.
+
+### Server
+- `server/index.js`: Express application setup, middleware and route registration.
+- `server/routes`: API route definitions for auth, users, journals, tags, buddies, AI, tests and SOS placeholders.
+- `server/controllers`: request validation, response formatting and coordination between routes and models.
+- `server/models`: MySQL query logic for users, auth, journals, tags, buddies and SOS placeholders.
+- `server/middleware`: JWT authentication and upload middleware.
+- `server/utils`: email reset service.
+- `server/services`: local AI bridge used by the AI controller.
+- `server/observers`: Buddy checklist subject and streak observer.
+- `server/python`: local AI inference script and Python dependency list.
+
+### Main API Areas
+- Authentication: `/api/auth`
+- User profile: `/api/user`
+- Journals: `/api/journal`
+- Tags and mood trends: `/api/tags`
+- Buddies and buddy checklist: `/api/buddies`
+- AI support: `/api/ai/support`
 
 
 ## 9. Data View
@@ -308,10 +428,36 @@ Our database structure in a schema:
 
 ![DatabaseSchema](Pictures/Mindhaven_Database_Schema.png) <br>
 
+Architecturally significant data entities include:
+- `users`: account profile, login identity and profile data
+- `journals`: user-owned journal entries and journal tags
+- `password_resets` or password reset token storage: password reset flow
+- `buddies`: buddy relationships, request status and streak data
+- `buddy_tasks`: shared tasks for an accepted buddy pair
+- `buddy_task_completions`: per-user daily completion records for buddy tasks
+
+Controllers enforce user ownership by using the authenticated `req.user.id`, especially for journals, profile data, buddy connections and mood trend analysis.
 
 ## 10. Size and Performance
-n/a
+- The React client and Express server are separated, allowing client and API changes to be maintained independently.
+- Journal, tag and buddy operations are database-backed and scoped by authenticated user id.
+- AI response generation is the highest-latency feature because it starts local Python inference and loads a Transformers model. The service has a configurable timeout through `LOCAL_AI_TIMEOUT_MS`.
+- File uploads are handled by Multer and served through the backend upload directory.
+- For a production environment, local AI model loading should be monitored for memory usage and startup latency.
 
 ## 11. Quality/Metrics
 
-n/a
+Quality is supported through:
+- JWT-protected routes for private user, journal, buddy, AI and mood trend endpoints
+- Password hashing with bcrypt for authentication
+- Environment variables for secrets such as email credentials and JWT configuration
+- Input validation in controllers before database operations
+- User ownership checks through `req.user.id`
+- Unit and integration tests using Jest and Supertest
+- Coverage reports generated under `server/coverage`
+- Observer Pattern separation for buddy streak logic, reducing controller complexity
+
+Remaining quality risks:
+- SOS backend files are placeholders and should be completed or clearly marked as planned.
+- AI support is not a replacement for professional care, so responses include a disclaimer and crisis guidance.
+- The local AI model may be slow or unavailable if Python dependencies are missing.
