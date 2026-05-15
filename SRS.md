@@ -38,7 +38,7 @@ The project is going to be realized as a web application.
   
 Actors of this application are users.
 
-Planned subsystems for this semester include:
+Current and planned subsystems include:
 
 - Authentication
 
@@ -46,16 +46,23 @@ Planned subsystems for this semester include:
 
 - Journal management
 
-Future planned extensions: 
 - AI assistance
+
 - SOS Mode
+
 - Buddy Circle
+
+- Tag-based mood alerts
 
 ### 1.3 Definitions, Acronyms and Abbreviations
 | Abbrevation | Explanation                            |
 | ----------- | -------------------------------------- |
 | SRS         | Software Requirements Specification    |
 | UC          | Use Case                               |
+| AI          | Artificial Intelligence                |
+| API         | Application Programming Interface      |
+| JWT         | JSON Web Token                         |
+| REST        | Representational State Transfer        |
 | N/A         | Not Applicable                         |
 | TBD         | To Be Determined                       |
 | OUCD        | Overall Use Case Diagram               |
@@ -65,8 +72,21 @@ Future planned extensions:
 
 | Title                                                                   | Date       | Publishing organization   |
 | ----------------------------------------------------------------------- |:----------:| ------------------------- |
-| [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven)    | 18.10.2018 | Mindhaven Team    		   |
-| [GitHub](https://github.com/dav-lehmann-24/Mindhaven)                   | 18.10.2018 | Mindhaven Team    		   |
+| [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven)    | 05.11.2025 | Mindhaven Team    		   |
+| [GitHub](https://github.com/dav-lehmann-24/Mindhaven)                   | 05.11.2025 | Mindhaven Team    		   |
+| [Software Architecture Document](SAD.md)                                | 05.11.2025 | Mindhaven Team            |
+| [Test Plan](Test_Plan.md)                                               | 05.11.2025 | Mindhaven Team            |
+| [Overall Use Case Diagram](Pictures/UCD.png)                            | 05.11.2025 | Mindhaven Team            |
+| [UC: Create Account](UCCreateAccount.md)                                | 05.11.2025 | Mindhaven Team            |
+| [UC: Edit Account](UCEditAccount.md)                                    | 05.11.2025 | Mindhaven Team            |
+| [UC: Delete Account](UCDeleteAccount.md)                                | 05.11.2025 | Mindhaven Team            |
+| [UC: Log in and Log out](UCLoginLogout.md)                              | 05.11.2025 | Mindhaven Team            |
+| [UC: Manage Journals](UCManageJournal.md)                               | 05.11.2025 | Mindhaven Team            |
+| [UC: Reset Password](UCResetPassword.md)                                 | 05.11.2025 | Mindhaven Team            |
+| [UC: Add Tags](UCAddTags.md)                                            | 05.11.2025 | Mindhaven Team            |
+| [UC: Alerts](UCAlerts.md)                                               | 05.11.2025 | Mindhaven Team            |
+| [UC: Tag Search](UCTagSearch.md)                                        | 05.11.2025 | Mindhaven Team            |
+| [UC: Sort Journals](UCSort.md)                                          | 05.11.2025 | Mindhaven Team            |
 
 
 ### 1.5 Overview
@@ -88,9 +108,16 @@ The technology we use is:
 Backend:
 - Node.js with Express
 - MySQL Database
+- JWT authentication
+- bcrypt password hashing
+- Nodemailer for password reset email
+- Multer for profile picture uploads
+- Python local AI runtime with Hugging Face Transformers
 
 Frontend:
 - React
+- React Router
+- Axios
 
 IDE:
 - Visual Studio Code
@@ -101,9 +128,11 @@ Project Management:
 - Discord & Whatsapp
 
 Deployment:
-- TBD
+- React client, Express API server, MySQL database, uploaded file storage and local Python AI runtime
 
 Testing:
+- Jest
+- Supertest
 - Cucumber
 - Chai
 - Playwright
@@ -112,7 +141,7 @@ Testing:
 
 ### 3.1 Functionality
 This section will explain the different use cases, you could see in the Use Case Diagram, and their functionality.  
-Until the end of the first semester we plan to implement:
+The implemented and planned functionality includes:
 - 3.1.1 Create account
 - 3.1.2 Logging in / Logging out
 - 3.1.3 Edit account
@@ -123,8 +152,6 @@ Until the end of the first semester we plan to implement:
 - 3.1.8 Create alerts based on tags
 - 3.1.9 Search journals based on tags
 - 3.1.10 Sort journals chronologically
-
-Until the end of the second semester, we want to implement:
 - 3.1.11 Implement AI assistance (Chatbot) 
 - 3.1.12 Implement SOS Mode
 - 3.1.13 Implement links for SOS Mode
@@ -190,7 +217,6 @@ To help users quickly locate specific journal entries, the system allows searchi
 Users can choose tags from a predefined list, and the system will return all journal entries containing the selected tag(s).
 
 For details, refer to **[Search Journals by Tag Use Case](UCTagSearch.md)**  
-*(planned feature for future development)*
 
 
 #### 3.1.10 Sort journals chronologically
@@ -204,27 +230,47 @@ Journals can be displayed in:
 Sorting journals chronologically allows users to track their emotional journey over time and makes navigating long lists of entries easier.
 
 For details, refer to **[Sort Journals Use Case](UCSort.md)**  
-*(planned feature for future development)*
 
 
 #### 3.1.11 Implement AI assistance (Chatbot)
 
+The system provides an authenticated AI support endpoint for mental health check-in messages. A logged-in user can send a message to `POST /api/ai/support`; the backend validates the message, calls the local AI service, and returns a supportive reply.
 
-[Implement AI assistance]()
+The AI response must include:
+- A supportive reply
+- A disclaimer that AI support is not a substitute for professional mental health care
+- Crisis guidance for immediate danger or self-harm situations
+
+The implementation uses `aiController.js`, `aiRoutes.js`, `localMentalHealthAiService.js`, and `server/python/mental_health_ai.py`.
 
 #### 3.1.12 Implement SOS Mode
 
+The frontend provides an SOS page at `/sos`. Users can choose the type of emergency they are experiencing and view focused guidance, hotline information and resource sections.
 
-[Implement SOS Mode]()
+The SOS frontend is implemented through `SOSPage.js`, `SOSPage.module.css`, and navigation from `AppHeader.js`. Backend SOS API/database integration is planned separately.
 
 #### 3.1.13 Implement links for SOS Mode
 
+The application provides navigation to SOS Mode from the app header. The SOS page contains emergency guidance and links/resources relevant to the selected emergency type.
 
-[Implement links for SOS Mode]()
+If the user is in immediate danger, the interface instructs the user to contact local emergency services.
 
 #### 3.1.14 Buddy Circle
 
-[Implement links for Buddy Circle]()
+The backend provides authenticated buddy connection functionality through `/api/buddies`.
+
+Buddy Circle supports:
+- Sending buddy requests
+- Listing accepted buddies
+- Listing pending buddy requests
+- Accepting or rejecting buddy requests
+- Viewing a buddy profile
+- Removing a buddy connection
+- Creating shared checklist tasks for an accepted buddy pair
+- Marking checklist tasks complete for the current day
+- Automatically updating buddy streaks when both buddies complete all shared tasks for the day
+
+The implementation uses `buddyController.js`, `buddyRoutes.js`, `buddy.js`, and the Buddy checklist Observer Pattern files under `server/observers`.
 
 
 ### 3.2 Usability
@@ -244,16 +290,16 @@ The server shall be available 95% of the time. This also means we have to figure
 #### 3.3.2 Defect Rate
 Our goal is that we have no loss of any data.
 
-### 3.4 Perfomance
+### 3.4 Performance
 
 #### 3.4.1 Capacity
 The system should be able to manage thousands of requests. Also it should be possible to register as many users as necessary.
 
 #### 3.4.2 Storage 
-TBD
+The system stores user accounts, journal entries, tags, password reset tokens, buddy relationships, buddy checklist tasks and buddy task completions in MySQL. Uploaded profile pictures are stored by the backend upload service.
 
-#### 3.4.3 Perfomance / Response time
-To provide the best perfomance we aim to keep the response time as low as possible. This will make the user experience much better.
+#### 3.4.3 Performance / Response time
+To provide the best performance we aim to keep the response time as low as possible. Standard API operations should return quickly for a normal user workflow. AI support responses may take longer because they use a local Python process and a local Transformers model.
 
 ### 3.5 Supportability
 
@@ -264,7 +310,13 @@ We are going to write the code by using all of the most common clean code standa
 The application will have a high test coverage and all important functionalities and edge cases should be tested. Further mistakes in the implementation will be discovered instantly and it will be easy to locate the error. 
 
 ### 3.6 Design Constraints
-TBD
+- The system uses a React frontend and a Node.js/Express backend.
+- Private user features require JWT authentication.
+- Persistent data is stored in a MySQL database.
+- Passwords must be hashed before storage.
+- Email-based password reset depends on configured Nodemailer environment variables.
+- Profile image upload depends on Multer upload restrictions.
+- Local AI support depends on Python and the packages in `server/python/requirements.txt`.
 
 ### 3.7 On-line User Documentation and Help System Requirements
 The usage of the app should be as intuitive as possible so it won't need any further documentation.
@@ -279,25 +331,37 @@ The User interfaces that will be implented are:
 - Dashboard - listing items specific for the user (e.g. journals, ...)
 - Login - this page is used to log in 
 - Register - provides a registration form
-- Profile - makes it possible to post information about yourself, might provide messaging feature, also shows additional information about users
-- Settings - shows the settings
+- Forgot password - allows users to request a password reset link
+- Reset password - allows users to set a new password using a reset token
+- Profile - allows users to view, update and delete account information
+- Journal create - allows users to create a journal entry with tags
+- Journal list - allows users to view, search, sort, edit and delete journal entries
+- SOS Mode - provides emergency guidance and resources
+- Static information pages - About, Contact, Privacy and Terms
 
 #### 3.9.2 Hardware Interfaces
 (n/a)
 
 #### 3.9.3 Software Interfaces
-(n/a)
+- REST API between React and Express
+- MySQL database connection through `mysql2`
+- JWT authentication middleware
+- Email service through Nodemailer
+- File upload handling through Multer
+- Local Python AI process started by the backend AI service
+- Hugging Face Transformers model used by the Python AI script
 
 #### 3.9.4 Communication Interfaces
-The server and hardware will communicate using the http protocol. 
+The client and server communicate using HTTP requests. The backend exposes REST endpoints under `/api/auth`, `/api/user`, `/api/journal`, `/api/tags`, `/api/buddies` and `/api/ai`.
 
 ### 3.10 Licensing Requirements
+The project uses open-source frameworks and libraries from the Node.js, React and Python ecosystems. No purchased commercial components are currently required. The project team must continue to respect the licenses of third-party dependencies.
 
 ### 3.11 Legal, Copyright, and Other Notices
 The logo is licensed to the Mindhaven Team and is only allowed to use for the application. We do not take responsibilty for any incorrect data or errors in the application.
 
 ### 3.12 Applicable Standards
-The development will follow the common clean code standards and naming conventions. Also we will create a definition of which will be added here as soon as its complete.
+The development follows common clean code standards and naming conventions. Private endpoints should use token-based authentication, passwords should be hashed, and user-owned data should be scoped to the authenticated user.
 
 ## 4. Supporting Information
 For any further information you can contact the Mindhaven Team or check our [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven). 
