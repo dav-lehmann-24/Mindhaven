@@ -431,7 +431,7 @@ The implementation is organized by client and server responsibilities.
 ## 9. Data View
 Our database structure in a schema:
 
-![DatabaseSchema](Pictures/Mindhaven_Database_Schema.png) <br>
+![DatabaseSchema](Pictures/EERD.png) <br>
 
 Architecturally significant data entities include:
 - `users`: account profile, login identity and profile data

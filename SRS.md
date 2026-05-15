@@ -243,23 +243,19 @@ The AI response must include:
 
 The implementation uses `aiController.js`, `aiRoutes.js`, `localMentalHealthAiService.js`, and `server/python/mental_health_ai.py`.
 
+For details, refer to **[Sort Journals Use Case](UCAI.md)**  
+
 #### 3.1.12 Implement SOS Mode
 
 The frontend provides an SOS page at `/sos`. Users can choose the type of emergency they are experiencing and view focused guidance, hotline information and resource sections.
 
 The SOS frontend is implemented through `SOSPage.js`, `SOSPage.module.css`, and navigation from `AppHeader.js`. Backend SOS API/database integration is planned separately.
 
-#### 3.1.13 Implement links for SOS Mode
-
-The application provides navigation to SOS Mode from the app header. The SOS page contains emergency guidance and links/resources relevant to the selected emergency type.
-
-If the user is in immediate danger, the interface instructs the user to contact local emergency services.
-
-#### 3.1.14 Buddy Circle
+#### 3.1.13 Buddy 
 
 The backend provides authenticated buddy connection functionality through `/api/buddies`.
 
-Buddy Circle supports:
+Buddy feature supports:
 - Sending buddy requests
 - Listing accepted buddies
 - Listing pending buddy requests
@@ -271,7 +267,7 @@ Buddy Circle supports:
 - Automatically updating buddy streaks when both buddies complete all shared tasks for the day
 
 The implementation uses `buddyController.js`, `buddyRoutes.js`, `buddy.js`, and the Buddy checklist Observer Pattern files under `server/observers`.
-
+For details, refer to **[Sort Journals Use Case](UCBuddy.md)**  
 
 ### 3.2 Usability
 We plan on designing the user interface as intuitive and self-explanatory as possible to make the user feel as comfortable as possible using the web application.
