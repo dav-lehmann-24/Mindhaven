@@ -356,6 +356,8 @@ Controller returns reply, disclaimer and crisis guidance
 ## 7. Deployment View
 
 Our Deployment setup includes a client and a server. 
+
+```text
 ┌──────────────────────────────────┐
 │     React Frontend (Client)      │
 │  - Pages                         │
@@ -383,6 +385,7 @@ Our Deployment setup includes a client and a server.
 │  - buddy_tasks                   │
 │  - buddy_task_completions        │
 └──────────────────────────────────┘
+```
 
 
 The backend also depends on a Python runtime for local AI inference. Python dependencies are listed in `server/python/requirements.txt` and include `transformers`, `torch`, and `sentencepiece`.
