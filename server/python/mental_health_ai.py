@@ -2,6 +2,8 @@ import json
 import os
 import sys
 
+DEFAULT_MODEL = "google/flan-t5-large"
+
 
 def emit(payload):
     sys.stdout.write(json.dumps(payload))
@@ -58,7 +60,7 @@ def main():
       return
 
     try:
-      from transformers import T5ForConditionalGeneration, T5Tokenizer
+      from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
     except Exception as exc:
       emit(
           {
@@ -71,12 +73,12 @@ def main():
       )
       return
 
-    model_name = os.environ.get("LOCAL_AI_MODEL", "google/flan-t5-base")
+    model_name = os.environ.get("LOCAL_AI_MODEL", DEFAULT_MODEL)
     prompt = (
         "Task: write a warm, supportive mental health check-in reply.\n"
         "Rules:\n"
         "- Be empathetic, calm, and conversational.\n"
-        "- Reply to the message in a supportive way and make coherrent sentences.\n"
+        "- Reply directly to the user's message in coherent sentences.\n"
         "- Mention 2 practical coping tips.\n"
         "- Encourage talking to a trusted buddy, counselor, or therapist.\n"
         "- Do not diagnose.\n"
@@ -94,15 +96,17 @@ def main():
     )
 
     try:
-      tokenizer = T5Tokenizer.from_pretrained(model_name)
-      model = T5ForConditionalGeneration.from_pretrained(model_name)
-      input_ids = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512).input_ids
+      tokenizer = AutoTokenizer.from_pretrained(model_name)
+      model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+      input_ids = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=768).input_ids
       outputs = model.generate(
           input_ids,
           max_new_tokens=180,
           min_new_tokens=60,
-          num_beams=4,
-          do_sample=False,
+          num_beams=5,
+          do_sample=True,
+          temperature=0.75,
+          top_p=0.9,
           no_repeat_ngram_size=3,
           early_stopping=True,
       )
