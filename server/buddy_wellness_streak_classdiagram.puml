@@ -1,0 +1,124 @@
+@startuml MindHavenBuddyWellnessStreak
+title MindHaven - Buddy Wellness Streaks Feature
+
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor Snow
+  BorderColor Black
+  ArrowColor Black
+}
+
+' ===================== FRONTEND (React) =====================
+package "Frontend (React)" {
+  class BuddyChecklistView {
+    +viewChecklist()
+    +addTask()
+    +toggleTaskComplete()
+    +showStreakAwarded()
+  }
+}
+
+' ===================== BACKEND (Node/Express) =====================
+package "Backend (Node/Express)" {
+  class BuddyRoutes {
+    +GET /api/buddies/tasks/:id
+    +POST /api/buddies/tasks/:id
+    +PATCH /api/buddies/tasks/:id/:taskId
+  }
+
+  class AuthMiddleware {
+    +verifyToken(req, res, next)
+  }
+
+  class BuddyController {
+    +getBuddyTasks(req, res)
+    +addBuddyTask(req, res)
+    +toggleBuddyTask(req, res)
+    -withAcceptedChecklistConnection(userId, buddyId, res, callback)
+  }
+
+  class BuddyChecklistSubject {
+    -observers : Observer[]
+    +subscribe(observer)
+    +notify(event, callback)
+  }
+
+  class BuddyStreakObserver {
+    +update(event, callback)
+  }
+
+  class BuddyChecklistNotifier {
+    +notifyTaskToggled(event, callback)
+  }
+
+  class Buddy {
+    +listChecklistTasks(firstUserId, secondUserId, currentUserId, callback)
+    +createChecklistTask(firstUserId, secondUserId, createdBy, title, callback)
+    +findChecklistTask(taskId, firstUserId, secondUserId, callback)
+    +markTaskCompleteForToday(taskId, userId, callback)
+    +unmarkTaskCompleteForToday(taskId, userId, callback)
+    +countChecklistTasks(firstUserId, secondUserId, callback)
+    +countTasksCompletedByBothToday(firstUserId, secondUserId, callback)
+    +wasStreakAwardedToday(userId, buddyId, callback)
+    +incrementStreakForPair(userId, buddyId, callback)
+  }
+
+  class Database {
+    +query(sql, params, callback)
+  }
+}
+
+' ===================== DATABASE (MySQL) =====================
+package "Database (MySQL)" {
+  class buddies {
+    id : int
+    user_id : int
+    buddy_id : int
+    streak : int
+    status : enum
+    last_streak_awarded_on : date
+  }
+
+  class buddy_tasks {
+    id : int
+    user_id : int
+    buddy_id : int
+    created_by : int
+    title : varchar
+    created_at : timestamp
+  }
+
+  class buddy_task_completions {
+    id : int
+    task_id : int
+    user_id : int
+    completed_on : date
+    completed_at : timestamp
+  }
+
+  class users {
+    id : int
+    username : varchar
+    email : varchar
+  }
+}
+
+' ===================== CONNECTIONS =====================
+BuddyChecklistView -[#blue]-> BuddyRoutes : manage checklist tasks
+BuddyRoutes --> AuthMiddleware : verifies JWT
+BuddyRoutes --> BuddyController : delegates request
+BuddyController --> Buddy : validates connection and persists task state
+BuddyController --> BuddyChecklistNotifier : task toggled event
+BuddyChecklistNotifier --> BuddyChecklistSubject : notify(event)
+BuddyChecklistSubject --> BuddyStreakObserver : update(event)
+BuddyStreakObserver --> Buddy : checks completion and awards streak
+Buddy --> Database : executes SQL
+
+users "1" <-- "many" buddy_tasks : user_id
+users "1" <-- "many" buddy_tasks : buddy_id
+users "1" <-- "many" buddy_tasks : created_by
+buddy_tasks "1" <-- "many" buddy_task_completions : task_id
+users "1" <-- "many" buddy_task_completions : user_id
+buddies "1" <-- "many" buddy_tasks : accepted pair
+
+@enduml

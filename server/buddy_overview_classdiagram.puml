@@ -1,0 +1,139 @@
+@startuml MindHavenBuddyOverview
+title MindHaven - Buddy Feature Overview
+
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor Snow
+  BorderColor Black
+  ArrowColor Black
+}
+
+' ===================== FRONTEND (React) =====================
+package "Frontend (React)" {
+  class AppHeader {
+    +navigateToBuddy()
+  }
+
+  class BuddyPage {
+    +listBuddies()
+    +listPendingRequests()
+    +sendBuddyRequest()
+    +acceptRequest()
+    +rejectRequest()
+    +viewBuddyProfile()
+    +manageChecklist()
+  }
+}
+
+' ===================== BACKEND (Node/Express) =====================
+package "Backend (Node/Express)" {
+  class BuddyRoutes {
+    +POST /api/buddies
+    +GET /api/buddies
+    +GET /api/buddies/pending
+    +GET /api/buddies/:id
+    +DELETE /api/buddies/:id
+    +PUT /api/buddies/:id/accept
+    +DELETE /api/buddies/:id/reject
+    +GET /api/buddies/tasks/:id
+    +POST /api/buddies/tasks/:id
+    +PATCH /api/buddies/tasks/:id/:taskId
+  }
+
+  class AuthMiddleware {
+    +verifyToken(req, res, next)
+  }
+
+  class BuddyController {
+    +connectBuddy(req, res)
+    +listBuddies(req, res)
+    +listPendingRequests(req, res)
+    +acceptBuddyRequest(req, res)
+    +rejectBuddyRequest(req, res)
+    +getBuddyProfile(req, res)
+    +removeBuddy(req, res)
+    +getBuddyTasks(req, res)
+    +addBuddyTask(req, res)
+    +toggleBuddyTask(req, res)
+  }
+
+  class Buddy {
+    +findUserById(userId, callback)
+    +findRequest(userId, buddyId, callback)
+    +createRequest(userId, buddyId, callback)
+    +acceptRequest(userId, buddyId, callback)
+    +createAcceptedConnection(userId, buddyId, streak, callback)
+    +listPendingRequests(userId, callback)
+    +listBuddies(userId, callback)
+    +removeConnection(userId, buddyId, callback)
+    +createChecklistTask(firstUserId, secondUserId, createdBy, title, callback)
+    +markTaskCompleteForToday(taskId, userId, callback)
+    +incrementStreakForPair(userId, buddyId, callback)
+  }
+
+  class BuddyChecklistNotifier {
+    +notifyTaskToggled(event, callback)
+  }
+
+  class BuddyStreakObserver {
+    +update(event, callback)
+  }
+}
+
+' ===================== DATABASE (MySQL) =====================
+package "Database (MySQL)" {
+  class users {
+    id : int
+    username : varchar
+    email : varchar
+    bio : text
+    profile_picture : varchar
+  }
+
+  class buddies {
+    id : int
+    user_id : int
+    buddy_id : int
+    streak : int
+    status : enum
+    last_streak_awarded_on : date
+  }
+
+  class buddy_tasks {
+    id : int
+    user_id : int
+    buddy_id : int
+    created_by : int
+    title : varchar
+  }
+
+  class buddy_task_completions {
+    id : int
+    task_id : int
+    user_id : int
+    completed_on : date
+  }
+}
+
+' ===================== CONNECTIONS =====================
+AppHeader --> BuddyPage : opens /buddy
+BuddyPage -[#blue]-> BuddyRoutes : buddy requests, profiles, checklist
+BuddyRoutes --> AuthMiddleware : verifies JWT
+BuddyRoutes --> BuddyController : delegates request
+BuddyController --> Buddy : uses model queries
+BuddyController --> BuddyChecklistNotifier : checklist task toggled
+BuddyChecklistNotifier --> BuddyStreakObserver : observer update
+BuddyStreakObserver --> Buddy : awards streak
+
+Buddy --> users : reads user profiles
+Buddy --> buddies : manages buddy connections
+Buddy --> buddy_tasks : manages shared checklist
+Buddy --> buddy_task_completions : tracks daily completion
+
+users "1" <-- "many" buddies : user_id
+users "1" <-- "many" buddies : buddy_id
+users "1" <-- "many" buddy_tasks : user_id/buddy_id/created_by
+buddy_tasks "1" <-- "many" buddy_task_completions : task_id
+users "1" <-- "many" buddy_task_completions : user_id
+
+@enduml

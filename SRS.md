@@ -82,11 +82,18 @@ Current and planned subsystems include:
 | [UC: Delete Account](UCDeleteAccount.md)                                | 05.11.2025 | Mindhaven Team            |
 | [UC: Log in and Log out](UCLoginLogout.md)                              | 05.11.2025 | Mindhaven Team            |
 | [UC: Manage Journals](UCManageJournal.md)                               | 05.11.2025 | Mindhaven Team            |
-| [UC: Reset Password](UCResetPassword.md)                                 | 05.11.2025 | Mindhaven Team            |
+| [UC: Reset Password](UCResetPassword.md)                                | 05.11.2025 | Mindhaven Team            |
 | [UC: Add Tags](UCAddTags.md)                                            | 05.11.2025 | Mindhaven Team            |
 | [UC: Alerts](UCAlerts.md)                                               | 05.11.2025 | Mindhaven Team            |
 | [UC: Tag Search](UCTagSearch.md)                                        | 05.11.2025 | Mindhaven Team            |
 | [UC: Sort Journals](UCSort.md)                                          | 05.11.2025 | Mindhaven Team            |
+| [UC: AI Assistance](server/ai_classdiagram.puml)                        | 14.05.2026 | Mindhaven Team            |
+| [UC: Manage Buddy](server/buddy_classdiagram.puml)                      | 24.04.2026 | Mindhaven Team            |
+| [UC: Add Buddy](server/buddy_classdiagram.puml)                         | 24.04.2026 | Mindhaven Team            |
+| [UC: Wellness streaks with Buddy](server/buddy_classdiagram.puml)       | 24.04.2026 | Mindhaven Team            |
+| [UC: Buddy profile](server/buddy_classdiagram.puml)                     | 24.04.2026 | Mindhaven Team            |
+| [UC: SOS Mode](server/sos_classdiagram.puml)                            | 12.05.2026 | Mindhaven Team            |
+
 
 
 ### 1.5 Overview

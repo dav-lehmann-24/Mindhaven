@@ -169,7 +169,7 @@ This is the class diagram for the feature SoS Mode
 
 This is the class diagram for the feature Buddy
 
-![Post](Pictures/F2.png) <br>
+![Post](Pictures/buddyOverview.png.png) <br>
 
 
 ### 5.2 Architecturally Significant Design Packages

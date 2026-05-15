@@ -1,0 +1,91 @@
+@startuml MindHavenAddBuddy
+title MindHaven - Add Buddy Feature
+
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor Snow
+  BorderColor Black
+  ArrowColor Black
+}
+
+' ===================== FRONTEND (React) =====================
+package "Frontend (React)" {
+  class BuddyPage {
+    +searchOrSelectBuddy()
+    +sendBuddyRequest()
+    +viewPendingRequests()
+  }
+
+  class AppHeader {
+    +navigateToBuddy()
+  }
+}
+
+' ===================== BACKEND (Node/Express) =====================
+package "Backend (Node/Express)" {
+  class BuddyRoutes {
+    +POST /api/buddies
+    +GET /api/buddies/pending
+    +PUT /api/buddies/:id/accept
+    +DELETE /api/buddies/:id/reject
+  }
+
+  class AuthMiddleware {
+    +verifyToken(req, res, next)
+  }
+
+  class BuddyController {
+    +connectBuddy(req, res)
+    +listPendingRequests(req, res)
+    +acceptBuddyRequest(req, res)
+    +rejectBuddyRequest(req, res)
+  }
+
+  class Buddy {
+    +findUserById(userId, callback)
+    +findRequest(userId, buddyId, callback)
+    +createRequest(userId, buddyId, callback)
+    +acceptRequest(userId, buddyId, callback)
+    +createAcceptedConnection(userId, buddyId, streak, callback)
+    +rejectRequest(userId, buddyId, callback)
+  }
+
+  class Database {
+    +query(sql, params, callback)
+  }
+}
+
+' ===================== DATABASE (MySQL) =====================
+package "Database (MySQL)" {
+  class users {
+    id : int
+    username : varchar
+    email : varchar
+    profile_picture : varchar
+  }
+
+  class buddies {
+    id : int
+    user_id : int
+    buddy_id : int
+    streak : int
+    status : enum
+    created_at : timestamp
+    last_streak_awarded_on : date
+  }
+}
+
+' ===================== CONNECTIONS =====================
+AppHeader --> BuddyPage : opens /buddy
+BuddyPage -[#blue]-> BuddyRoutes : send/list/respond to request
+BuddyRoutes --> AuthMiddleware : verifies JWT
+BuddyRoutes --> BuddyController : delegates request
+BuddyController --> Buddy : validates user and request state
+Buddy --> Database : executes SQL
+Buddy --> users : reads buddy profile
+Buddy --> buddies : creates or updates request
+
+users "1" <-- "many" buddies : user_id
+users "1" <-- "many" buddies : buddy_id
+
+@enduml
