@@ -62,6 +62,10 @@ This document describes the technical architecture of the Mindhaven project, inc
 | [UC:Tag Journals](UCAddTags.md)|05.11.2025 |Mindhaven  |
 | [UC:Filter Journals using tags](UCTagSearch.md)|05.11.2025 |Mindhaven |
 | [UC:Sort Journals](UCSort.md)|05.11.2025 |Mindhaven |
+| [UC: AI Assistance]()|12.05.2026 |Mindhaven |
+| [UC: Buddy ]()|25.04.2026 |Mindhaven |
+| [UC: SOS Mode]()|13.05.2026 |Mindhaven |
+
 
 ### 1.5 Overview
 This document contains the Architectural Representation, Goals and Constraints as well
@@ -145,20 +149,7 @@ The our project our elements are categorized by model, view and controller.
 Generating an Architectural UML diagram for a JavaScript (JS) application are challenging because most UML tools and generators are geared toward object-oriented languages (like Java or C#) with strict class-based structures.
 We've tried PlantUML and UML Generator in VSC but it does not automatically generate UML Diagrams, but we have to code Diagrams ourselfs.
 
-#### Backend Data Flow
-
-
-User sends request → Frontend (React)
-
-Controller receives it → Express route → Controller
-
-Controller calls Model → DB Query
-
-Model returns result → Controller formats response
-
-Response returned to Frontend
-
-[You can see our components here.]()
+[You can see our components here.](client/src/components)
 
 This is the class diagram for the feature Authentication
 
@@ -286,6 +277,16 @@ Safety disclaimer and crisis guidance returned with each AI response
 
 ✔ SOS Mode
 
+SOSPage.js
+
+SOSPage.module.css
+
+AppHeader.js navigation to `/sos`
+
+Frontend emergency support page with emergency type selection, focused guidance, hotlines and resource sections
+
+The backend SOS files currently exist as placeholders for future API/database integration.
+
 ## 6. Process View
 
 ### Login Sequence
@@ -405,12 +406,13 @@ The implementation is organized by client and server responsibilities.
 - `client/src/pages`: page-level React views such as login, registration, dashboard, journal creation and journal list.
 - `client/src/components`: reusable UI components such as buttons, cards, forms, headers, footers, alerts and journal entry cards.
 - `client/src/App.js`: React Router configuration and top-level layout.
+- `client/src/pages/SOSPage.js`: frontend SOS mode view for emergency guidance and resources.
 
 ### Server
 - `server/index.js`: Express application setup, middleware and route registration.
-- `server/routes`: API route definitions for auth, users, journals, tags, buddies, AI, tests and SOS placeholders.
+- `server/routes`: API route definitions for auth, users, journals, tags, buddies, AI, tests and planned SOS backend integration.
 - `server/controllers`: request validation, response formatting and coordination between routes and models.
-- `server/models`: MySQL query logic for users, auth, journals, tags, buddies and SOS placeholders.
+- `server/models`: MySQL query logic for users, auth, journals, tags, buddies and planned SOS backend integration.
 - `server/middleware`: JWT authentication and upload middleware.
 - `server/utils`: email reset service.
 - `server/services`: local AI bridge used by the AI controller.
@@ -461,6 +463,6 @@ Quality is supported through:
 - Observer Pattern separation for buddy streak logic, reducing controller complexity
 
 Remaining quality risks:
-- SOS backend files are placeholders and should be completed or clearly marked as planned.
+- SOS is implemented on the frontend, but backend SOS API/database integration is still planned.
 - AI support is not a replacement for professional care, so responses include a disclaimer and crisis guidance.
 - The local AI model may be slow or unavailable if Python dependencies are missing.
