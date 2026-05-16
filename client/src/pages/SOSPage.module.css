@@ -138,12 +138,13 @@
 
 .selectedHeader {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 10px;
   width: min(980px, 100%);
   text-align: center;
+  margin: 0 auto;
 }
 
 .selectedLabel {
@@ -156,8 +157,13 @@
 }
 
 .selectedDescription {
-  margin: 8px 0 0 0;
+  margin: 8px auto 0;
   color: var(--sos-ink-soft);
+  max-width: 640px;
+}
+
+.selectedHeader .ghostButton {
+  margin-top: 4px;
 }
 
 .ghostButton {
