@@ -9,6 +9,14 @@ const Buddy = {
     db.query(sql, [userId], callback);
   },
 
+  findUserByUsername: (username, callback) => {
+    const sql = `
+      SELECT id, username, email, bio, profile_picture, country, gender
+      FROM users
+      WHERE username = ?`;
+    db.query(sql, [username], callback);
+  },
+
   findRequest: (userId, buddyId, callback) => {
     const sql = `
       SELECT id, user_id, buddy_id, streak, status

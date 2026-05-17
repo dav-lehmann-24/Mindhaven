@@ -21,7 +21,7 @@ const BuddyPage = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [selectedBuddyId, setSelectedBuddyId] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [connectBuddyId, setConnectBuddyId] = useState('');
+  const [connectBuddyUsername, setConnectBuddyUsername] = useState('');
   const [taskTitle, setTaskTitle] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -115,24 +115,24 @@ const BuddyPage = () => {
     event.preventDefault();
     clearMessages();
 
-    const buddyId = Number(connectBuddyId);
-    if (!Number.isInteger(buddyId)) {
-      setErrorMessage('Please enter a valid buddy id.');
+    const username = connectBuddyUsername.trim();
+    if (!username) {
+      setErrorMessage('Please enter a username.');
       return;
     }
 
     setLoading((prev) => ({ ...prev, action: true }));
     try {
-      const res = await axios.post('/api/buddies', { buddyId }, buildAuthConfig(token));
+      const res = await axios.post('/api/buddies', { username }, buildAuthConfig(token));
       setStatusMessage(res.data?.message || 'Buddy request sent.');
-      setConnectBuddyId('');
+      setConnectBuddyUsername('');
       await fetchPending();
     } catch (err) {
       setErrorMessage(err.response?.data?.message || 'Could not send buddy request.');
     } finally {
       setLoading((prev) => ({ ...prev, action: false }));
     }
-  }, [clearMessages, connectBuddyId, fetchPending, token]);
+  }, [clearMessages, connectBuddyUsername, fetchPending, token]);
 
   const handleAcceptRequest = useCallback(async (buddyId) => {
     clearMessages();
@@ -267,8 +267,8 @@ const BuddyPage = () => {
           <StatusBanner statusMessage={statusMessage} errorMessage={errorMessage} />
 
           <ConnectBuddySection
-            connectBuddyId={connectBuddyId}
-            onChange={(event) => setConnectBuddyId(event.target.value)}
+            connectBuddyUsername={connectBuddyUsername}
+            onChange={(event) => setConnectBuddyUsername(event.target.value)}
             onSubmit={handleConnectBuddy}
             loadingAction={loading.action}
           />

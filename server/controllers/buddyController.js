@@ -53,49 +53,64 @@ const withAcceptedChecklistConnection = (userId, buddyId, res, callback) => {
 
 exports.connectBuddy = (req, res) => {
   const userId = req.user.id;
+  const username = typeof req.body.username === 'string' ? req.body.username.trim() : '';
   const buddyId = Number(req.body.buddyId);
 
-  if (!Number.isInteger(buddyId)) {
-    return res.status(400).json({ message: 'A valid buddyId is required' });
-  }
-
-  if (buddyId === userId) {
-    return res.status(400).json({ message: 'You cannot connect with yourself' });
-  }
-
-  Buddy.findUserById(buddyId, (userErr, users) => {
-    if (userErr) return res.status(500).json({ message: 'Database error' });
-    if (users.length === 0) {
-      return res.status(404).json({ message: 'Buddy not found' });
+  const startBuddyRequest = (buddy) => {
+    const resolvedBuddyId = Number(buddy.id);
+    if (resolvedBuddyId === userId) {
+      return res.status(400).json({ message: 'You cannot connect with yourself' });
     }
 
-    Buddy.findRequest(userId, buddyId, (outgoingErr, outgoingConnections) => {
-      if (outgoingErr) return res.status(500).json({ message: 'Database error' });
+    Buddy.findRequest(userId, resolvedBuddyId, (outgoingErr, outgoingConnections) => {
+      if (outgoingErr) return sendDatabaseError(res);
       if (outgoingConnections.length > 0) {
         return res.status(400).json({
           message: `Buddy request already ${outgoingConnections[0].status}`,
         });
       }
 
-      Buddy.findRequest(buddyId, userId, (incomingErr, incomingConnections) => {
-        if (incomingErr) return res.status(500).json({ message: 'Database error' });
+      Buddy.findRequest(resolvedBuddyId, userId, (incomingErr, incomingConnections) => {
+        if (incomingErr) return sendDatabaseError(res);
         if (incomingConnections.length > 0) {
           return res.status(400).json({
             message: `This buddy already sent you a ${incomingConnections[0].status} request`,
           });
         }
 
-        Buddy.createRequest(userId, buddyId, (createErr) => {
+        Buddy.createRequest(userId, resolvedBuddyId, (createErr) => {
           if (createErr) return res.status(500).json({ message: 'Could not send buddy request' });
 
           return res.status(201).json({
             message: 'Buddy request sent successfully',
             status: 'pending',
-            buddy: users[0],
+            buddy,
           });
         });
       });
     });
+  };
+
+  if (username) {
+    return Buddy.findUserByUsername(username, (userErr, users) => {
+      if (userErr) return sendDatabaseError(res);
+      if (users.length === 0) {
+        return res.status(404).json({ message: 'Buddy not found' });
+      }
+      return startBuddyRequest(users[0]);
+    });
+  }
+
+  if (!Number.isInteger(buddyId)) {
+    return res.status(400).json({ message: 'A valid buddyId or username is required' });
+  }
+
+  return Buddy.findUserById(buddyId, (userErr, users) => {
+    if (userErr) return sendDatabaseError(res);
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'Buddy not found' });
+    }
+    return startBuddyRequest(users[0]);
   });
 };
 

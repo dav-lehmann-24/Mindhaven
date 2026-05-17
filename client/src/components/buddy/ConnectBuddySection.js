@@ -3,19 +3,18 @@ import Card from '../Card';
 import Button from '../Button';
 import styles from '../../pages/BuddyPage.module.css';
 
-const ConnectBuddySection = ({ connectBuddyId, onChange, onSubmit, loadingAction }) => (
+const ConnectBuddySection = ({ connectBuddyUsername, onChange, onSubmit, loadingAction }) => (
   <section className={styles.section}>
     <div className={styles.sectionHeader}>
       <h2>Connect a Buddy</h2>
-      <span>Send a request by id.</span>
+      <span>Send a request by username.</span>
     </div>
     <Card className={styles.card}>
       <form className={styles.formRow} onSubmit={onSubmit}>
         <input
-          type="number"
-          min="1"
-          placeholder="Buddy id"
-          value={connectBuddyId}
+          type="text"
+          placeholder="Username"
+          value={connectBuddyUsername}
           onChange={onChange}
           className={styles.input}
         />
