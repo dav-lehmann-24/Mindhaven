@@ -31,6 +31,7 @@ const AiChatbotPage = () => {
     }
   }, [navigate, token]);
 
+
   useEffect(() => {
     if (!listRef.current) {
       return;

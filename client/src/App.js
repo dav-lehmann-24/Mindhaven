@@ -9,7 +9,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import JournalCreatePage from './pages/JournalCreatePage';
 import JournalListPage from './pages/JournalListPage';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
@@ -24,6 +24,11 @@ function AppContent() {
   const location = useLocation();
   const hideHeaderFooterRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
   const shouldShowHeaderFooter = !hideHeaderFooterRoutes.includes(location.pathname) && !location.pathname.startsWith('/reset-password/');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
     <>
       {shouldShowHeaderFooter && <AppHeader />}
