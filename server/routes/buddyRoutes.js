@@ -15,6 +15,7 @@ router.put('/streak', verifyToken, buddyController.updateStreak);
 
 router.put('/:id/accept', verifyToken, buddyController.acceptBuddyRequest);
 router.delete('/:id/reject', verifyToken, buddyController.rejectBuddyRequest);
+router.delete('/:id/cancel', verifyToken, buddyController.cancelBuddyRequest);
 
 router.get('/:id', verifyToken, buddyController.getBuddyProfile);
 router.delete('/:id', verifyToken, buddyController.removeBuddy);

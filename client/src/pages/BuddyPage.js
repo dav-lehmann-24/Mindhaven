@@ -15,6 +15,14 @@ const buildAuthConfig = (token) => ({
 
 const getBuddyId = (buddy) => buddy.profile_id;
 
+const normalizeProfilePicture = (profilePicture) => {
+  if (!profilePicture || typeof profilePicture !== 'string') return '';
+  if (profilePicture.startsWith('http://') || profilePicture.startsWith('https://')) return profilePicture;
+  if (profilePicture.startsWith('/uploads/')) return profilePicture;
+  if (profilePicture.startsWith('uploads/')) return `/${profilePicture}`;
+  return profilePicture;
+};
+
 const BuddyPage = () => {
   const navigate = useNavigate();
   const [buddies, setBuddies] = useState([]);
@@ -43,7 +51,19 @@ const BuddyPage = () => {
     setLoading((prev) => ({ ...prev, buddies: true }));
     try {
       const res = await axios.get('/api/buddies', buildAuthConfig(token));
-      setBuddies(Array.isArray(res.data) ? res.data : []);
+      const buddyList = Array.isArray(res.data) ? res.data : [];
+      const normalized = buddyList.map((buddy) => ({
+        ...buddy,
+        profile_picture: normalizeProfilePicture(buddy.profile_picture),
+      }));
+      const unique = new Map();
+      normalized.forEach((buddy) => {
+        const key = Number.isNaN(Number(buddy.profile_id)) ? buddy.profile_id : Number(buddy.profile_id);
+        if (!unique.has(key)) {
+          unique.set(key, buddy);
+        }
+      });
+      setBuddies(Array.from(unique.values()));
     } catch {
       setBuddies([]);
     } finally {
@@ -163,6 +183,20 @@ const BuddyPage = () => {
     }
   }, [clearMessages, fetchPending, token]);
 
+  const handleCancelRequest = useCallback(async (buddyId) => {
+    clearMessages();
+    setLoading((prev) => ({ ...prev, action: true }));
+    try {
+      const res = await axios.delete(`/api/buddies/${buddyId}/cancel`, buildAuthConfig(token));
+      setStatusMessage(res.data?.message || 'Buddy request cancelled.');
+      await fetchPending();
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || 'Could not cancel request.');
+    } finally {
+      setLoading((prev) => ({ ...prev, action: false }));
+    }
+  }, [clearMessages, fetchPending, token]);
+
   const handleRemoveBuddy = useCallback(async (buddyId) => {
     clearMessages();
     setLoading((prev) => ({ ...prev, action: true }));
@@ -241,6 +275,14 @@ const BuddyPage = () => {
     }
   }, [clearMessages, selectedBuddyId, token]);
 
+  useEffect(() => {
+    if (!statusMessage && !errorMessage) return;
+    const timeoutId = setTimeout(() => {
+      clearMessages();
+    }, 4000);
+    return () => clearTimeout(timeoutId);
+  }, [statusMessage, errorMessage, clearMessages]);
+
   return (
     <div className={styles.page}>
       <div className={styles.hero}>
@@ -285,6 +327,7 @@ const BuddyPage = () => {
             outgoingRequests={outgoingRequests}
             onAccept={handleAcceptRequest}
             onReject={handleRejectRequest}
+            onCancel={handleCancelRequest}
             loadingAction={loading.action}
           />
 

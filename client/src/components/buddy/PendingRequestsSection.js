@@ -9,6 +9,7 @@ const PendingRequestsSection = ({
   outgoingRequests,
   onAccept,
   onReject,
+  onCancel,
   loadingAction,
 }) => (
   <section className={styles.section}>
@@ -51,6 +52,12 @@ const PendingRequestsSection = ({
           </div>
           <div className={styles.requestActions}>
             <span className={styles.pendingPill}>Pending</span>
+            <Button
+              text="Cancel"
+              className={styles.secondaryButton}
+              onClick={() => onCancel(request.profile_id)}
+              disabled={loadingAction}
+            />
           </div>
         </div>
       ))}

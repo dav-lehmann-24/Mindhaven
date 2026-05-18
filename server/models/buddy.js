@@ -222,6 +222,13 @@ const Buddy = {
       WHERE user_id = ? AND buddy_id = ? AND status = 'pending'`;
     db.query(sql, [userId, buddyId], callback);
   },
+
+  cancelRequest: (userId, buddyId, callback) => {
+    const sql = `
+      DELETE FROM buddies
+      WHERE user_id = ? AND buddy_id = ? AND status = 'pending'`;
+    db.query(sql, [userId, buddyId], callback);
+  },
 };
 
 module.exports = Buddy;

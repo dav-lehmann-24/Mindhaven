@@ -76,6 +76,29 @@ const DashboardPage = () => {
             </div>
           </div>
         </Card>
+        <section className={styles.chatbotSection}>
+          <Card className={styles.chatbotCard}>
+            <div className={styles.chatbotCopy}>
+              <span className={styles.chatbotEyebrow}>AI Support</span>
+              <h2 className={styles.chatbotTitle}>Need a calm check-in?</h2>
+              <p className={styles.chatbotText}>
+                Chat with Mindhaven&apos;s AI for a supportive response, coping tips, and
+                gentle guidance.
+              </p>
+              <button
+                type="button"
+                className={styles.chatbotButton}
+                onClick={() => navigate('/ai-chatbot')}
+              >
+                Open AI Chatbot
+              </button>
+            </div>
+            <div className={styles.chatbotVisual}>
+              <div className={styles.chatbotOrb} />
+              <div className={styles.chatbotPulse} />
+            </div>
+          </Card>
+        </section>
       </main>
       <div style={{
         width: '100vw',

@@ -17,6 +17,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import SOSPage from './pages/SOSPage';
 import BuddyPage from './pages/BuddyPage';
+import AiChatbotPage from './pages/AiChatbotPage';
 
 
 function AppContent() {
@@ -43,6 +44,7 @@ function AppContent() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/sos" element={<SOSPage />} />
           <Route path="/buddy" element={<BuddyPage />} />
+          <Route path="/ai-chatbot" element={<AiChatbotPage />} />
         </Routes>
       </div>
       {shouldShowHeaderFooter && <Footer />}

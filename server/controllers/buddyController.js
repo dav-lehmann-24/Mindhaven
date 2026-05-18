@@ -192,10 +192,41 @@ exports.rejectBuddyRequest = (req, res) => {
   });
 };
 
+exports.cancelBuddyRequest = (req, res) => {
+  const userId = req.user.id;
+  const buddyId = parseBuddyId(req, res);
+  if (buddyId === null) return;
+
+  Buddy.findRequest(userId, buddyId, (requestErr, requests) => {
+    if (requestErr) return sendDatabaseError(res);
+    if (requests.length === 0 || requests[0].status !== 'pending') {
+      return res.status(404).json({ message: 'Pending buddy request not found' });
+    }
+
+    Buddy.cancelRequest(userId, buddyId, (cancelErr) => {
+      if (cancelErr) return res.status(500).json({ message: 'Could not cancel buddy request' });
+
+      return res.status(200).json({
+        message: 'Buddy request cancelled successfully',
+        status: 'cancelled',
+      });
+    });
+  });
+};
+
 exports.listBuddies = (req, res) => {
   Buddy.listBuddies(req.user.id, (err, buddies) => {
     if (err) return res.status(500).json({ message: 'Error fetching buddies' });
-    return res.status(200).json(buddies);
+    const uniqueByProfile = new Map();
+    (buddies || []).forEach((buddy) => {
+      const numericProfileId = Number(buddy.profile_id);
+      const key = Number.isNaN(numericProfileId) ? buddy.profile_id : numericProfileId;
+      const existing = uniqueByProfile.get(key);
+      if (!existing || (buddy.streak ?? 0) > (existing.streak ?? 0)) {
+        uniqueByProfile.set(key, buddy);
+      }
+    });
+    return res.status(200).json(Array.from(uniqueByProfile.values()));
   });
 };
 
