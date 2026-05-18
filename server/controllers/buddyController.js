@@ -7,6 +7,36 @@ const hasAcceptedConnection = (outgoingConnection, incomingConnection) =>
 const normalizePair = (userId, buddyId) => [Math.min(userId, buddyId), Math.max(userId, buddyId)];
 const sendDatabaseError = (res) => res.status(500).json({ message: 'Database error' });
 
+const loadBuddyById = (buddyId, res, callback) => {
+  Buddy.findUserById(buddyId, (userErr, users) => {
+    if (userErr) return sendDatabaseError(res);
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'Buddy not found' });
+    }
+    return callback(users[0]);
+  });
+};
+
+const withPendingRequest = (sourceUserId, targetUserId, res, callback) => {
+  Buddy.findRequest(sourceUserId, targetUserId, (requestErr, requests) => {
+    if (requestErr) return sendDatabaseError(res);
+    if (requests.length === 0 || requests[0].status !== 'pending') {
+      return res.status(404).json({ message: 'Pending buddy request not found' });
+    }
+    return callback(requests[0]);
+  });
+};
+
+const withAnyConnectionOr404 = (userId, buddyId, res, callback) => {
+  getAnyConnection(userId, buddyId, (connectionErr, connection) => {
+    if (connectionErr) return sendDatabaseError(res);
+    if (!connection) {
+      return res.status(404).json({ message: 'Buddy connection not found' });
+    }
+    return callback(connection);
+  });
+};
+
 const parseBuddyId = (req, res) => {
   const buddyId = Number(req.params.id);
 
@@ -105,13 +135,7 @@ exports.connectBuddy = (req, res) => {
     return res.status(400).json({ message: 'A valid buddyId or username is required' });
   }
 
-  return Buddy.findUserById(buddyId, (userErr, users) => {
-    if (userErr) return sendDatabaseError(res);
-    if (users.length === 0) {
-      return res.status(404).json({ message: 'Buddy not found' });
-    }
-    return startBuddyRequest(users[0]);
-  });
+  return loadBuddyById(buddyId, res, startBuddyRequest);
 };
 
 exports.acceptBuddyRequest = (req, res) => {
@@ -175,12 +199,7 @@ exports.rejectBuddyRequest = (req, res) => {
   const buddyId = parseBuddyId(req, res);
   if (buddyId === null) return;
 
-  Buddy.findRequest(buddyId, userId, (requestErr, requests) => {
-    if (requestErr) return sendDatabaseError(res);
-    if (requests.length === 0 || requests[0].status !== 'pending') {
-      return res.status(404).json({ message: 'Pending buddy request not found' });
-    }
-
+  withPendingRequest(buddyId, userId, res, () => {
     Buddy.rejectRequest(userId, buddyId, (rejectErr) => {
       if (rejectErr) return res.status(500).json({ message: 'Could not reject buddy request' });
 
@@ -197,12 +216,7 @@ exports.cancelBuddyRequest = (req, res) => {
   const buddyId = parseBuddyId(req, res);
   if (buddyId === null) return;
 
-  Buddy.findRequest(userId, buddyId, (requestErr, requests) => {
-    if (requestErr) return sendDatabaseError(res);
-    if (requests.length === 0 || requests[0].status !== 'pending') {
-      return res.status(404).json({ message: 'Pending buddy request not found' });
-    }
-
+  withPendingRequest(userId, buddyId, res, () => {
     Buddy.cancelRequest(userId, buddyId, (cancelErr) => {
       if (cancelErr) return res.status(500).json({ message: 'Could not cancel buddy request' });
 
@@ -323,20 +337,10 @@ exports.getBuddyProfile = (req, res) => {
   const buddyId = parseBuddyId(req, res);
   if (buddyId === null) return;
 
-  getAnyConnection(userId, buddyId, (connectionErr, connection) => {
-    if (connectionErr) return sendDatabaseError(res);
-    if (!connection) {
-      return res.status(404).json({ message: 'Buddy connection not found' });
-    }
-
-    Buddy.findUserById(buddyId, (userErr, users) => {
-      if (userErr) return sendDatabaseError(res);
-      if (users.length === 0) {
-        return res.status(404).json({ message: 'Buddy not found' });
-      }
-
+  withAnyConnectionOr404(userId, buddyId, res, (connection) => {
+    loadBuddyById(buddyId, res, (buddy) => {
       return res.status(200).json({
-        ...users[0],
+        ...buddy,
         streak: connection.streak,
         status: connection.status,
       });
@@ -355,12 +359,7 @@ exports.removeBuddy = (req, res) => {
   const buddyId = parseBuddyId(req, res);
   if (buddyId === null) return;
 
-  getAnyConnection(userId, buddyId, (connectionErr, connection) => {
-    if (connectionErr) return sendDatabaseError(res);
-    if (!connection) {
-      return res.status(404).json({ message: 'Buddy connection not found' });
-    }
-
+  withAnyConnectionOr404(userId, buddyId, res, () => {
     Buddy.removeConnection(userId, buddyId, (removeErr) => {
       if (removeErr) return res.status(500).json({ message: 'Could not remove buddy' });
 
