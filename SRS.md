@@ -73,29 +73,29 @@ Current and planned subsystems include:
 
 ### 1.4 References
 
-| Title                                                                |    Date    | Publishing organization |
-| -------------------------------------------------------------------- | :--------: | ----------------------- |
-| [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven) | 05.11.2025 | Mindhaven Team          |
-| [GitHub](https://github.com/dav-lehmann-24/Mindhaven)                | 05.11.2025 | Mindhaven Team          |
-| [Software Architecture Document](SAD.md)                             | 05.11.2025 | Mindhaven Team          |
-| [Test Plan](Test_Plan.md)                                            | 05.11.2025 | Mindhaven Team          |
-| [Overall Use Case Diagram](Pictures/UCD.png)                         | 05.11.2025 | Mindhaven Team          |
-| [UC: Create Account](UCCreateAccount.md)                             | 05.11.2025 | Mindhaven Team          |
-| [UC: Edit Account](UCEditAccount.md)                                 | 05.11.2025 | Mindhaven Team          |
-| [UC: Delete Account](UCDeleteAccount.md)                             | 05.11.2025 | Mindhaven Team          |
-| [UC: Log in and Log out](UCLoginLogout.md)                           | 05.11.2025 | Mindhaven Team          |
-| [UC: Manage Journals](UCManageJournal.md)                            | 05.11.2025 | Mindhaven Team          |
-| [UC: Reset Password](UCResetPassword.md)                             | 05.11.2025 | Mindhaven Team          |
-| [UC: Add Tags](UCAddTags.md)                                         | 05.11.2025 | Mindhaven Team          |
-| [UC: Alerts](UCAlerts.md)                                            | 05.11.2025 | Mindhaven Team          |
-| [UC: Tag Search](UCTagSearch.md)                                     | 05.11.2025 | Mindhaven Team          |
-| [UC: Sort Journals](UCSort.md)                                       | 05.11.2025 | Mindhaven Team          |
-| [UC: AI Assistance](UCAIAssistance.md)                               | 14.05.2026 | Mindhaven Team          |
-| [UC: Manage Buddy](UCBuddy.md#L23)                                   | 24.04.2026 | Mindhaven Team          |
-| [UC: Add Buddy](UCBuddy.md#L15)                                      | 24.04.2026 | Mindhaven Team          |
-| [UC: Wellness streaks with Buddy](UCBuddy.md#L27)                    | 24.04.2026 | Mindhaven Team          |
-| [UC: Buddy profile](UCBuddy.md#L19)                                  | 24.04.2026 | Mindhaven Team          |
-| [UC: SOS Mode](UCSOSMode.md)                                         | 12.05.2026 | Mindhaven Team          |
+| Title                                                                       |    Date    | Publishing organization |
+| --------------------------------------------------------------------------- | :--------: | ----------------------- |
+| [Mindhaven Blog](https://mindhavenapp-kunpy.wordpress.com/mindhaven)        | 05.11.2025 | Mindhaven Team          |
+| [GitHub](https://github.com/dav-lehmann-24/Mindhaven)                       | 05.11.2025 | Mindhaven Team          |
+| [Software Architecture Document](SAD.md)                                    | 05.11.2025 | Mindhaven Team          |
+| [Test Plan](Test_Plan.md)                                                   | 05.11.2025 | Mindhaven Team          |
+| [Overall Use Case Diagram](Pictures/UCD.png)                                | 05.11.2025 | Mindhaven Team          |
+| [UC: Create Account](UCCreateAccount.md)                                    | 05.11.2025 | Mindhaven Team          |
+| [UC: Edit Account](UCEditAccount.md)                                        | 05.11.2025 | Mindhaven Team          |
+| [UC: Delete Account](UCDeleteAccount.md)                                    | 05.11.2025 | Mindhaven Team          |
+| [UC: Log in and Log out](UCLoginLogout.md)                                  | 05.11.2025 | Mindhaven Team          |
+| [UC: Manage Journals](UCManageJournal.md)                                   | 05.11.2025 | Mindhaven Team          |
+| [UC: Reset Password](UCResetPassword.md)                                    | 05.11.2025 | Mindhaven Team          |
+| [UC: Add Tags](UCAddTags.md)                                                | 05.11.2025 | Mindhaven Team          |
+| [UC: Alerts](UCAlerts.md)                                                   | 05.11.2025 | Mindhaven Team          |
+| [UC: Tag Search](UCTagSearch.md)                                            | 05.11.2025 | Mindhaven Team          |
+| [UC: Sort Journals](UCSort.md)                                              | 05.11.2025 | Mindhaven Team          |
+| [UC: AI Assistance](UCAIAssistance.md)                                      | 14.05.2026 | Mindhaven Team          |
+| [UC: Manage Buddy](UCBuddy.md#213-use-case-manage-buddies)                  | 24.04.2026 | Mindhaven Team          |
+| [UC: Add Buddy](UCBuddy.md#211-use-case-connect-buddy)                      | 24.04.2026 | Mindhaven Team          |
+| [UC: Wellness streaks with Buddy](UCBuddy.md#214-use-case-wellness-streaks) | 24.04.2026 | Mindhaven Team          |
+| [UC: Buddy profile](UCBuddy.md#212-use-case-buddy-profile)                  | 24.04.2026 | Mindhaven Team          |
+| [UC: SOS Mode](UCSOSMode.md)                                                | 12.05.2026 | Mindhaven Team          |
 
 ### 1.5 Overview
 
