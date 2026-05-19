@@ -47,6 +47,7 @@
 ### 1.1 Purpose
 
 This Test Plan defines the testing strategy for **Mindhaven**, including backend API testing, integration testing, and CI-based validation. The goal is to ensure correctness, stability, and maintainability of the system.
+The SUT is the Mindhaven backend API.
 
 ### 1.2 Scope
 
@@ -92,6 +93,12 @@ This document is intended for:
 | Backend Test Files | `server/tests/` |
 | Feature Files | `features/` |
 | CI Workflow | `.github/workflows/node.js.yml` |
+| Document                            | Location              |
+| ----------------------------------- | --------------------- |
+| Software Requirements Specification | `SRS.md`              |
+| Software Architecture Document      | `SAD.md`              |
+| Project README                      | `README.md`           |
+| Server README / scripts             | `server/package.json` |
 
 ### 1.6 Document Structure
 
@@ -141,6 +148,7 @@ We aim to verify that:
 **Backend:**
 
 - Authentication (register, login)
+- JWT token issuance and protected routes
 - Journal management (create, update, fetch)
 - Tag-based alerts
 - User-related operations
@@ -173,7 +181,7 @@ We aim to verify that:
 ### 4.2 Potential Future Tests
 
 - Frontend testing (React)
-- E2E browser testing
+- Additional E2E browser flows beyond login
 - Performance testing
 
 ### 4.3 Exclusions
@@ -246,7 +254,16 @@ Example:
 - Register user
 - Login
 - Create journal
+- Update journal
 - Fetch journals
+
+Screenshot (Postman runs):
+
+- ![Postman Register](Pictures/Postman_Test_Register.jpeg)
+- ![Postman Login](Pictures/Postman_Test_Login.jpeg)
+- ![Postman Create Journal](Pictures/Postman_Test_Create_Journal.jpeg)
+- ![Postman Fetch Journals](Pictures/Postman_Test_Fetch_Journals.jpeg)
+- ![Postman Update Journal](Pictures/Postman_Test_Update_Journal.jpeg)
 
 #### 5.2.5 Test Coverage
 
@@ -256,6 +273,11 @@ Example:
 Focus:
 
 - Improve controller coverage
+- Increase branch coverage
+
+Screenshot (Coverage report):
+
+- ![Jest Coverage Summary](Pictures/Test_Coverage.png)
 - Increase branch coverage
 - Identify untested backend modules before future releases
 
@@ -298,6 +320,15 @@ Current saved backend coverage report:
 
 ## 7. Deliverables
 
+| Deliverable       | Location                          |
+| ----------------- | --------------------------------- |
+| Unit Tests        | `/server/tests/unit/`             |
+| Integration Tests | `/server/tests/integration/`      |
+| Feature Files     | `/features/` and `/features/e2e/` |
+| Step Definitions  | `/features/steps_definition/`     |
+| Coverage Report   | `/server/coverage/`               |
+| CI Workflow       | `/.github/workflows/node.js.yml`  |
+| Test Plan         | `/Test_Plan.md`                   |
 | Deliverable       | Location              |
 | ----------------- | --------------------- |
 | Unit Tests        | `server/tests/unit/`  |
@@ -309,6 +340,25 @@ Current saved backend coverage report:
 ---
 
 ## 8. Testing Workflow
+
+1. Install dependencies in `/server` and `/client`.
+2. Configure `server/.env` with database credentials (local or Aiven) and secrets.
+3. Run unit + integration tests from `/server`:
+
+- `npm test`
+- `npm run test:coverage`
+
+4. Run E2E login flow (requires backend on `http://localhost:8080` and frontend on `http://localhost:3000`):
+
+- Start backend: `node index.js`
+- Start frontend: `npm start` (from `/client`)
+- Run E2E: `npm run test:e2e` (from `/server`)
+
+5. CI runs `npm test` in `/server` on every push/PR to `main`, then checks duplication and runs frontend lint.
+
+Screenshot (Testlauf):
+
+- ![Lokaler Jest Testlauf](Pictures/Test_Jest.png)
 
 The testing workflow is:
 
@@ -335,6 +385,13 @@ Any system capable of running Node.js (Windows, macOS, Linux)
 
 ### 9.2 Base Software Elements in the Test Environment
 
+- Node.js (CI uses v20)
+- npm
+- MySQL (local or Aiven) for integration tests
+- Environment variables in `server/.env`
+- Optional: Python runtime for local AI feature
+- Playwright browsers for E2E tests
+
 | Software | Purpose |
 | -------- | ------- |
 | Node.js 20 | Runtime used by the GitHub Actions workflow |
@@ -348,6 +405,17 @@ Any system capable of running Node.js (Windows, macOS, Linux)
 
 ### 9.3 Productivity and Support Tools
 
+| Tool           | Purpose                               |
+| -------------- | ------------------------------------- |
+| Jest           | Unit and integration test runner      |
+| Supertest      | API integration testing               |
+| Cucumber       | Gherkin-based functional tests        |
+| Chai           | Assertions for E2E tests              |
+| Playwright     | Browser automation for E2E login flow |
+| Postman        | Manual API testing                    |
+| GitHub Actions | CI test execution                     |
+| JSCPD          | Code duplication check in CI          |
+| ESLint         | Frontend linting in CI                |
 | Tool | Purpose |
 | ---- | ------- |
 | GitHub Actions | Automated CI validation |
@@ -361,6 +429,12 @@ Any system capable of running Node.js (Windows, macOS, Linux)
 
 ## 10. Responsibilities, Staffing, and Training Needs
 
+| Role                | Responsibility                                                      |
+| ------------------- | ------------------------------------------------------------------- |
+| Developers          | Write and maintain unit/integration tests, keep coverage up to date |
+| QA/Testers          | Execute manual API tests (Postman), verify Gherkin scenarios        |
+| CI Owner            | Maintain GitHub Actions workflow and address CI failures            |
+| Reviewers/Lecturers | Validate test evidence and deliverables                             |
 | Role | Responsibility |
 | ---- | -------------- |
 | Developers | Write and maintain unit, integration, and functional tests |
@@ -381,6 +455,13 @@ Training needs:
 
 ## 11. Iteration Milestones
 
+| Milestone                                     | Status  |
+| --------------------------------------------- | ------- |
+| Initial unit tests for controllers/models     | Done    |
+| Integration test for auth routes              | Done    |
+| E2E login flow (Cucumber + Playwright)        | Done    |
+| CI workflow for backend tests + frontend lint | Done    |
+| Additional API endpoint coverage              | Planned |
 | Milestone | Status |
 | --------- | ------ |
 | Test plan drafted | Complete |
@@ -398,6 +479,13 @@ Training needs:
 
 ## 12. Risks, Dependencies, Assumptions, and Constraints
 
+| Risk                                              | Probability | Impact | Mitigation                                                          |
+| ------------------------------------------------- | ----------- | ------ | ------------------------------------------------------------------- |
+| Integration tests depend on database availability | Medium      | High   | Use local DB in dev; document Aiven setup for CI/local runs         |
+| E2E tests are flaky due to browser timing/network | Medium      | Medium | Increase timeouts, keep stable test data, run locally when CI fails |
+| AI feature depends on local Python environment    | Low         | Medium | Treat as optional; skip AI tests if Python deps missing             |
+| Limited frontend tests                            | Medium      | Medium | Keep frontend linting in CI; plan React tests later                 |
+| Secrets/config missing in CI or local runs        | Medium      | High   | Provide `.env.example` and document required variables              |
 | Risk | Probability | Impact | Mitigation |
 | ---- | ----------- | ------ | ---------- |
 | Environment variables are missing or incorrect | Medium | High | Document required variables and use test-specific configuration |
@@ -433,6 +521,14 @@ Constraints:
 ---
 
 ## 13. Test Execution Screenshots
+
+- ![Jest Testlauf (Unit + Integration)](Pictures/Test_Jest.png)
+- ![Jest Coverage Report](Pictures/Test_Coverage.png)
+- ![Postman Register](Pictures/Postman_Test_Register.jpeg)
+- ![Postman Login](Pictures/Postman_Test_Login.jpeg)
+- ![Postman Create Journal](Pictures/Postman_Test_Create_Journal.jpeg)
+- ![Postman Fetch Journals](Pictures/Postman_Test_Fetch_Journals.jpeg)
+- ![Postman Update Journal](Pictures/Postman_Test_Update_Journal.jpeg)
 
 Test execution evidence should include screenshots or copied output from:
 
