@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 // routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(uploadsDir));
 app.use('/api/test', testRoutes);
 app.use('/api/journal', journalRoutes);
 app.use('/api/tags', tagRoutes);
