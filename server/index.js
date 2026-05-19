@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -12,6 +14,9 @@ const aiRoutes = require('./routes/aiRoutes');
 require('dotenv').config();
 
 const app = express();
+
+const uploadsDir = path.join(__dirname, 'uploads');
+fs.mkdirSync(uploadsDir, { recursive: true });
 const cors = require('cors');
 app.use(express.json());
 
