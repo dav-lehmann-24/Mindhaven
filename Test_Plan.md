@@ -237,10 +237,10 @@ Example:
 Screenshot (Postman runs):
 
 - ![Postman Register](Pictures/Postman_Test_Register.jpeg)
-- ![Postman Login](pictures/Postman_Test_Login.jpeg)
-- ![Postman Create Journal](pictures/Postman_Test_Create_Journal.jpeg)
-- ![Postman Fetch Journals](pictures/Postman_Test_Fetch_Journals.jpeg)
-- ![Postman Update Journal](pictures/Postman_Test_Update_Journal.jpeg)
+- ![Postman Login](Pictures/Postman_Test_Login.jpeg)
+- ![Postman Create Journal](Pictures/Postman_Test_Create_Journal.jpeg)
+- ![Postman Fetch Journals](Pictures/Postman_Test_Fetch_Journals.jpeg)
+- ![Postman Update Journal](Pictures/Postman_Test_Update_Journal.jpeg)
 
 #### 5.2.5 Test Coverage
 
@@ -254,7 +254,7 @@ Focus:
 
 Screenshot (Coverage report):
 
-- ![Jest Coverage Summary](pictures/Test_Coverage.png)
+- ![Jest Coverage Summary](Pictures/Test_Coverage.png)
 
 ---
 
@@ -317,7 +317,7 @@ Screenshot (Coverage report):
 
 Screenshot (Testlauf):
 
-- ![Lokaler Jest Testlauf](pictures/Test_Jest.png)
+- ![Lokaler Jest Testlauf](Pictures/Test_Jest.png)
 
 ---
 
@@ -389,10 +389,10 @@ Any system capable of running Node.js (Windows, macOS, Linux)
 
 ## 13. Test Execution Screenshots
 
-- ![Jest Testlauf (Unit + Integration)](pictures/Test_Jest.png)
-- ![Jest Coverage Report](pictures/Test_Coverage.png)
-- ![Postman Register](pictures/Postman_Test_Register.jpeg)
-- ![Postman Login](pictures/Postman_Test_Login.jpeg)
-- ![Postman Create Journal](pictures/Postman_Test_Create_Journal.jpeg)
-- ![Postman Fetch Journals](pictures/Postman_Test_Fetch_Journals.jpeg)
-- ![Postman Update Journal](pictures/Postman_Test_Update_Journal.jpeg)
+- ![Jest Testlauf (Unit + Integration)](Pictures/Test_Jest.png)
+- ![Jest Coverage Report](Pictures/Test_Coverage.png)
+- ![Postman Register](Pictures/Postman_Test_Register.jpeg)
+- ![Postman Login](Pictures/Postman_Test_Login.jpeg)
+- ![Postman Create Journal](Pictures/Postman_Test_Create_Journal.jpeg)
+- ![Postman Fetch Journals](Pictures/Postman_Test_Fetch_Journals.jpeg)
+- ![Postman Update Journal](Pictures/Postman_Test_Update_Journal.jpeg)
