@@ -1,0 +1,310 @@
+@startuml Mindhaven_Full_Architecture
+
+title MindHaven Full System Architecture
+
+left to right direction
+
+skinparam style strictuml
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype polyline
+skinparam defaultFontName Arial
+skinparam class {
+  BackgroundColor #F9F9F9
+  BorderColor #8A8A8A
+  ArrowColor #6D6DFF
+  FontColor #1F1F1F
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #4F4F4F
+  FontColor #1F1F1F
+}
+skinparam stereotypeCBackgroundColor #D5E8D4
+skinparam stereotypeCBorderColor #82B366
+
+package "Frontend (React)" as Frontend {
+  class LoginPage <<C>>
+  class RegisterPage <<C>>
+  class ForgotPasswordPage <<C>>
+  class ResetPasswordPage <<C>>
+  class AccountProfilePage <<C>>
+  class DashboardPage <<C>>
+  class JournalCreatePage <<C>>
+  class JournalListPage <<C>>
+  class BuddyPage <<C>>
+  class AiChatbotPage <<C>>
+  class SOSPage <<C>>
+}
+
+package "Backend (Node/Express)" as Backend {
+  class AuthController <<C>> {
+    + registerUser(req, res)
+    + loginUser(req, res)
+    + requestPasswordReset(req, res)
+    + resetPassword(req, res)
+    + updateProfile(req, res)
+  }
+
+  class UserController <<C>> {
+    + getProfile(req, res)
+    + updateProfile(req, res)
+    + getUserJournals(req, res)
+    + uploadProfilePicture(req, res)
+    + deleteAccount(req, res)
+  }
+
+  class JournalController <<C>> {
+    + createJournal(req, res)
+    + updateJournal(req, res)
+    + deleteJournal(req, res)
+    + getJournalsByUserId(req, res)
+    + getJournalById(req, res)
+  }
+
+  class TagController <<C>> {
+    + getMoodTrend(req, res)
+    + getTagsByMood(req, res)
+  }
+
+  class BuddyController <<C>> {
+    + connectBuddy(req, res)
+    + acceptBuddyRequest(req, res)
+    + listPendingRequests(req, res)
+    + listBuddies(req, res)
+    + getBuddyTasks(req, res)
+    + addBuddyTask(req, res)
+    + toggleBuddyTask(req, res)
+    + updateStreak(req, res)
+    + removeBuddy(req, res)
+  }
+
+  class AIController <<C>> {
+    + getMentalHealthSupport(req, res)
+  }
+
+  class AuthMiddleware <<C>> {
+    + verifyToken(req, res, next)
+  }
+
+  class UploadMiddleware <<C>> {
+    + single(fieldName)
+  }
+
+  class User <<C>> {
+    - id : int
+    - username : string
+    - email : string
+    - password : string
+    - bio : string
+    - profile_picture : string
+    - country : string
+    - gender : string
+    + create()
+    + findByEmail()
+    + update()
+    + delete()
+  }
+
+  class Journal <<C>> {
+    - id : int
+    - user_id : int
+    - title : string
+    - content : text
+    - tags : string
+    - created_at : date
+    - updated_at : date
+    + createJournal()
+    + updateJournal()
+    + deleteJournal()
+    + getJournalsByUserId()
+    + getJournalById()
+  }
+
+  class Tag <<C>> {
+    + classifyMood(tag)
+    + analyzeTrend(journals)
+    + getTagsByMood(mood)
+  }
+
+  class Buddy <<C>> {
+    - id : int
+    - user_id : int
+    - buddy_id : int
+    - streak : int
+    - status : string
+    + createRequest()
+    + acceptRequest()
+    + listBuddies()
+    + listChecklistTasks()
+    + createChecklistTask()
+    + updateStreak()
+    + removeConnection()
+  }
+
+  class BuddyChecklistSubject <<C>> {
+    + attach(observer)
+    + notify(event, callback)
+  }
+
+  class BuddyStreakObserver <<C>> {
+    + update(event, callback)
+  }
+
+  class LocalMentalHealthAiService <<C>> {
+    + generateMentalHealthSupport(message)
+  }
+
+  class EmailService <<C>> {
+    + sendResetEmail(email, token)
+  }
+
+  class Database <<C>> {
+    + createPool(config)
+    + query(sql, params)
+  }
+}
+
+database "Database (MySQL)" as DB {
+  class users <<C>> {
+    id : int
+    username : string
+    email : string
+    password : string
+    bio : string
+    profile_picture : string
+    country : string
+    gender : string
+  }
+
+  class journals <<C>> {
+    id : int
+    user_id : int
+    title : string
+    content : text
+    tags : string
+    created_at : date
+    updated_at : date
+  }
+
+  class buddies <<C>> {
+    id : int
+    user_id : int
+    buddy_id : int
+    streak : int
+    status : string
+    last_streak_awarded_on : date
+  }
+
+  class buddy_tasks <<C>> {
+    id : int
+    user_id : int
+    buddy_id : int
+    created_by : int
+    title : string
+    created_at : date
+  }
+
+  class buddy_task_completions <<C>> {
+    id : int
+    task_id : int
+    user_id : int
+    completed_on : date
+    completed_at : date
+  }
+
+  class password_reset_tokens <<C>> {
+    id : int
+    user_id : int
+    token : string
+    expires_at : date
+  }
+}
+
+cloud "External / Runtime Services" as External {
+  class SMTPProvider <<C>>
+  class PythonAI <<C>> {
+    mental_health_ai.py
+  }
+  class UploadsFolder <<C>> {
+    profile images
+  }
+}
+
+' Frontend to backend API calls
+LoginPage -[#6D6DFF]-> AuthController : POST /api/auth/login
+RegisterPage -[#6D6DFF]-> AuthController : POST /api/auth/register
+ForgotPasswordPage -[#6D6DFF]-> AuthController : POST /api/auth/request-reset
+ResetPasswordPage -[#6D6DFF]-> AuthController : POST /api/auth/reset-password
+
+AccountProfilePage -[#6D6DFF]-> UserController : GET/PUT /api/user/profile
+AccountProfilePage -[#6D6DFF]-> UserController : POST /api/user/profile/upload
+AccountProfilePage -[#6D6DFF]-> UserController : DELETE /api/user/delete
+
+DashboardPage -[#6D6DFF]-> TagController : GET /api/tags/trend
+JournalCreatePage -[#6D6DFF]-> JournalController : POST /api/journal/create
+JournalCreatePage -[#6D6DFF]-> TagController : GET /api/tags?mood=
+JournalListPage -[#6D6DFF]-> JournalController : GET /api/journal/user
+JournalListPage -[#6D6DFF]-> JournalController : GET /api/journal/:id
+JournalListPage -[#6D6DFF]-> JournalController : PUT /api/journal/update/:id
+JournalListPage -[#6D6DFF]-> JournalController : DELETE /api/journal/delete/:id
+
+BuddyPage -[#6D6DFF]-> BuddyController : /api/buddies
+BuddyPage -[#6D6DFF]-> BuddyController : /api/buddies/tasks/:id
+AiChatbotPage -[#6D6DFF]-> AIController : POST /api/ai/support
+
+' Authentication and upload middleware
+AuthMiddleware ..> AuthController : protects profile route
+AuthMiddleware ..> UserController : protects user routes
+AuthMiddleware ..> JournalController : protects journal routes
+AuthMiddleware ..> TagController : protects trend route
+AuthMiddleware ..> BuddyController : protects buddy routes
+AuthMiddleware ..> AIController : protects AI route
+UploadMiddleware ..> AuthController : update-profile file
+UploadMiddleware ..> UserController : profile image upload
+
+' Controller to model/service dependencies
+AuthController --> User
+AuthController --> EmailService
+UserController --> User
+UserController --> Journal
+UserController --> UploadsFolder
+JournalController --> Journal
+TagController --> Tag
+BuddyController --> Buddy
+BuddyController --> BuddyChecklistSubject
+AIController --> LocalMentalHealthAiService
+
+BuddyChecklistSubject --> BuddyStreakObserver
+BuddyStreakObserver --> Buddy
+LocalMentalHealthAiService --> PythonAI
+EmailService --> SMTPProvider
+
+' Backend persistence
+User --> Database
+Journal --> Database
+Tag --> Database
+Buddy --> Database
+Database --> users
+Database --> journals
+Database --> buddies
+Database --> buddy_tasks
+Database --> buddy_task_completions
+Database --> password_reset_tokens
+
+' Database relationships
+users "1" --> "*" journals : owns
+users "1" --> "*" buddies : user_id
+users "1" --> "*" buddies : buddy_id
+buddies "1" --> "*" buddy_tasks : checklist
+buddy_tasks "1" --> "*" buddy_task_completions : completions
+users "1" --> "*" password_reset_tokens : reset tokens
+
+note right of SOSPage
+  SOSPage is a frontend route.
+  The current backend has sosRoutes.js
+  and sosController.js placeholders,
+  but they are not registered in server/index.js.
+end note
+
+@enduml

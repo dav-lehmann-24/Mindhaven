@@ -86,7 +86,12 @@ This document is intended for:
 
 | Document | Location |
 | -------- | -------- |
-|          |          |
+| Software Requirements Specification | `SRS.md` |
+| Software Architecture Document | `SAD.md` |
+| Use Case Documents | `UC*.md` files in the project root |
+| Backend Test Files | `server/tests/` |
+| Feature Files | `features/` |
+| CI Workflow | `.github/workflows/node.js.yml` |
 
 ### 1.6 Document Structure
 
@@ -139,12 +144,17 @@ We aim to verify that:
 - Journal management (create, update, fetch)
 - Tag-based alerts
 - User-related operations
+- Buddy request and buddy checklist operations
+- AI support controller behavior
+- SOS route and model behavior
 
 **System Flow:**
 
 - User registration and login
 - Journal lifecycle
 - API request/response handling
+- Buddy connection lifecycle
+- Tag trend and alert analysis
 
 ---
 
@@ -152,13 +162,13 @@ We aim to verify that:
 
 ### 4.1 Outline of Test Inclusions
 
-| Test Type         | Tool           | Description                |
-| ----------------- | -------------- | -------------------------- |
-| Unit Tests        | Jest           | Test controllers and logic |
-| Integration Tests | Supertest      | Test API endpoints         |
-| Functional Tests  | Gherkin        | Validate user workflows    |
-| API Testing       | Postman        | Manual endpoint validation |
-| CI Testing        | GitHub Actions | Automated test execution   |
+| Test Type         | Tool           | Description |
+| ----------------- | -------------- | ----------- |
+| Unit Tests        | Jest           | Test backend controllers, models, observers, and service-level logic |
+| Integration Tests | Supertest      | Test Express API endpoints through route handling |
+| Functional Tests  | Gherkin        | Validate user workflows through feature files |
+| API Testing       | Postman        | Manually validate endpoint request and response behavior |
+| CI Testing        | GitHub Actions | Automatically run backend tests, duplication checks, and frontend linting |
 
 ### 4.2 Potential Future Tests
 
@@ -200,11 +210,15 @@ Example:
 
 - Tests individual components
 - Focus on controllers and logic
+- Uses mocked models and dependencies where needed to isolate the component under test
 
 Example:
 
 - UserController
 - TagController
+- BuddyController
+- AIController
+- Models and observer classes
 
 #### 5.2.3 Integration Testing
 
@@ -213,8 +227,14 @@ Example:
 
 Example:
 
-- `/api/auth/login`
-- `/api/journal/create`
+- `POST /api/auth/register`
+
+Planned integration coverage to add:
+
+- `POST /api/auth/login`
+- Journal create, update, delete, and fetch endpoints
+- Buddy request endpoints
+- Tag and alert endpoints
 
 #### 5.2.4 API Testing (Postman)
 
@@ -236,7 +256,17 @@ Example:
 Focus:
 
 - Improve controller coverage
-- Increase branch coverage |
+- Increase branch coverage
+- Identify untested backend modules before future releases
+
+Current saved backend coverage report:
+
+| Metric | Coverage |
+| ------ | -------- |
+| Statements | 50.58% |
+| Branches | 28.70% |
+| Functions | 45.34% |
+| Lines | 54.90% |
 
 ---
 
@@ -270,15 +300,30 @@ Focus:
 
 | Deliverable       | Location              |
 | ----------------- | --------------------- |
-| Unit Tests        | `/tests/unit/`        |
-| Integration Tests | `/tests/integration/` |
+| Unit Tests        | `server/tests/unit/`  |
+| Integration Tests | `server/tests/integration/` |
 | Feature Files     | `/features/`          |
 | CI Workflow       | `.github/workflows/`  |
-| Test Plan         | `/docs/TEST_PLAN.md`  |
+| Test Plan         | `Test_Plan.md`        |
 
 ---
 
 ## 8. Testing Workflow
+
+The testing workflow is:
+
+1. Install backend dependencies from the `server/` directory using `npm install`.
+2. Install frontend dependencies from the `client/` directory using `npm install`.
+3. Run backend unit and integration tests with `npm test` from `server/`.
+4. Run backend coverage with `npm run test:coverage` from `server/`.
+5. Run optional Cucumber feature tests with `npm run test:cucumber` from `server/`.
+6. Run frontend linting with `npm run lint` from `client/`.
+7. Review test output and coverage reports.
+8. Fix failed tests or defects.
+9. Re-run the affected test suite.
+10. Commit changes only after tests pass.
+
+In CI, GitHub Actions runs on pushes and pull requests targeting `main`. The configured workflow installs backend dependencies, runs backend tests, checks code duplication, installs frontend dependencies, and runs frontend linting.
 
 ---
 
@@ -290,11 +335,27 @@ Any system capable of running Node.js (Windows, macOS, Linux)
 
 ### 9.2 Base Software Elements in the Test Environment
 
+| Software | Purpose |
+| -------- | ------- |
+| Node.js 20 | Runtime used by the GitHub Actions workflow |
+| npm | Dependency installation and script execution |
+| Jest | Backend unit and integration test runner |
+| Supertest | HTTP endpoint testing for Express routes |
+| Cucumber.js | Functional workflow tests using Gherkin feature files |
+| React Scripts | Frontend test and lint tooling |
+| MySQL-compatible database | Application persistence layer for local/manual testing |
+| Environment variables | Database, JWT, email, and API configuration |
+
 ### 9.3 Productivity and Support Tools
 
 | Tool | Purpose |
 | ---- | ------- |
-|      |         |
+| GitHub Actions | Automated CI validation |
+| Jest Coverage | Generates coverage reports under `server/coverage/` |
+| jscpd | Detects duplicated backend code |
+| ESLint | Checks frontend code quality and complexity |
+| Postman | Manual API request testing |
+| Gherkin Feature Files | Documents functional user scenarios |
 
 ---
 
@@ -302,7 +363,19 @@ Any system capable of running Node.js (Windows, macOS, Linux)
 
 | Role | Responsibility |
 | ---- | -------------- |
-|      |                |
+| Developers | Write and maintain unit, integration, and functional tests |
+| Test Lead | Review the test plan, confirm scope, and track completion |
+| Reviewer/Lecturer | Evaluate test evidence, coverage, and project quality |
+| CI Maintainer | Ensure GitHub Actions remains functional |
+| Product Owner/Stakeholder | Confirm that tested workflows match expected user behavior |
+
+Training needs:
+
+- Basic Jest and Supertest usage
+- Understanding of REST API testing
+- Ability to read Gherkin feature files
+- Familiarity with GitHub Actions output
+- Understanding of project environment variables and setup
 
 ---
 
@@ -310,7 +383,16 @@ Any system capable of running Node.js (Windows, macOS, Linux)
 
 | Milestone | Status |
 | --------- | ------ |
-|           |        |
+| Test plan drafted | Complete |
+| Backend unit tests added for controllers and models | Complete |
+| Backend integration test added for registration route | Complete |
+| Gherkin feature files documented | Complete |
+| GitHub Actions workflow configured | Complete |
+| Backend unit test execution verified locally | Complete |
+| Coverage report generated | Complete |
+| Additional integration tests for login, journal, buddy, tag, and SOS APIs | Planned |
+| Frontend component test expansion | Planned |
+| E2E browser automation | Future work |
 
 ---
 
@@ -318,8 +400,61 @@ Any system capable of running Node.js (Windows, macOS, Linux)
 
 | Risk | Probability | Impact | Mitigation |
 | ---- | ----------- | ------ | ---------- |
-|      |             |        |            |
+| Environment variables are missing or incorrect | Medium | High | Document required variables and use test-specific configuration |
+| Database is unavailable during manual or integration testing | Medium | High | Use mocked dependencies for unit tests and configure a stable test database for integration tests |
+| Third-party services such as email or AI APIs are unavailable | Medium | Medium | Mock external services during automated testing |
+| Coverage is lower for branches and integration flows | High | Medium | Add focused tests for error paths, validation failures, and route-level workflows |
+| CI workflow does not run every available test type | Medium | Medium | Expand CI to include frontend tests and Cucumber tests when stable |
+| Manual Postman results are not recorded consistently | Medium | Medium | Store exported Postman collections and screenshots as test evidence |
+| Test data may conflict between runs | Medium | Medium | Use isolated test users, cleanup steps, or mocked persistence |
+
+Dependencies:
+
+- Node.js and npm must be installed.
+- Backend dependencies must be installed in `server/`.
+- Frontend dependencies must be installed in `client/`.
+- Required environment variables must be configured for local/manual testing.
+- GitHub Actions requires repository access and a valid workflow file.
+
+Assumptions:
+
+- Unit tests should run without a live database by mocking model/database dependencies.
+- Integration tests may require Express route setup and local server binding.
+- Manual API testing is performed against a locally running backend.
+- Current testing focus is backend correctness; frontend UI testing is limited.
+
+Constraints:
+
+- Load, stress, and performance testing are outside the current scope.
+- Multi-browser testing is outside the current scope.
+- Third-party service reliability is outside the current scope.
+- Current CI does not execute frontend test cases.
 
 ---
 
 ## 13. Test Execution Screenshots
+
+Test execution evidence should include screenshots or copied output from:
+
+- Backend unit test run
+- Backend full test run
+- Backend coverage report
+- GitHub Actions workflow result
+- Postman API request/response validation
+
+Current local backend unit test result:
+
+| Command | Result |
+| ------- | ------ |
+| `npx jest tests/unit --runInBand` from `server/` | 9 test suites passed, 27 tests passed |
+
+Current saved backend coverage result:
+
+| Metric | Coverage |
+| ------ | -------- |
+| Statements | 50.58% |
+| Branches | 28.70% |
+| Functions | 45.34% |
+| Lines | 54.90% |
+
+Screenshots can be added below this section after running the commands in the local terminal or after viewing the GitHub Actions workflow run.

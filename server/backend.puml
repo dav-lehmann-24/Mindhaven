@@ -1,147 +1,327 @@
-@startuml Mindhaven
+@startuml Mindhaven_Backend_Architecture
+
+title MindHaven Backend Architecture
+
+left to right direction
+
 skinparam style strictuml
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype polyline
+skinparam defaultFontName Arial
 skinparam class {
-    BackgroundColor white
-    BorderColor #7D7D7D
-    ArrowColor #7D7D7D
-    FontColor black
+  BackgroundColor #F9F9F9
+  BorderColor #8A8A8A
+  ArrowColor #6D6DFF
+  FontColor #1F1F1F
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #4F4F4F
+  FontColor #1F1F1F
 }
 skinparam stereotypeCBackgroundColor #D5E8D4
 skinparam stereotypeCBorderColor #82B366
 
-'
-' =======================
-' AUTH CONTROLLER
-' =======================
-class AuthController <<C>> {
-  + registerUser(req, res)
-  + loginUser(req, res)
-  + resetPassword(req, res)
-  + deleteAccount(req, res)
+package "Express App" as ExpressApp {
+  class ServerIndex <<C>> {
+    + express()
+    + cors()
+    + bodyParser.json()
+    + app.use(routes)
+    + listen(PORT)
+  }
+
+  class AuthRoutes <<C>> {
+    + POST /register
+    + POST /login
+    + POST /request-reset
+    + POST /reset-password
+    + PUT /update-profile
+    + GET /profile
+  }
+
+  class UserRoutes <<C>> {
+    + GET /profile
+    + PUT /profile
+    + GET /profile/journals
+    + POST /profile/upload
+    + DELETE /delete
+  }
+
+  class JournalRoutes <<C>> {
+    + POST /create
+    + PUT /update/:id
+    + DELETE /delete/:id
+    + GET /user
+    + GET /:id
+  }
+
+  class TagRoutes <<C>> {
+    + GET /trend
+    + GET /
+  }
+
+  class BuddyRoutes <<C>> {
+    + POST /
+    + GET /
+    + GET /pending
+    + GET /tasks/:id
+    + POST /tasks/:id
+    + PATCH /tasks/:id/:taskId
+    + PUT /streak
+    + PUT /:id/accept
+    + DELETE /:id/reject
+    + DELETE /:id/cancel
+    + GET /:id
+    + DELETE /:id
+  }
+
+  class AiRoutes <<C>> {
+    + POST /support
+  }
+
+  class TestRoutes <<C>> {
+    + POST /ping
+  }
 }
 
-'
-' =======================
-' USER CONTROLLER
-' =======================
-class UserController <<C>> {
-  + getProfile(req, res)
-  + updateProfile(req, res)
-  + uploadProfilePicture(req, res)
+package "Middleware" as Middleware {
+  class AuthMiddleware <<C>> {
+    + verifyToken(req, res, next)
+  }
+
+  class UploadMiddleware <<C>> {
+    + multer.diskStorage()
+    + single(profile_picture)
+  }
+
+  class ErrorMiddleware <<C>> {
+    + handleError()
+  }
 }
 
-'
-' =======================
-' JOURNAL CONTROLLER
-' =======================
-class JournalController <<C>> {
-  + createJournal(req, res)
-  + updateJournal(req, res)
-  + deleteJournal(req, res)
-  + listJournals(req, res)
-  + filterByTag(req, res)
-  + sortByDate(req, res)
+package "Controllers" as Controllers {
+  class AuthController <<C>> {
+    + registerUser(req, res)
+    + loginUser(req, res)
+    + requestPasswordReset(req, res)
+    + resetPassword(req, res)
+    + updateProfile(req, res)
+  }
+
+  class UserController <<C>> {
+    + getProfile(req, res)
+    + updateProfile(req, res)
+    + getUserJournals(req, res)
+    + uploadProfilePicture(req, res)
+    + deleteAccount(req, res)
+  }
+
+  class JournalController <<C>> {
+    + createJournal(req, res)
+    + updateJournal(req, res)
+    + deleteJournal(req, res)
+    + getJournalsByUserId(req, res)
+    + getJournalById(req, res)
+  }
+
+  class TagController <<C>> {
+    + getMoodTrend(req, res)
+    + getTagsByMood(req, res)
+  }
+
+  class BuddyController <<C>> {
+    + connectBuddy(req, res)
+    + acceptBuddyRequest(req, res)
+    + listPendingRequests(req, res)
+    + rejectBuddyRequest(req, res)
+    + cancelBuddyRequest(req, res)
+    + listBuddies(req, res)
+    + getBuddyTasks(req, res)
+    + addBuddyTask(req, res)
+    + toggleBuddyTask(req, res)
+    + getBuddyProfile(req, res)
+    + updateStreak(req, res)
+    + removeBuddy(req, res)
+  }
+
+  class AIController <<C>> {
+    + getMentalHealthSupport(req, res)
+  }
+
+  class TestController <<C>> {
+    + testRoute(req, res)
+  }
 }
 
-'
-' =======================
-' SOS CONTROLLER
-' =======================
-class SOSController <<C>> {
-  + getEmergencyList()
-  + getHotlines()
-  + getYouTubeResources()
+package "Models" as Models {
+  class AuthModel <<C>> {
+    + create()
+    + findByEmail()
+    + createResetToken()
+    + findResetToken()
+    + deleteResetTokens()
+    + updateProfile()
+  }
+
+  class UserModel <<C>> {
+    + findById()
+    + update()
+    + getJournals()
+    + deleteAccount()
+  }
+
+  class JournalModel <<C>> {
+    + createJournal()
+    + updateJournal()
+    + deleteJournal()
+    + checkOwnership()
+    + getJournalsByUserId()
+    + getJournalById()
+  }
+
+  class TagModel <<C>> {
+    + classifyMood()
+    + analyzeTrend()
+    + getTagsByMood()
+  }
+
+  class BuddyModel <<C>> {
+    + findUserById()
+    + findUserByUsername()
+    + findRequest()
+    + createRequest()
+    + acceptRequest()
+    + createAcceptedConnection()
+    + listPendingRequests()
+    + listBuddies()
+    + listChecklistTasks()
+    + createChecklistTask()
+    + markTaskCompleteForToday()
+    + unmarkTaskCompleteForToday()
+    + incrementStreakForPair()
+    + removeConnection()
+  }
 }
 
-'
-' =======================
-' AI CONTROLLER
-' =======================
-class AIController <<C>> {
-  + chatWithAI(req, res)
-  + getSuggestions(req, res)
+package "Services and Observers" as Services {
+  class EmailService <<C>> {
+    + sendResetEmail(toEmail, resetToken)
+  }
+
+  class LocalMentalHealthAiService <<C>> {
+    + generateMentalHealthSupport(userMessage)
+  }
+
+  class BuddyChecklistSubject <<C>> {
+    + attach(observer)
+    + notify(event, callback)
+  }
+
+  class BuddyStreakObserver <<C>> {
+    + update(event, callback)
+  }
+
+  class BuddyChecklistNotifier <<C>> {
+    + notifyTaskToggled(event, callback)
+  }
 }
 
-'
-' =======================
-' BUDDY CONTROLLER
-' =======================
-class BuddyController <<C>> {
-  + connectBuddy(req, res)
-  + removeBuddy(req, res)
-  + updateStreak(req, res)
-  + listBuddies(req, res)
+package "Persistence" as Persistence {
+  class Database <<C>> {
+    + createPool(connectionConfig)
+    + query(sql, params, callback)
+  }
+
+  database "MySQL Tables" as MySQL {
+    class users <<C>>
+    class journals <<C>>
+    class buddies <<C>>
+    class buddy_tasks <<C>>
+    class buddy_task_completions <<C>>
+    class password_reset_tokens <<C>>
+    class password_resets <<C>>
+  }
 }
 
-'
-' =======================
-' USER MODEL
-' =======================
-class User <<C>> {
-  - id : int
-  - username : string
-  - email : string
-  - password : string
-  - bio : string
-  - profile_picture : string
-  - country : string
-  - gender : string
-
-  + register()
-  + login()
-  + updateProfile()
-  + deleteAccount()
+cloud "External / Runtime" as External {
+  class SMTPProvider <<C>>
+  class PythonAI <<C>> {
+    mental_health_ai.py
+  }
+  class UploadsFolder <<C>>
 }
 
-'
-' =======================
-' JOURNAL MODEL
-' =======================
-class Journal <<C>> {
-  - id : int
-  - user_id : int
-  - title : string
-  - content : text
-  - tags : string[]
-  - is_private : boolean
-  - created_at : date
-  - updated_at : date
+' Route registration
+ServerIndex --> AuthRoutes : /api/auth
+ServerIndex --> UserRoutes : /api/user
+ServerIndex --> JournalRoutes : /api/journal
+ServerIndex --> TagRoutes : /api/tags
+ServerIndex --> BuddyRoutes : /api/buddies
+ServerIndex --> AiRoutes : /api/ai
+ServerIndex --> TestRoutes : /api/test
+ServerIndex --> UploadsFolder : /uploads static
 
-  + createJournal()
-  + editJournal()
-  + deleteJournal()
-  + filterByTag()
-  + sortByDate()
-}
+' Middleware use
+AuthRoutes ..> AuthMiddleware : protected routes
+UserRoutes ..> AuthMiddleware
+JournalRoutes ..> AuthMiddleware
+TagRoutes ..> AuthMiddleware : /trend
+BuddyRoutes ..> AuthMiddleware
+AiRoutes ..> AuthMiddleware
+AuthRoutes ..> UploadMiddleware : update profile
+UserRoutes ..> UploadMiddleware : profile upload
 
-'
-' =======================
-' TAG MODEL
-' =======================
-class Tag <<C>> {
-  - id : int
-  - name : string
-}
+' Routes to controllers
+AuthRoutes --> AuthController
+UserRoutes --> UserController
+JournalRoutes --> JournalController
+TagRoutes --> TagController
+BuddyRoutes --> BuddyController
+AiRoutes --> AIController
+TestRoutes --> TestController
 
-'
-' =======================
-' BUDDY MODEL
-' =======================
-class Buddy <<C>> {
-  - id : int
-  - user_id : int
-  - buddy_id : int
-  - streak : int
+' Controllers to models and services
+AuthController --> AuthModel
+AuthController --> EmailService
+AuthController --> Database
+UserController --> UserModel
+UserController --> Database
+UserController --> UploadsFolder
+JournalController --> JournalModel
+TagController --> TagModel
+BuddyController --> BuddyModel
+BuddyController --> BuddyChecklistNotifier
+AIController --> LocalMentalHealthAiService
 
-  + connectBuddy()
-  + removeBuddy()
-  + updateStreak()
-}
+' Services
+EmailService --> SMTPProvider
+LocalMentalHealthAiService --> PythonAI
+BuddyChecklistNotifier --> BuddyChecklistSubject
+BuddyChecklistSubject --> BuddyStreakObserver
+BuddyStreakObserver --> BuddyModel
 
-'
-' ========= RELATIONSHIPS =========
-User "1" --> "*" Journal
-Journal "*" --> "*" Tag
-User "1" --> "*" Buddy
+' Persistence
+AuthModel --> Database
+UserModel --> Database
+JournalModel --> Database
+TagModel --> Database
+BuddyModel --> Database
+Database --> MySQL
+
+users "1" --> "*" journals : owns
+users "1" --> "*" buddies : user_id
+users "1" --> "*" buddies : buddy_id
+buddies "1" --> "*" buddy_tasks : checklist
+buddy_tasks "1" --> "*" buddy_task_completions : completions
+users "1" --> "*" password_reset_tokens : auth reset
+users "1" --> "*" password_resets : user reset
+
+note right of ServerIndex
+  sosRoutes.js and sosController.js exist,
+  but SOS routes are not currently
+  registered in server/index.js.
+end note
 
 @enduml

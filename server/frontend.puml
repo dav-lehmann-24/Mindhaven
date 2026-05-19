@@ -1,134 +1,219 @@
-@startuml Mindhaven
+@startuml Mindhaven_Frontend_Architecture
+
+title MindHaven Frontend Architecture
+
+top to bottom direction
 
 skinparam style strictuml
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam nodesep 20
+skinparam ranksep 25
 skinparam class {
-    BackgroundColor white
-    BorderColor #7D7D7D
-    ArrowColor #7D7D7D
-    FontColor black
+  BackgroundColor #F9F9F9
+  BorderColor #8A8A8A
+  ArrowColor #6D6DFF
+  FontColor #1F1F1F
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #4F4F4F
+  FontColor #1F1F1F
+}
+skinparam note {
+  BackgroundColor #FFFBEA
+  BorderColor #D6B656
 }
 skinparam stereotypeCBackgroundColor #D5E8D4
 skinparam stereotypeCBorderColor #82B366
 
-
-'
-' =========================
-' AUTH PAGES
-' =========================
-class LoginPage <<C>> {
-  + handleLogin()
-  + validateInputs()
+package "React App Shell" as AppShell {
+  class App <<C>>
+  class AppContent <<C>> {
+    + renderRoutes()
+    + toggleHeaderFooter()
+  }
+  class BrowserRouter <<C>>
+  class AppHeader <<C>>
+  class Footer <<C>>
 }
 
-class RegisterPage <<C>> {
-  + handleRegister()
-  + validateInputs()
+package "Pages" as Pages {
+  package "Authentication" as AuthPages {
+    class LoginPage <<C>>
+    class RegisterPage <<C>>
+    class ForgotPasswordPage <<C>>
+    class ResetPasswordPage <<C>>
+  }
+
+  package "Journal and Dashboard" as JournalPages {
+    class DashboardPage <<C>>
+    class JournalCreatePage <<C>>
+    class JournalListPage <<C>>
+  }
+
+  package "Account and Support" as AccountSupportPages {
+    class AccountProfilePage <<C>>
+    class BuddyPage <<C>>
+    class AiChatbotPage <<C>>
+    class SOSPage <<C>>
+  }
+
+  package "Static Pages" as StaticPages {
+    class AboutPage <<C>>
+    class ContactPage <<C>>
+    class PrivacyPage <<C>>
+    class TermsPage <<C>>
+  }
 }
 
-class AuthLayoutPage <<C>> {}
-
-
-'
-' =========================
-' USER PROFILE PAGES
-' =========================
-class AccountLayoutPage <<C>> {}
-class AccountProfilePage <<C>> {
-  + handleBioUpdate()
-  + handleImageUpload()
-  + fetchUserProfile()
+package "Reusable UI Components" as Components {
+  class Button <<C>>
+  class Card <<C>>
+  class Form <<C>>
+  class InputField <<C>>
+  class Loader <<C>>
+  class EmptyState <<C>>
+  class ConfirmDialog <<C>>
+  class AlertCard <<C>>
+  class JournalEntryForm <<C>>
+  class JournalEntryCard <<C>>
+  class FilterSearch <<C>>
 }
 
-class AccountSettingsPage <<C>> {
-  + updateEmail()
-  + updatePassword()
-  + deleteAccount()
+package "Buddy UI Components" as BuddyComponents {
+  class BuddySidebar <<C>>
+  class BuddyDetailsSection <<C>>
+  class BuddyChecklistSection <<C>>
+  class PendingRequestsSection <<C>>
+  class ConnectBuddySection <<C>>
+  class StatusBanner <<C>>
 }
 
+package "Client Services" as ClientServices {
+  class AxiosFetchClient <<C>> {
+    + get()
+    + post()
+    + put()
+    + delete()
+  }
 
-'
-' =========================
-' JOURNAL PAGES
-' =========================
-class JournalListPage <<C>> {
-  + fetchJournals()
-  + filterByTag()
-  + sortByDate()
+  class LocalStorage <<C>> {
+    + token
+    + user
+  }
 }
 
-class JournalCreatePage <<C>> {
-  + saveJournal()
-  + handleTags()
+class BackendRESTAPI <<C>> {
+  + request()
+  + authorize()
+  + returnResponse()
 }
 
-class JournalEditPage <<C>> {
-  + loadJournal()
-  + updateJournal()
-}
+' Main structure
+App --> BrowserRouter
+BrowserRouter --> AppContent
+AppContent --> AppHeader
+AppContent --> Footer
+AppContent --> Pages : renders routes
 
-class JournalDetailPage <<C>> {
-  + viewJournal()
-}
+' Page dependencies
+Pages --> Components : shared UI
+BuddyPage --> BuddyComponents : buddy hub UI
+JournalCreatePage --> JournalEntryForm
+JournalListPage --> JournalEntryCard
+JournalListPage --> FilterSearch
+JournalListPage --> ConfirmDialog
+DashboardPage --> AlertCard
 
-class JournalStatsPage <<C>> {
-  + showCalendar()
-  + showMonthlyStats()
-}
+' Data and API access
+AuthPages --> AxiosFetchClient
+JournalPages --> AxiosFetchClient
+AccountSupportPages --> AxiosFetchClient
+AxiosFetchClient --> BackendRESTAPI : REST requests
 
-class JournalCalendarPage <<C>> {
-  + displayCalendar()
-}
+LoginPage --> LocalStorage : save token
+JournalPages --> LocalStorage : read token
+AccountSupportPages --> LocalStorage : read token
 
+App -[hidden]down- BrowserRouter
+BrowserRouter -[hidden]down- AppContent
+AppContent -[hidden]down- AppHeader
+AppHeader -[hidden]down- Footer
 
-'
-' =========================
-' AI & SOS
-' =========================
-class AIChatPage <<C>> {
-  + sendMessage()
-  + fetchSuggestions()
-}
+LoginPage -[hidden]down- RegisterPage
+RegisterPage -[hidden]down- ForgotPasswordPage
+ForgotPasswordPage -[hidden]down- ResetPasswordPage
 
-class SOSPage <<C>> {
-  + getEmergencyList()
-  + getHotlines()
-  + openYouTubeResources()
-}
+DashboardPage -[hidden]down- JournalCreatePage
+JournalCreatePage -[hidden]down- JournalListPage
 
-'
-' =========================
-' BUDDY CIRCLE
-' =========================
-class BuddyCirclePage <<C>> {
-  + connectBuddy()
-  + removeBuddy()
-  + viewBuddies()
-}
+AccountProfilePage -[hidden]down- BuddyPage
+BuddyPage -[hidden]down- AiChatbotPage
+AiChatbotPage -[hidden]down- SOSPage
 
-'
-' =========================
-' COMPONENTS
-' =========================
-class JournalCard <<C>> {}
-class TagSelector <<C>> {}
-class ChatBubble <<C>> {}
-class BuddyCard <<C>> {}
+AboutPage -[hidden]down- ContactPage
+ContactPage -[hidden]down- PrivacyPage
+PrivacyPage -[hidden]down- TermsPage
 
+Button -[hidden]down- Card
+Card -[hidden]down- Form
+Form -[hidden]down- InputField
+InputField -[hidden]down- Loader
+Loader -[hidden]down- EmptyState
+EmptyState -[hidden]down- ConfirmDialog
+ConfirmDialog -[hidden]down- AlertCard
+AlertCard -[hidden]down- JournalEntryForm
+JournalEntryForm -[hidden]down- JournalEntryCard
+JournalEntryCard -[hidden]down- FilterSearch
 
-'
-' ============= RELATIONSHIPS (Frontend Navigation) =============
-LoginPage --> AccountLayoutPage : redirects after success
-RegisterPage --> LoginPage
-AccountLayoutPage --> AccountProfilePage
-AccountLayoutPage --> AccountSettingsPage
-AccountProfilePage --> JournalListPage
-JournalListPage --> JournalDetailPage
-JournalListPage --> JournalCreatePage
-JournalDetailPage --> JournalEditPage
+BuddySidebar -[hidden]down- BuddyDetailsSection
+BuddyDetailsSection -[hidden]down- BuddyChecklistSection
+BuddyChecklistSection -[hidden]down- PendingRequestsSection
+PendingRequestsSection -[hidden]down- ConnectBuddySection
+ConnectBuddySection -[hidden]down- StatusBanner
 
-JournalListPage --> TagSelector
-JournalListPage --> JournalCard
-AIChatPage --> ChatBubble
-BuddyCirclePage --> BuddyCard
+AxiosFetchClient -[hidden]down- LocalStorage
+
+AuthPages -[hidden]down- JournalPages
+JournalPages -[hidden]down- AccountSupportPages
+AccountSupportPages -[hidden]down- StaticPages
+AppShell -[hidden]down- Pages
+Pages -[hidden]down- Components
+Components -[hidden]down- BuddyComponents
+BuddyComponents -[hidden]down- ClientServices
+ClientServices -[hidden]down- BackendRESTAPI
+
+note bottom of AppContent
+  Routes:
+  /login, /register
+  /forgot-password
+  /reset-password/:resetToken
+  /dashboard, /profile
+  /journal/create, /journal/list
+  /buddy, /ai-chatbot, /sos
+  /about, /contact, /privacy, /terms
+end note
+
+note bottom of BackendRESTAPI
+  Main API calls:
+  POST /api/auth/login
+  POST /api/auth/register
+  POST /api/auth/request-reset
+  POST /api/auth/reset-password
+  GET/PUT /api/user/profile
+  POST /api/user/profile/upload
+  DELETE /api/user/delete
+  GET /api/tags/trend
+  GET /api/tags?mood=
+  POST /api/journal/create
+  GET /api/journal/user
+  PUT /api/journal/update/:id
+  DELETE /api/journal/delete/:id
+  /api/buddies
+  POST /api/ai/support
+end note
 
 @enduml

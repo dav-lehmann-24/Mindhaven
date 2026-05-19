@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.52% </span>
+                <span class="strong">11.66% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>6/63</span>
+                <span class='fraction'>7/60</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">10.9% </span>
+                <span class="strong">12.96% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/55</span>
+                <span class='fraction'>7/54</span>
             </div>
         
             
@@ -163,6 +163,17 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -195,12 +206,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -212,11 +217,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -255,6 +255,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const Journal = require('../models/journal');
 &nbsp;
+const withOwnedJournal = <span class="fstat-no" title="function not covered" >(j</span>ournalId, userId, res, callback) =&gt; {
+<span class="cstat-no" title="statement not covered" >  Journal.checkOwnership(journalId, <span class="fstat-no" title="function not covered" >(e</span>rr, rows) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    if (err) <span class="cstat-no" title="statement not covered" >return res.status(500).json({ message: 'Database error' });</span></span>
+<span class="cstat-no" title="statement not covered" >    if (rows.length === 0) <span class="cstat-no" title="statement not covered" >return res.status(404).json({ message: 'Journal not found' });</span></span>
+<span class="cstat-no" title="statement not covered" >    if (rows[0].user_id !== userId) {</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(403).json({ message: 'Unauthorized: not your journal' });</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return callback();</span>
+  });
+};
+&nbsp;
 exports.createJournal = <span class="fstat-no" title="function not covered" >(r</span>eq, res) =&gt; {
   const userId = <span class="cstat-no" title="statement not covered" >req.user.id;</span>
   const { title, content, tags  } = <span class="cstat-no" title="statement not covered" >req.body;</span>
@@ -284,14 +295,8 @@ exports.updateJournal = <span class="fstat-no" title="function not covered" >(r<
   const journalId = <span class="cstat-no" title="statement not covered" >req.params.id;</span>
   const { title, content, tags } = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  Journal.checkOwnership(journalId, <span class="fstat-no" title="function not covered" >(e</span>rr, rows) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (err) <span class="cstat-no" title="statement not covered" >return res.status(500).json({ message: 'Database error' });</span></span>
-<span class="cstat-no" title="statement not covered" >    if (rows.length === 0) <span class="cstat-no" title="statement not covered" >return res.status(404).json({ message: 'Journal not found' });</span></span>
-<span class="cstat-no" title="statement not covered" >    if (rows[0].user_id !== userId)</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(403).json({ message: 'Unauthorized: not your journal' });</span>
-&nbsp;
-    
-<span class="cstat-no" title="statement not covered" >  Journal.updateJournal(journalId, title, content, tags, <span class="fstat-no" title="function not covered" >(e</span>rr, result) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  withOwnedJournal(journalId, userId, res, <span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    Journal.updateJournal(journalId, title, content, tags, <span class="fstat-no" title="function not covered" >(e</span>rr, result) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      if (err) {</span>
 <span class="cstat-no" title="statement not covered" >        console.error('❌ Error updating journal:', err);</span>
 <span class="cstat-no" title="statement not covered" >        return res.status(500).json({ message: 'Error updating journal' });</span>
@@ -306,12 +311,7 @@ exports.deleteJournal = <span class="fstat-no" title="function not covered" >(r<
   const userId = <span class="cstat-no" title="statement not covered" >req.user.id;</span>
   const journalId = <span class="cstat-no" title="statement not covered" >req.params.id;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >Journal.checkOwnership(journalId, <span class="fstat-no" title="function not covered" >(e</span>rr, rows) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (err) <span class="cstat-no" title="statement not covered" >return res.status(500).json({ message: 'Database error' });</span></span>
-<span class="cstat-no" title="statement not covered" >    if (rows.length === 0) <span class="cstat-no" title="statement not covered" >return res.status(404).json({ message: 'Journal not found' });</span></span>
-<span class="cstat-no" title="statement not covered" >    if (rows[0].user_id !== userId)</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(403).json({ message: 'Unauthorized: not your journal' });</span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" >  withOwnedJournal(journalId, userId, res, <span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    Journal.deleteJournal(journalId, <span class="fstat-no" title="function not covered" >(e</span>rr) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      if (err) {</span>
 <span class="cstat-no" title="statement not covered" >        console.error('❌ Error deleting journal:', err);</span>
@@ -355,7 +355,7 @@ exports.getJournalsByUserId = <span class="fstat-no" title="function not covered
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-29T09:17:11.756Z
+                at 2026-05-19T14:07:37.091Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
