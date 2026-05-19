@@ -150,7 +150,7 @@ const DashboardPage = () => {
 
           <div className={styles.rightColumn}>
             <Card className={styles.panelCard}>
-              <h2 className={styles.sectionTitle}>AI Alerts</h2>
+              <h2 className={styles.sectionTitle}>Alerts</h2>
               <div className={styles.alertsList}>
                 {alerts.length === 0 ? (
                   <AlertCard message="No alerts at the moment." type="neutral" />
