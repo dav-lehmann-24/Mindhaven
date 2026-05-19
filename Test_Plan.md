@@ -236,7 +236,7 @@ Example:
 
 Screenshot (Postman runs):
 
-- ![Postman Register](pictures/Postman_Test_Register.jpeg)
+- ![Postman Register](Pictures/Postman_Test_Register.jpeg)
 - ![Postman Login](pictures/Postman_Test_Login.jpeg)
 - ![Postman Create Journal](pictures/Postman_Test_Create_Journal.jpeg)
 - ![Postman Fetch Journals](pictures/Postman_Test_Fetch_Journals.jpeg)
